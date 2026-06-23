@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apoyo Emocional para Adolescentes</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234facfe'/%3E%3Cstop offset='100%25' stop-color='%2300f2fe'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Cpath d='M35,65 Q35,45 50,45 Q65,45 65,65' stroke='white' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M50,45 Q40,30 50,20 Q60,30 50,45' fill='%2366bb6a'/%3E%3Cpath d='M50,35 Q35,30 40,20 Q50,28 50,35' fill='%2381c784'/%3E%3Cpath d='M50,35 Q65,30 60,20 Q50,28 50,35' fill='%2381c784'/%3E%3Ccircle cx='50' cy='52' r='3' fill='white'/%3E%3C/svg%3E">
-    <!-- Etiquetas para salir en Google -->
     <meta name="description" content="Proyecto Alegría: Un espacio seguro de orientación y apoyo emocional para adolescentes.">
     <meta name="keywords" content="apoyo emocional, adolescentes, salud mental, proyecto alegria">
     <meta name="author" content="Jesús">
@@ -373,7 +372,7 @@
         .detalle-dia-titulo { font-weight: bold; font-size: 1rem; color: #333; margin-bottom: 10px; display: flex; justify-content: space-between;}
         .lista-emociones-lineal { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
         .badge-emocion { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; color: white; font-size: 0.85rem; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); animation: aparecerBadge 0.3s ease; }
-        @pragma keyframes aparecerBadge { from { transform: translateY(5px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes aparecerBadge { from { transform: translateY(5px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         /* ==========================================
            MASCOTA VIRTUAL FLOTANTE Y SELECTOR
@@ -452,7 +451,6 @@
 </head>
 <body>
 
-    <!-- BARRA LATERAL DINÁMICA (SIDEBAR) -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo-text">Alegría</div>
@@ -470,7 +468,6 @@
             </div>
         </div>
 
-        <!-- FOOTER DEL SIDEBAR: INICIO DE SESIÓN / PERFIL -->
         <div class="sidebar-footer">
             <div id="auth-container">
                 <a href="login.html" class="auth-profile">
@@ -483,7 +480,6 @@
         </div>
     </nav>
 
-    <!-- MASCOTA VIRTUAL FLOTANTE -->
     <div id="mascota-virtual">
         <div id="mascota-emoji">🌱</div>
         <div id="mascota-texto">Mi Compañero</div>
@@ -493,7 +489,6 @@
         <div id="mascota-limite-texto">0/3 Hoy</div>
     </div>
 
-    <!-- MODAL:  DE COMPAÑEROS -->
     <div id="modal-galeria" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
@@ -503,14 +498,12 @@
             <div class="modal-body">
                 <p style="text-align: center; margin-bottom: 20px; color: #555;">Aquí descansan las mascotas que has cuidado con éxito. ¡Cada una representa tu progreso!</p>
                 <div id="galeria-logros-contenedor" class="galeria-grid">
-                    <!-- Se llena con JS -->
-                </div>
+                    </div>
                 <p id="mensaje-sin-logros" style="color: #888; font-style: italic; text-align: center;">Aún no tienes mascotas completadas. ¡Sigue completando ejercicios!</p>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: DIARIO EMOCIONAL (CALENDARIO) -->
     <div id="modal-diario" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header" style="background: var(--secondary-color);">
@@ -528,24 +521,20 @@
                 </div>
                 
                 <div class="calendario-grid" id="calendario-contenedor" style="margin-top: 8px;">
-                    <!-- Se genera dinámicamente con Firebase -->
-                </div>
+                    </div>
 
-                <!-- SECCIÓN DE DETALLE INFERIOR ADICIONAL -->
                 <div id="detalle-dia-seccion" class="detalle-dia-contenedor" style="display: none;">
                     <div class="detalle-dia-titulo">
                         <span id="detalle-fecha-texto">Emociones del día</span>
                         <span style="font-size: 0.85rem; color: #888; font-weight: normal;">En orden de registro 🕒</span>
                     </div>
                     <div id="detalle-emociones-lista" class="lista-emociones-lineal">
-                        <!-- Las burbujas de emociones se agregan dinámicamente aquí -->
-                    </div>
+                        </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: SELECTOR DE NUEVA MASCOTA -->
     <div id="modal-selector-mascota">
         <div class="selector-content">
             <h2 style="color: var(--happy-color); margin-top:0;">¡Felicidades! 🎉</h2>
@@ -560,14 +549,12 @@
         </div>
     </div>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <header class="hero">
         <h1>Orientación y Salud Mental para Adolescentes</h1>
         <p>Tu bienestar emocional es nuestra prioridad. Un espacio seguro para estudiantes de secundaria y jóvenes.</p>
     </header>
 
     <div class="container">
-        <!-- SECCIÓN INTERACTIVA DE EMOCIONES -->
         <section class="interactive-section">
             <h2>¿Cómo te sientes en este momento?</h2>
             <div class="emotion-buttons">
@@ -584,7 +571,6 @@
                 <ul id="advice-list"></ul>
             </div>
 
-            <!-- Zona Interactiva de Juegos -->
             <div id="seccion-juego">
                 <h3 id="juego-titulo-header" style="color: #2F80ED; margin-top: 0;">🎯 ¡Zona Interactiva de Bienestar!</h3>
                 <p id="juego-descripcion" style="color: #4F4F4F; margin-bottom: 15px;"></p>
@@ -599,7 +585,6 @@
             </div>
         </section>
 
-        <!-- ZONA DE AYUDA SOS -->
         <section class="sos-section">
             <h2>🚨 Zona de Ayuda Inmediata</h2>
             <p><strong>No estás solo.</strong> Si sientes que la situación te supera, estás en crisis o tienes pensamientos de hacerte daño, hay profesionales capacitados listos para escucharte <strong>gratis y de forma anónima</strong>.</p>
@@ -619,7 +604,6 @@
             </div>
         </section>
 
-        <!-- SECCIÓN DE PROBLEMA (Estadísticas) -->
         <section class="problem-section">
             <h2>El Reto: Bajo acceso a orientación</h2>
             <div class="stats-grid">
@@ -629,7 +613,6 @@
         </section>
     </div>
 
-    <!-- EL CHAT WIDGET DE ALEGRIA -->
     <div id="chat-widget">
         <button id="chat-button" onclick="toggleChat()">💬</button>
         
@@ -657,7 +640,6 @@
         </div>
     </div>
 
-    <!-- SCRIPTS -->
     <script>
         // ==========================================
         // CONTROL DE BARRA LATERAL (SIDEBAR)
@@ -699,7 +681,7 @@
         };
 
         // ==========================================
-        // LOGICA DE LA MASCOTA (Guardar)
+        // LOGICA DE LA MASCOTA (Sincronizada a Firestore)
         // ==========================================
         let datosProgreso = {
             tipoActivo: 'planta',
@@ -712,7 +694,7 @@
         async function guardarProgresoMascota() {
             if (window.usuarioLogueado && window.db) {
                 try {
-                    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
                     const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
                     await setDoc(usuarioRef, { mascota: datosProgreso }, { merge: true });
                     console.log("Mascota guardada en la nube con éxito.");
@@ -724,15 +706,12 @@
             }
         }
 
-        // ==========================================
-        // CARGAR LA MASCOTA AL INICIAR EL SISTEMA (Cargar)
-        // ==========================================
         async function iniciarSistemaMascota() {
             const hoy = new Date().toLocaleDateString();
 
             if (window.usuarioLogueado && window.db) {
                 try {
-                    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
                     const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
                     const docSnap = await getDoc(usuarioRef);
                     
@@ -740,7 +719,7 @@
                         datosProgreso = docSnap.data().mascota;
                         console.log("Mascota cargada desde Google Cloud.");
                     } else {
-                        datosProgreso = { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
+                        datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
                     }
                 } catch (error) {
                     console.error("Error cargando mascota remota, usando local:", error);
@@ -832,9 +811,6 @@
                 contenedor.appendChild(div);
             });
         }
-
-        // Se elimina la llamada directa al DOMContentLoaded original de la mascota para delegarla de forma segura a Firebase Auth
-        // window.addEventListener('DOMContentLoaded', iniciarSistemaMascota);
 
         // ==========================================
         // VARIABLES GLOBALES Y FUNCIONES DE JUEGOS
@@ -1162,11 +1138,11 @@
         }
     </script>
 
-    <!-- LÓGICA DE FIREBASE Y CALENDARIO -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        // ESTA ES LA LÍNEA QUE ROMPÍA EL CALENDARIO Y YA FUE CORREGIDA (debe decir firebase-firestore.js)
+        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
@@ -1207,7 +1183,7 @@
                     signOut(auth).then(() => { window.location.reload(); });
                 });
 
-                // Primero esperamos a autenticar y luego ejecutamos la mascota e historial de forma sincronizada
+                // Carga la mascota y luego el historial del calendario
                 iniciarSistemaMascota().then(() => {
                     window.cargarHistorialYCalendario();
                 });
@@ -1223,7 +1199,7 @@
                         </div>
                     </a>
                 `;
-                // Si no hay usuario, iniciamos localmente la mascota y luego el calendario
+                
                 iniciarSistemaMascota().then(() => {
                     window.cargarHistorialYCalendario();
                 });
@@ -1236,7 +1212,7 @@
 
             if (window.usuarioLogueado && window.db) {
                 try {
-                    const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                    const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
                     await addDoc(collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones"), {
                         emocion: emocion,
                         fecha: serverTimestamp(),
@@ -1274,7 +1250,7 @@
 
             if (window.usuarioLogueado && window.db) {
                 try {
-                    const { collection, query, orderBy, getDocs, limit } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                    const { collection, query, orderBy, getDocs, limit } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
                     const consulta = query(collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones"), orderBy("fecha", "asc"), limit(200));
                     const resultados = await getDocs(consulta);
 
