@@ -373,7 +373,7 @@
         .detalle-dia-titulo { font-weight: bold; font-size: 1rem; color: #333; margin-bottom: 10px; display: flex; justify-content: space-between;}
         .lista-emociones-lineal { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
         .badge-emocion { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; color: white; font-size: 0.85rem; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); animation: aparecerBadge 0.3s ease; }
-        @keyframes aparecerBadge { from { transform: translateY(5px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @pragma keyframes aparecerBadge { from { transform: translateY(5px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         /* ==========================================
            MASCOTA VIRTUAL FLOTANTE Y SELECTOR
@@ -698,67 +698,67 @@
             loro: { nombre: "Loro Sabio", tipoIcon: "🦜 Inteligencia", etapas: ["🥚", "🐣", "🐥", "🦜", "✨🐦✨"] }
         };
 
-      // ==========================================
-// LOGICA DE LA MASCOTA (Guardar)
-// ==========================================
-let datosProgreso = {
-    tipoActivo: 'planta',
-    nivel: 0,
-    fechaUltimoUpgrade: new Date().toLocaleDateString(),
-    upgradesHoy: 0,
-    logros: []
-};
+        // ==========================================
+        // LOGICA DE LA MASCOTA (Guardar)
+        // ==========================================
+        let datosProgreso = {
+            tipoActivo: 'planta',
+            nivel: 0,
+            fechaUltimoUpgrade: new Date().toLocaleDateString(),
+            upgradesHoy: 0,
+            logros: []
+        };
 
-async function guardarProgresoMascota() {
-    if (window.usuarioLogueado) {
-        try {
-            const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-            const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
-            await setDoc(usuarioRef, { mascota: datosProgreso }, { merge: true });
-            console.log("Mascota guardada en la nube con éxito.");
-        } catch (error) {
-            console.error("Error al guardar mascota en la nube: ", error);
-        }
-    } else {
-        localStorage.setItem('alegria_mascota_data', JSON.stringify(datosProgreso));
-    }
-}
-
-// ==========================================
-// CARGAR LA MASCOTA AL INICIAR EL SISTEMA (Cargar)
-// ==========================================
-async function iniciarSistemaMascota() {
-    const hoy = new Date().toLocaleDateString();
-
-    if (window.usuarioLogueado && window.db) {
-        try {
-            const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-            const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
-            const docSnap = await getDoc(usuarioRef);
-            
-            if (docSnap.exists() && docSnap.data().mascota) {
-                datosProgreso = docSnap.data().mascota;
-                console.log("Mascota cargada desde Google Cloud.");
+        async function guardarProgresoMascota() {
+            if (window.usuarioLogueado && window.db) {
+                try {
+                    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                    const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
+                    await setDoc(usuarioRef, { mascota: datosProgreso }, { merge: true });
+                    console.log("Mascota guardada en la nube con éxito.");
+                } catch (error) {
+                    console.error("Error al guardar mascota en la nube: ", error);
+                }
             } else {
-                datosProgreso = { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
+                localStorage.setItem('alegria_mascota_data', JSON.stringify(datosProgreso));
             }
-        } catch (error) {
-            console.error("Error cargando mascota remota, usando local:", error);
-            datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
         }
-    } else {
-        datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
-    }
 
-    if (datosProgreso.fechaUltimoUpgrade !== hoy) {
-        datosProgreso.upgradesHoy = 0;
-        datosProgreso.fechaUltimoUpgrade = hoy;
-        guardarProgresoMascota();
-    }
+        // ==========================================
+        // CARGAR LA MASCOTA AL INICIAR EL SISTEMA (Cargar)
+        // ==========================================
+        async function iniciarSistemaMascota() {
+            const hoy = new Date().toLocaleDateString();
 
-    actualizarUIMascota();
-    renderizarLogros();
-}
+            if (window.usuarioLogueado && window.db) {
+                try {
+                    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                    const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
+                    const docSnap = await getDoc(usuarioRef);
+                    
+                    if (docSnap.exists() && docSnap.data().mascota) {
+                        datosProgreso = docSnap.data().mascota;
+                        console.log("Mascota cargada desde Google Cloud.");
+                    } else {
+                        datosProgreso = { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
+                    }
+                } catch (error) {
+                    console.error("Error cargando mascota remota, usando local:", error);
+                    datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
+                }
+            } else {
+                datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
+            }
+
+            if (datosProgreso.fechaUltimoUpgrade !== hoy) {
+                datosProgreso.upgradesHoy = 0;
+                datosProgreso.fechaUltimoUpgrade = hoy;
+                guardarProgresoMascota();
+            }
+
+            actualizarUIMascota();
+            renderizarLogros();
+        }
 
         function actualizarUIMascota() {
             const config = tiposMascotas[datosProgreso.tipoActivo];
@@ -808,9 +808,10 @@ async function iniciarSistemaMascota() {
             const contenedor = document.getElementById('galeria-logros-contenedor');
             const msgVacio = document.getElementById('mensaje-sin-logros');
             
-            if (datosProgreso.logros.length === 0) { msgVacio.style.display = 'block'; return; }
+            if (!contenedor) return;
+            if (datosProgreso.logros.length === 0) { if (msgVacio) msgVacio.style.display = 'block'; return; }
             
-            msgVacio.style.display = 'none';
+            if (msgVacio) msgVacio.style.display = 'none';
             contenedor.innerHTML = '';
             
             datosProgreso.logros.forEach((logro, index) => {
@@ -832,7 +833,8 @@ async function iniciarSistemaMascota() {
             });
         }
 
-        window.addEventListener('DOMContentLoaded', iniciarSistemaMascota);
+        // Se elimina la llamada directa al DOMContentLoaded original de la mascota para delegarla de forma segura a Firebase Auth
+        // window.addEventListener('DOMContentLoaded', iniciarSistemaMascota);
 
         // ==========================================
         // VARIABLES GLOBALES Y FUNCIONES DE JUEGOS
@@ -1164,7 +1166,7 @@ async function iniciarSistemaMascota() {
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
@@ -1205,7 +1207,10 @@ async function iniciarSistemaMascota() {
                     signOut(auth).then(() => { window.location.reload(); });
                 });
 
-                window.cargarHistorialYCalendario();
+                // Primero esperamos a autenticar y luego ejecutamos la mascota e historial de forma sincronizada
+                iniciarSistemaMascota().then(() => {
+                    window.cargarHistorialYCalendario();
+                });
             } else {
                 window.usuarioLogueado = null;
                 document.getElementById('btn-sidebar-diario').style.display = 'none';
@@ -1218,185 +1223,205 @@ async function iniciarSistemaMascota() {
                         </div>
                     </a>
                 `;
-                window.cargarHistorialYCalendario();
+                // Si no hay usuario, iniciamos localmente la mascota y luego el calendario
+                iniciarSistemaMascota().then(() => {
+                    window.cargarHistorialYCalendario();
+                });
             }
         });
 
         window.guardarEmocionBD = async function(emocion) {
-    const hoy = new Date();
-    const claveLocal = `${hoy.getFullYear()}-${hoy.getMonth() + 1}-${hoy.getDate()}`;
+            const hoy = new Date();
+            const claveLocal = `${hoy.getFullYear()}-${hoy.getMonth() + 1}-${hoy.getDate()}`;
 
-    //  AQUÍ EL ESCUDO: Protegemos con && window.db 
-    if (window.usuarioLogueado && window.db) {
-        try {
-            const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-            await addDoc(collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones"), {
-                emocion: emocion,
-                fecha: serverTimestamp(),
-                fechaLocalStr: claveLocal,
-                timestampCreado: Date.now()
-            });
-            console.log("Emoción sincronizada con Google.");
-        } catch (error) {
-            console.error("Error guardando tu emoción en la nube: ", error);
-        }
-    } else {
-        // Respaldo temporal si la base de datos aún no carga
-        let historialLocal = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
-        if (!historialLocal[claveLocal]) historialLocal[claveLocal] = [];
-        historialLocal[claveLocal].push(emocion);
-        localStorage.setItem('alegria_emociones_local_list', JSON.stringify(historialLocal));
-    }
-    
-    if (typeof window.cargarHistorialYCalendario === "function") {
-        window.cargarHistorialYCalendario();
-    }
-};
-    // 1. Si el usuario inició sesión pero la base de datos no se ha conectado, frenamos
-   window.cargarHistorialYCalendario = async function() {
-    // CONDICIÓN DE SEGURIDAD: Si no hay base de datos conectada todavía, 
-    // evitamos que Firebase explote y cargamos el respaldo local temporalmente.
-    if (!window.db) {
-        console.log("Firebase no está listo aún. Usando base de datos local temporal...");
-        let emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
-        window.mapaEmocionesGlobal = emocionesPorDia;
-        if (typeof window.generarCalendarioUI === "function") {
-            window.generarCalendarioUI(emocionesPorDia);
-        }
-        return; // Detiene la ejecución aquí para que no salte el error en rojo
-    }
-
-    let emocionesPorDia = {};
-
-    // Si hay usuario y la base de datos está totalmente lista
-    if (window.usuarioLogueado && window.db) {
-        try {
-            const { collection, query, orderBy, getDocs, limit } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-            const consulta = query(collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones"), orderBy("fecha", "asc"), limit(200));
-            const resultados = await getDocs(consulta);
-
-            resultados.forEach((doc) => {
-                const data = doc.data();
-                let clave = null;
-
-                if (data.fechaLocalStr) {
-                    clave = data.fechaLocalStr;
-                } else if (data.fecha) {
-                    const d = data.fecha.toDate();
-                    clave = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+            if (window.usuarioLogueado && window.db) {
+                try {
+                    const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                    await addDoc(collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones"), {
+                        emocion: emocion,
+                        fecha: serverTimestamp(),
+                        fechaLocalStr: claveLocal,
+                        timestampCreado: Date.now()
+                    });
+                    console.log("Emoción sincronizada con Google.");
+                } catch (error) {
+                    console.error("Error guardando tu emoción en la nube: ", error);
                 }
+            } else {
+                let historialLocal = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
+                if (!historialLocal[claveLocal]) historialLocal[claveLocal] = [];
+                historialLocal[claveLocal].push(emocion);
+                localStorage.setItem('alegria_emociones_local_list', JSON.stringify(historialLocal));
+            }
+            
+            if (typeof window.cargarHistorialYCalendario === "function") {
+                window.cargarHistorialYCalendario();
+            }
+        };
 
-                if (clave) {
-                    if (!emocionesPorDia[clave]) emocionesPorDia[clave] = [];
-                    emocionesPorDia[clave].push(data.emocion);
+        window.cargarHistorialYCalendario = async function() {
+            if (!window.db) {
+                console.log("Firebase no está listo aún. Usando base de datos local temporal...");
+                let emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
+                window.mapaEmocionesGlobal = emocionesPorDia;
+                if (typeof window.generarCalendarioUI === "function") {
+                    window.generarCalendarioUI(emocionesPorDia);
                 }
-            });
-            console.log("Historial descargado completo desde Google.");
-        } catch (error) {
-            console.error("Error al obtener documentos remotos: ", error);
-            emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
-        }
-    } else {
-        emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
-    }
+                return;
+            }
 
-    window.mapaEmocionesGlobal = emocionesPorDia;
-    }
+            let emocionesPorDia = {};
 
-    const claveHoy = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
-    if (typeof window.mostrarDetalleDia === "function") {
-        window.mostrarDetalleDia(claveHoy, new Date().getDate());
-    }
+            if (window.usuarioLogueado && window.db) {
+                try {
+                    const { collection, query, orderBy, getDocs, limit } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                    const consulta = query(collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones"), orderBy("fecha", "asc"), limit(200));
+                    const resultados = await getDocs(consulta);
 
+                    resultados.forEach((doc) => {
+                        const data = doc.data();
+                        let clave = null;
 
-// Ejecutar la función de forma segura al cargar el archivo
-window.cargarHistorialYCalendario();
+                        if (data.fechaLocalStr) {
+                            clave = data.fechaLocalStr;
+                        } else if (data.fecha) {
+                            const d = data.fecha.toDate();
+                            clave = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+                        }
 
-window.generarCalendarioUI = function(emocionesPorDia) {
-    const fechaActual = new Date();
-    const anio = fechaActual.getFullYear();
-    const mes = fechaActual.getMonth();
-    const diaHoy = fechaActual.getDate();
+                        if (clave) {
+                            if (!emocionesPorDia[clave]) emocionesPorDia[clave] = [];
+                            emocionesPorDia[clave].push(data.emocion);
+                        }
+                    });
+                    console.log("Historial descargado completo desde Google.");
+                } catch (error) {
+                    console.error("Error al obtener documentos remotos: ", error);
+                    emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
+                }
+            } else {
+                emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
+            }
 
-    const primerDiaMes = new Date(anio, mes, 1).getDay();
-    const totalDiasMes = new Date(anio, mes + 1, 0).getDate();
+            window.mapaEmocionesGlobal = emocionesPorDia;
+            if (typeof window.generarCalendarioUI === "function") {
+                window.generarCalendarioUI(emocionesPorDia);
+            }
 
-    const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-    const mesAnio = `${nombresMeses[mes]} ${anio}`;
-    
-    const calTitulo = document.getElementById('calendario-titulo');
-    if (calTitulo) {
-        calTitulo.innerText = mesAnio.charAt(0).toUpperCase() + mesAnio.slice(1);
-    }
-
-    const contenedorDias = document.getElementById('calendario-dias');
-    if (!contenedorDias) return;
-    contenedorDias.innerHTML = '';
-
-    // Ajuste para inicio de semana en lunes (opcional, estándar adaptado)
-    const desp = primerDiaMes === 0 ? 6 : primerDiaMes - 1;
-    for (let i = 0; i < desp; i++) {
-        const celdaVacia = document.createElement('div');
-        celdaVacia.classList.add('dia-vacio');
-        contenedorDias.appendChild(celdaVacia);
-    }
-
-    for (let d = 1; d <= totalDiasMes; d++) {
-        const celdaDia = document.createElement('div');
-        celdaDia.classList.add('dia-celda');
-        celdaDia.innerText = d;
-
-        const claveDia = `${anio}-${mes + 1}-${d}`;
-        if (emocionesPorDia && emocionesPorDia[claveDia] && emocionesPorDia[claveDia].length > 0) {
-            const ultimaEmocion = emocionesPorDia[claveDia][emocionesPorDia[claveDia].length - 1];
-            celdaDia.classList.add(`emocion-${ultimaEmocion}`);
-        }
-
-        if (d === diaHoy) {
-            celdaDia.classList.add('hoy');
-        }
-
-        celdaDia.addEventListener('click', () => {
+            const claveHoy = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
             if (typeof window.mostrarDetalleDia === "function") {
-                window.mostrarDetalleDia(claveDia, d);
+                window.mostrarDetalleDia(claveHoy, new Date().getDate());
             }
-        });
+        };
 
-       contenedorDias.appendChild(celdaDia);
-    }
-};
+        window.generarCalendarioUI = function(emocionesPorDia) {
+            const fechaActual = new Date();
+            const anio = fechaActual.getFullYear();
+            const mes = fechaActual.getMonth();
+            const diaHoy = fechaActual.getDate();
 
-// ==========================================
-// MOSTRAR DETALLE DEL DÍA (CRONOLÓGICO)
-// ==========================================
-window.mostrarDetalleDia = function(claveDia, numeroDia) {
-    const seccionDetalle = document.getElementById('detalle-dia-seccion');
-    const contenedorLista = document.getElementById('detalle-emociones-lista');
-    const textoFecha = document.getElementById('detalle-fecha-texto');
+            const primerDiaMes = new Date(anio, mes, 1).getDay();
+            const totalDiasMes = new Date(anio, mes + 1, 0).getDate();
 
-    if (seccionDetalle) seccionDetalle.style.display = "block";
-    if (contenedorLista) contenedorLista.innerHTML = "";
-    if (textoFecha) textoFecha.innerText = `Historial del día ${numeroDia} de este mes:`;
-
-    const emocionesDelDia = window.mapaEmocionesGlobal ? window.mapaEmocionesGlobal[claveDia] : null;
-
-    if (emocionesDelDia && emocionesDelDia.length > 0) {
-        emocionesDelDia.forEach((emocionStr) => {
-            const configE = window.configEmociones ? window.configEmociones[emocionStr] : null;
-            if (configE) {
-                const badge = document.createElement('div');
-                badge.className = 'badge-emocion';
-                badge.style.backgroundColor = configE.color;
-                badge.innerHTML = `<span>${configE.emoji}</span> <span>${configE.texto}</span>`;
-                contenedorLista.appendChild(badge);
+            const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            const mesAnio = `${nombresMeses[mes]} ${anio}`;
+            
+            const calTitulo = document.getElementById('calendario-titulo');
+            if (calTitulo) {
+                calTitulo.innerText = mesAnio.charAt(0).toUpperCase() + mesAnio.slice(1);
             }
-        });
-    } else {
-        if (contenedorLista) {
-            contenedorLista.innerHTML = `<span style="color: #888; font-style: italic; font-size: 0.9rem;">No registraste emociones este día.</span>`;
-        }
-    }
-};
-</script>
+
+            const contenedorDias = document.getElementById('calendario-contenedor');
+            if (!contenedorDias) return;
+            contenedorDias.innerHTML = '';
+
+            const desp = primerDiaMes === 0 ? 6 : primerDiaMes - 1;
+            for (let i = 0; i < desp; i++) {
+                const celdaVacia = document.createElement('div');
+                celdaVacia.classList.add('celda-dia', 'vacia');
+                contenedorDias.appendChild(celdaVacia);
+            }
+
+            for (let d = 1; d <= totalDiasMes; d++) {
+                const celdaDia = document.createElement('div');
+                celdaDia.classList.add('celda-dia');
+                
+                const numDia = document.createElement('div');
+                numDia.className = 'numero-dia';
+                numDia.innerText = d;
+                celdaDia.appendChild(numDia);
+
+                const claveDia = `${anio}-${mes + 1}-${d}`;
+                if (emocionesPorDia && emocionesPorDia[claveDia] && emocionesPorDia[claveDia].length > 0) {
+                    const listaEmociones = emocionesPorDia[claveDia];
+                    const ultimaEmocion = listaEmociones[listaEmociones.length - 1];
+                    const configE = window.configEmociones[ultimaEmocion];
+
+                    if (configE) {
+                        const divReg = document.createElement('div');
+                        divReg.className = 'emocion-registro';
+                        divReg.innerHTML = `<span style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">${configE.emoji}</span>`;
+                        celdaDia.appendChild(divReg);
+                        celdaDia.style.backgroundColor = configE.color + "15"; 
+                        celdaDia.style.borderColor = configE.color;
+                    }
+
+                    if (listaEmociones.length > 1) {
+                        const indMultiples = document.createElement('div');
+                        indMultiples.className = 'indicador-multiples';
+                        indMultiples.innerText = listaEmociones.length;
+                        celdaDia.appendChild(indMultiples);
+                    }
+                }
+
+                if (d === diaHoy) {
+                    celdaDia.classList.add('hoy');
+                }
+
+                celdaDia.addEventListener('click', () => {
+                    const celdas = contenedorDias.querySelectorAll('.celda-dia');
+                    celdas.forEach(c => c.classList.remove('seleccionada'));
+                    celdaDia.classList.add('seleccionada');
+                    if (typeof window.mostrarDetalleDia === "function") {
+                        window.mostrarDetalleDia(claveDia, d);
+                    }
+                });
+
+                contenedorDias.appendChild(celdaDia);
+            }
+        };
+
+        // ==========================================
+        // MOSTRAR DETALLE DEL DÍA (CRONOLÓGICO)
+        // ==========================================
+        window.mostrarDetalleDia = function(claveDia, numeroDia) {
+            const seccionDetalle = document.getElementById('detalle-dia-seccion');
+            const contenedorLista = document.getElementById('detalle-emociones-lista');
+            const textoFecha = document.getElementById('detalle-fecha-texto');
+
+            if (seccionDetalle) seccionDetalle.style.display = "block";
+            if (contenedorLista) contenedorLista.innerHTML = "";
+            if (textoFecha) textoFecha.innerText = `Historial del día ${numeroDia} de este mes:`;
+
+            const emocionesDelDia = window.mapaEmocionesGlobal ? window.mapaEmocionesGlobal[claveDia] : null;
+
+            if (emocionesDelDia && emocionesDelDia.length > 0) {
+                emocionesDelDia.forEach((emocionStr) => {
+                    const configE = window.configEmociones ? window.configEmociones[emocionStr] : null;
+                    if (configE) {
+                        const badge = document.createElement('div');
+                        badge.className = 'badge-emocion';
+                        badge.style.backgroundColor = configE.color;
+                        badge.innerHTML = `<span>${configE.emoji}</span> <span>${configE.texto}</span>`;
+                        contenedorLista.appendChild(badge);
+                    }
+                });
+            } else {
+                if (contenedorLista) {
+                    contenedorLista.innerHTML = `<span style="color: #888; font-style: italic; font-size: 0.9rem;">No registraste emociones este día.</span>`;
+                }
+            }
+        };
+    </script>
 </body>
 </html>
