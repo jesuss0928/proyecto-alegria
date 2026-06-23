@@ -1306,82 +1306,59 @@ window.cargarHistorialYCalendario = async function() {
 // Ejecutar la función de forma segura al cargar el archivo
 window.cargarHistorialYCalendario();
 
-        window.generarCalendarioUI = function(emocionesPorDia) {
-            const fechaActual = new Date();
-            const anio = fechaActual.getFullYear();
-            const mes = fechaActual.getMonth();
-            const diaHoy = fechaActual.getDate();
+window.generarCalendarioUI = function(emocionesPorDia) {
+    const fechaActual = new Date();
+    const anio = fechaActual.getFullYear();
+    const mes = fechaActual.getMonth();
+    const diaHoy = fechaActual.getDate();
 
-            const opcionesMes = { month: 'long', year: 'numeric' };
-            const mesAnio = fechaActual.toLocaleDateString('es-ES', opcionesMes);
-            document.getElementById('calendario-titulo').innerText = mesAnio.charAt(0).toUpperCase() + mesAnio.slice(1);
+    const primerDiaMes = new Date(anio, mes, 1).getDay();
+    const totalDiasMes = new Date(anio, mes + 1, 0).getDate();
 
-            const contenedor = document.getElementById('calendario-contenedor');
-            contenedor.innerHTML = '';
+    const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    const mesAnio = `${nombresMeses[mes]} ${anio}`;
+    
+    const calTitulo = document.getElementById('calendario-titulo');
+    if (calTitulo) {
+        calTitulo.innerText = mesAnio.charAt(0).toUpperCase() + mesAnio.slice(1);
+    }
 
-            let primerDiaMes = new Date(anio, mes, 1).getDay();
-            primerDiaMes = primerDiaMes === 0 ? 6 : primerDiaMes - 1; 
-            
-            const diasEnMes = new Date(anio, mes + 1, 0).getDate();
+    const contenedorDias = document.getElementById('calendario-dias');
+    if (!contenedorDias) return;
+    contenedorDias.innerHTML = '';
 
-            for (let i = 0; i < primerDiaMes; i++) {
-                const celdaVacia = document.createElement('div');
-                celdaVacia.className = 'celda-dia vacia';
-                contenedor.appendChild(celdaVacia);
+    // Ajuste para inicio de semana en lunes (opcional, estándar adaptado)
+    const desp = primerDiaMes === 0 ? 6 : primerDiaMes - 1;
+    for (let i = 0; i < desp; i++) {
+        const celdaVacia = document.createElement('div');
+        celdaVacia.classList.add('dia-vacio');
+        contenedorDias.appendChild(celdaVacia);
+    }
+
+    for (let d = 1; d <= totalDiasMes; d++) {
+        const celdaDia = document.createElement('div');
+        celdaDia.classList.add('dia-celda');
+        celdaDia.innerText = d;
+
+        const claveDia = `${anio}-${mes + 1}-${d}`;
+        if (emocionesPorDia && emocionesPorDia[claveDia] && emocionesPorDia[claveDia].length > 0) {
+            const ultimaEmocion = emocionesPorDia[claveDia][emocionesPorDia[claveDia].length - 1];
+            celdaDia.classList.add(`emocion-${ultimaEmocion}`);
+        }
+
+        if (d === diaHoy) {
+            celdaDia.classList.add('hoy');
+        }
+
+        celdaDia.addEventListener('click', () => {
+            if (typeof window.mostrarDetalleDia === "function") {
+                window.mostrarDetalleDia(claveDia, d);
             }
+        });
 
-            for (let dia = 1; dia <= diasEnMes; dia++) {
-                const celda = document.createElement('div');
-                celda.className = 'celda-dia';
-                if (dia === diaHoy) celda.classList.add('hoy');
-
-                const numDiv = document.createElement('div');
-                numDiv.className = 'numero-dia';
-                numDiv.innerText = dia;
-                celda.appendChild(numDiv);
-
-                const claveDia = `${anio}-${mes}-${dia}`;
-                
-                // Si hay emociones registradas en el día
-                if (emocionesPorDia[claveDia] && emocionesPorDia[claveDia].length > 0) {
-                    const listaDelDia = emocionesPorDia[claveDia];
-                    
-                    // En el cuadro principal del calendario mostramos la ÚLTIMA ingresada
-                    const ultimaEmocionStr = listaDelDia[listaDelDia.length - 1];
-                    const configE = window.configEmociones ? window.configEmociones[ultimaEmocionStr] : null; 
-                    
-                    if(configE) {
-                        const emDiv = document.createElement('div');
-                        emDiv.className = 'emocion-registro';
-                        emDiv.style.color = configE.color;
-                        emDiv.innerHTML = `
-                            <div>${configE.emoji}</div>
-                            <div class="emocion-texto">${configE.texto}</div>
-                        `;
-                        celda.appendChild(emDiv);
-                        celda.style.borderColor = configE.color; 
-                    }
-
-                    // Si hay más de una emoción este día, pintamos un contador (+2, +3, etc.)
-                    if (listaDelDia.length > 1) {
-                        const badgeMultiples = document.createElement('div');
-                        badgeMultiples.className = 'indicador-multiples';
-                        badgeMultiples.innerText = `+${listaDelDia.length}`;
-                        celda.appendChild(badgeMultiples);
-                    }
-                }
-
-                // Evento para que al dar clic al día, se cargue la lista abajo
-                celda.addEventListener('click', () => {
-                    document.querySelectorAll('.celda-dia').forEach(c => c.classList.remove('seleccionada'));
-                    celda.classList.add('seleccionada');
-                    window.mostrarDetalleDia(claveDia, dia);
-                });
-
-                contenedor.appendChild(celda);
-            }
-        };
-
+        contenedorDias.appendChild(celdaDia);
+    }
+};
         // Nueva función encargada de pintar la lista cronológica abajo del calendario
         window.mostrarDetalleDia = function(claveDia, numeroDia) {
             const seccionDetalle = document.getElementById('detalle-dia-seccion');
