@@ -1247,62 +1247,64 @@ async function iniciarSistemaMascota() {
         localStorage.setItem('alegria_emociones_local_list', JSON.stringify(historialLocal));
     }
     
-    window.cargarHistorialYCalendario();
-};
+    // Definimos la función de forma correcta y segura
+window.cargarHistorialYCalendario = async function() {
+    // 1. Si el usuario inició sesión pero la base de datos no se ha conectado, frenamos
+    if (window.usuarioLogueado && !window.db) {
+        console.log("Firebase detectado, esperando la inicialización de la base de datos...");
+        return; 
+    }
 
-        window.cargarHistorialYCalendario = async function() {
     let emocionesPorDia = {};
 
+    // 2. Si todo está listo en la nube, descargamos los datos
     if (window.usuarioLogueado && window.db) {
         try {
             const { collection, query, orderBy, getDocs, limit } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
-            // Mantenemos tu orden por fecha y el límite de 200 registros que tenías configurado
             const consulta = query(collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones"), orderBy("fecha", "asc"), limit(200));
             const resultados = await getDocs(consulta);
-                    resultados.forEach((doc) => {
-                        const data = doc.data();
-                        let clave = null;
-                        
-                        if (data.fechaLocalStr) {
-                            clave = data.fechaLocalStr;
-                        } else if (data.fecha) {
-                            const d = data.fecha.toDate();
-                            clave = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-                        }
 
-                        if(clave) {
-                            // Si detectamos datos en la nube de ese día, priorizamos sincronizar la lista completa
-                            if (!emocionesPorDia[clave] || !Array.isArray(emocionesPorDia[clave])) {
-                                emocionesPorDia[clave] = [];
-                            }
-                            
-                            // Evitar insertar repetidos si ya existen en el array local del día actual
-                            if (!emocionesPorDia[clave].includes(data.emocion) || emocionesPorDia[clave].length < resultados.size) {
-                                // Para reconstrucción perfecta, rearmamos la lista según registros
-                                if (resultados.metadata.fromCache === false) {
-                                    // Sincronización limpia si viene fresco del server
-                                    if(!emocionesPorDia[clave].remotoProcesado) {
-                                        emocionesPorDia[clave] = [];
-                                        emocionesPorDia[clave].remotoProcesado = true;
-                                    }
-                                }
-                                emocionesPorDia[clave].push(data.emocion);
-                            }
-                        }
-                    });
-                } catch (error) {
-                    console.error("Error cargando calendario", error);
+            resultados.forEach((doc) => {
+                const data = doc.data();
+                let clave = null;
+
+                if (data.fechaLocalStr) {
+                    clave = data.fechaLocalStr;
+                } else if (data.fecha) {
+                    const d = data.fecha.toDate();
+                    clave = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
                 }
-            }
 
-            mapaEmocionesGlobal = emocionesPorDia;
-            window.generarCalendarioUI(emocionesPorDia);
-
-            // Mostrar por defecto las emociones de HOY en la sección de abajo al abrir
-            const hoy = new Date();
-            const claveHoy = `${hoy.getFullYear()}-${hoy.getMonth()}-${hoy.getDate()}`;
-            window.mostrarDetalleDia(claveHoy, hoy.getDate());
+                if (clave) {
+                    if (!emocionesPorDia[clave]) emocionesPorDia[clave] = [];
+                    emocionesPorDia[clave].push(data.emocion);
+                }
+            });
+            console.log("Historial descargado completo desde Google.");
+        } catch (error) {
+            console.error("Error al obtener documentos remotos: ", error);
+            emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
         }
+    } else {
+        // 3. Si no hay usuario, usamos el almacenamiento local sin romper nada
+        emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
+    }
+
+    // 4. Guardamos globalmente e inicializamos la interfaz de forma segura
+    window.mapaEmocionesGlobal = emocionesPorDia;
+    
+    if (typeof window.generarCalendarioUI === "function") {
+        window.generarCalendarioUI(emocionesPorDia);
+    }
+
+    const claveHoy = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
+    if (typeof window.mostrarDetalleDia === "function") {
+        window.mostrarDetalleDia(claveHoy, new Date().getDate());
+    }
+};
+
+// Ejecutar la función de forma segura al cargar el archivo
+window.cargarHistorialYCalendario();
 
         window.generarCalendarioUI = function(emocionesPorDia) {
             const fechaActual = new Date();
