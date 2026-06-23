@@ -1090,7 +1090,7 @@
 
         async function procesarRespuestaIA(textoUsuario) {
             try {
-                const respuesta = await fetch('http://localhost:3000/api/chat', {
+                const respuesta = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ mensaje: textoUsuario })
