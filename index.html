@@ -698,7 +698,9 @@
             loro: { nombre: "Loro Sabio", tipoIcon: "🦜 Inteligencia", etapas: ["🥚", "🐣", "🐥", "🦜", "✨🐦✨"] }
         };
 
-       // Objeto global de la mascota en memoria
+      // ==========================================
+// AQUÍ QUEDA EL CÓDIGO DEL PASO 1 (Guardar)
+// ==========================================
 let datosProgreso = {
     tipoActivo: 'planta',
     nivel: 0,
@@ -707,11 +709,9 @@ let datosProgreso = {
     logros: []
 };
 
-// Nueva función en la nube para guardar la mascota
 async function guardarProgresoMascota() {
     if (window.usuarioLogueado) {
         try {
-            // Guardamos el progreso de la mascota directamente en el documento principal del usuario
             const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
             const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
             await setDoc(usuarioRef, { mascota: datosProgreso }, { merge: true });
@@ -720,9 +720,44 @@ async function guardarProgresoMascota() {
             console.error("Error al guardar mascota en la nube: ", error);
         }
     } else {
-        // Respaldo local por si no ha iniciado sesión
         localStorage.setItem('alegria_mascota_data', JSON.stringify(datosProgreso));
     }
+}
+
+// ==========================================
+// AQUÍ ABAJO PEGAS EL CÓDIGO DEL PASO 2 (Cargar)
+// ==========================================
+async function iniciarSistemaMascota() {
+    const hoy = new Date().toLocaleDateString();
+
+    if (window.usuarioLogueado) {
+        try {
+            const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+            const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
+            const docSnap = await getDoc(usuarioRef);
+            
+            if (docSnap.exists() && docSnap.data().mascota) {
+                datosProgreso = docSnap.data().mascota;
+                console.log("Mascota cargada desde Google Cloud.");
+            } else {
+                datosProgreso = { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
+            }
+        } catch (error) {
+            console.error("Error cargando mascota remota, usando local:", error);
+            datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
+        }
+    } else {
+        datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
+    }
+
+    if (datosProgreso.fechaUltimoUpgrade !== hoy) {
+        datosProgreso.upgradesHoy = 0;
+        datosProgreso.fechaUltimoUpgrade = hoy;
+        guardarProgresoMascota();
+    }
+
+    actualizarUIMascota();
+    renderizarLogros();
 }
 
         function actualizarUIMascota() {
