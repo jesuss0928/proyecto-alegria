@@ -730,7 +730,7 @@ async function guardarProgresoMascota() {
 async function iniciarSistemaMascota() {
     const hoy = new Date().toLocaleDateString();
 
-    if (window.usuarioLogueado) {
+    if (window.usuarioLogueado && window.db) {
         try {
             const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
             const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
