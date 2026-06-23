@@ -1250,14 +1250,22 @@ async function iniciarSistemaMascota() {
     // Definimos la función de forma correcta y segura
 window.cargarHistorialYCalendario = async function() {
     // 1. Si el usuario inició sesión pero la base de datos no se ha conectado, frenamos
-    if (window.usuarioLogueado && !window.db) {
-        console.log("Firebase detectado, esperando la inicialización de la base de datos...");
-        return; 
+   window.cargarHistorialYCalendario = async function() {
+    // CONDICIÓN DE SEGURIDAD: Si no hay base de datos conectada todavía, 
+    // evitamos que Firebase explote y cargamos el respaldo local temporalmente.
+    if (!window.db) {
+        console.log("Firebase no está listo aún. Usando base de datos local temporal...");
+        let emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
+        window.mapaEmocionesGlobal = emocionesPorDia;
+        if (typeof window.generarCalendarioUI === "function") {
+            window.generarCalendarioUI(emocionesPorDia);
+        }
+        return; // Detiene la ejecución aquí para que no salte el error en rojo
     }
 
     let emocionesPorDia = {};
 
-    // 2. Si todo está listo en la nube, descargamos los datos
+    // Si hay usuario y la base de datos está totalmente lista
     if (window.usuarioLogueado && window.db) {
         try {
             const { collection, query, orderBy, getDocs, limit } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
@@ -1286,15 +1294,10 @@ window.cargarHistorialYCalendario = async function() {
             emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
         }
     } else {
-        // 3. Si no hay usuario, usamos el almacenamiento local sin romper nada
         emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
     }
 
-    // 4. Guardamos globalmente e inicializamos la interfaz de forma segura
     window.mapaEmocionesGlobal = emocionesPorDia;
-    
-    if (typeof window.generarCalendarioUI === "function") {
-        window.generarCalendarioUI(emocionesPorDia);
     }
 
     const claveHoy = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
