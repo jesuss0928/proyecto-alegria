@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar - ALEGRIA</title>
+    <style>
+        /* Fondo general suave y centrado */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #bbdefb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        /* La tarjeta blanca donde van los botones */
+        .tarjeta-login {
+            background-color: #ffffff;
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            max-width: 340px;
+            width: 90%;
+        }
+
+        /* Títulos y textos amigables */
+        .tarjeta-login h2 {
+            margin-top: 0;
+            color: #1565c0;
+            font-size: 24px;
+        }
+
+        .tarjeta-login p {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        /* Estilo base de los botones */
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        /* Botón de Google */
+        .btn-google {
+            background-color: #ffffff;
+            color: #444;
+            border: 2px solid #eeeeee;
+        }
+        
+        .btn-google:hover {
+            background-color: #f9f9f9;
+            border-color: #dddddd;
+            transform: translateY(-2px);
+        }
+
+        /* Botón de Facebook */
+        .btn-facebook {
+            background-color: #1877F2;
+            color: #ffffff;
+        }
+
+        .btn-facebook:hover {
+            background-color: #166fe5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(24, 119, 242, 0.3);
+        }
+
+        /* Botón para regresar al chat anónimo */
+        .btn-volver {
+            margin-top: 20px;
+            display: inline-block;
+            color: #888;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .btn-volver:hover {
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+<!-- Cargamos los scripts necesarios de Firebase de forma directa -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Tus credenciales sacadas directamente de tu consola de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
+            authDomain: "alegria-web-977ea.firebaseapp.com",
+            projectId: "alegria-web-977ea",
+            storageBucket: "alegria-web-977ea.firebasestorage.app",
+            messagingSenderId: "561418892075",
+            appId: "1:561418892075:web:133a1ff3948b86a4e88b6e"
+        };
+
+        // Inicializamos Firebase y la Autenticación
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // Buscamos el boton de Google en tu pantalla y le damos vida
+        document.querySelector('.btn-google').addEventListener('click', () => {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    // El usuario inicio sesion con exito
+                    const user = result.user;
+                    alert(`¡Bienvenido/a de nuevo, ${user.displayName}! Tu sesión está guardada.`);
+                    
+                    // Lo redirigimos de vuelta al chat principal
+                    window.location.href = "index.html";
+                })
+                .catch((error) => {
+                    console.error("Error al iniciar sesión:", error);
+                    alert("Ocurrió un inconveniente al conectar con Google. Inténtalo de nuevo.");
+                });
+        });
+    </script>
+    <div class="tarjeta-login">
+        <h2>Hola de nuevo 👋</h2>
+        <p>Inicia sesión en <b>ALEGRIA</b> para guardar tu progreso, tus reflexiones y seguir justo donde lo dejaste.</p>
+
+        <!-- Botones -->
+        <button class="btn-social btn-google">
+            Continuar con Google
+        </button>
+        <button class="btn-social btn-facebook">
+            Continuar con Facebook
+        </button>
+
+        <!-- Enlace para volver -->
+        <a href="index.html" class="btn-volver">Volver al chat sin registrarme</a>
+    </div>
+
+</body>
+</html>

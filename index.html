@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apoyo Emocional para Adolescentes</title>
+    <style>
+        /* ==========================================
+           VARIABLES Y ESTILOS GENERALES
+           ========================================== */
+        :root {
+            --primary-color: #2F80ED;
+            --secondary-color: #56CCF2;
+            --background-color: #F4F7F6;
+            --text-dark: #333333;
+            --white: #FFFFFF;
+            --anxiety-color: #F2994A;
+            --sadness-color: #9B51E0;
+            --anger-color: #EB5757;
+            --tired-color: #78909C;
+            --happy-color: #27AE60;
+            --sos-color: #E53935;
+            --sidebar-collapsed-width: 80px;
+            --sidebar-expanded-width: 250px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            padding-left: var(--sidebar-collapsed-width); 
+            background-color: var(--background-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+            transition: padding-left 0.3s ease;
+        }
+
+        body.sidebar-expanded {
+            padding-left: var(--sidebar-expanded-width);
+        }
+
+        h1, h2, h3 { color: var(--primary-color); }
+
+        /* ==========================================
+           BARRA LATERAL DINÁMICA (SIDEBAR)
+           ========================================== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-collapsed-width);
+            height: 100vh;
+            background: #111827;
+            display: flex;
+            flex-direction: column;
+            padding-top: 1.5rem;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            z-index: 1500;
+            transition: width 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        .sidebar.expanded {
+            width: var(--sidebar-expanded-width);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 1rem;
+            margin-bottom: 2rem;
+            height: 40px;
+        }
+
+        .sidebar.expanded .sidebar-header {
+            justify-content: space-between;
+        }
+
+        .sidebar-logo-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: none;
+            white-space: nowrap;
+        }
+
+        .sidebar.expanded .sidebar-logo-text {
+            display: block;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar-menu {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .sidebar.expanded .sidebar-menu {
+            align-items: stretch;
+        }
+
+        .sidebar-item {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 0.8rem;
+            background: transparent;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9CA3AF;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        .sidebar.expanded .sidebar-item {
+            width: 100%;
+            justify-content: flex-start;
+            padding: 0 15px;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .sidebar-icon {
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+        }
+
+        .sidebar-text {
+            display: none;
+            margin-left: 15px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .sidebar.expanded .sidebar-text {
+            display: block;
+        }
+
+        /* Footer del Sidebar (Perfil / Login) */
+        .sidebar-footer {
+            padding: 15px 10px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: center;
+        }
+
+        .sidebar.expanded .sidebar-footer {
+            justify-content: stretch;
+        }
+
+        .auth-profile {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 12px;
+            width: 50px;
+            height: 50px;
+            box-sizing: border-box;
+            color: white;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .sidebar.expanded .auth-profile {
+            width: 100%;
+            justify-content: flex-start;
+            padding: 10px 15px;
+        }
+
+        .auth-profile:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .auth-avatar { 
+            width: 30px; 
+            height: 30px; 
+            border-radius: 50%; 
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .auth-info {
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar.expanded .auth-info {
+            display: flex;
+        }
+
+        /* ==========================================
+           CONTENEDOR PRINCIPAL Y SECCIONES
+           ========================================== */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .hero h1 { color: var(--white); font-size: 2.5rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.2rem; max-width: 800px; margin: 0 auto; }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+
+        .interactive-section, .problem-section {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        /* Botones de Emociones */
+        .emotion-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
+        .btn-emotion { border: none; padding: 1rem 2rem; font-size: 1.1rem; border-radius: 50px; cursor: pointer; color: var(--white); font-weight: bold; transition: transform 0.2s; }
+        .btn-emotion:hover { transform: scale(1.05); }
+        .btn-ansiedad { background-color: var(--anxiety-color); }
+        .btn-tristeza { background-color: var(--sadness-color); }
+        .btn-enojo { background-color: var(--anger-color); }
+        .btn-desmotivado { background-color: var(--tired-color); }
+        .btn-feliz { background-color: var(--happy-color); }
+
+        #advice-container { display: none; margin-top: 2rem; padding: 1.5rem; border-radius: 8px; background-color: #F8F9FA; border-left: 5px solid var(--primary-color); text-align: left; }
+
+        /* ZONA SOS */
+        .sos-section {
+            background-color: #FFF5F5; border-left: 6px solid var(--sos-color); border-radius: 10px;
+            padding: 2rem; margin-bottom: 2.5rem; box-shadow: 0 4px 15px rgba(229, 57, 53, 0.15); text-align: left;
+        }
+        .sos-section h2 { color: var(--sos-color); margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        .sos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+        .sos-card { background: var(--white); padding: 1.5rem; border-radius: 8px; border: 1px solid #FFCDD2; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s ease;}
+        .sos-card:hover { transform: translateY(-5px); }
+        .sos-phone { font-size: 1.8rem; font-weight: bold; color: var(--sos-color); margin: 10px 0; display: block; text-decoration: none; }
+        .sos-phone:hover { text-decoration: underline; }
+
+        .stats-grid { display: grid; gap: 2rem; margin-top: 2rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); text-align: left;}
+        .stat-card { background-color: #E8F4FD; padding: 1.5rem; border-radius: 8px; text-align: center; border-top: 4px solid var(--primary-color); }
+        .stat-number { font-size: 2.5rem; font-weight: bold; color: var(--primary-color); margin-bottom: 0.5rem; }
+
+        /* ==========================================
+           VENTANAS MODALES (GALERÍA Y CALENDARIO)
+           ========================================== */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+            padding-left: var(--sidebar-collapsed-width);
+        }
+        
+        body.sidebar-expanded .modal-overlay {
+            padding-left: var(--sidebar-expanded-width);
+        }
+
+        .modal-container {
+            background: var(--white); width: 90%; max-width: 900px; max-height: 95vh;
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex;
+            flex-direction: column; overflow: hidden; position: relative;
+        }
+
+        .modal-header {
+            background: var(--primary-color); color: white; padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        
+        .modal-header h2 { margin: 0; color: white; font-size: 1.5rem; }
+        
+        .btn-close-modal {
+            background: none; border: none; color: white; font-size: 2rem; cursor: pointer; line-height: 1;
+        }
+
+        .modal-body {
+            padding: 1.5rem; overflow-y: auto; background: #F4F7F6; flex-grow: 1;
+        }
+
+        /* ==========================================
+           ESTILOS: GALERÍA DE COMPAÑEROS
+           ========================================== */
+        .galeria-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;
+        }
+        
+        .card-coleccion {
+            background: #2C3E50; border: 3px solid #34495E; border-radius: 12px;
+            overflow: hidden; text-align: center; color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.2s;
+        }
+        
+        .card-coleccion:hover { transform: translateY(-5px); border-color: var(--secondary-color); }
+        
+        .card-coleccion-header {
+            background: rgba(0,0,0,0.3); padding: 5px; font-size: 0.8rem; font-weight: bold; border-bottom: 2px solid #34495E;
+        }
+        
+        .card-coleccion-body { background: #ECF0F1; padding: 20px 0; }
+        .card-coleccion-emoji { font-size: 4rem; line-height: 1; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2)); }
+        .card-coleccion-footer { padding: 8px; font-size: 0.7rem; color: #BDC3C7; display: flex; justify-content: center; gap: 5px; }
+
+        /* ==========================================
+           ESTILOS: CALENDARIO ALEGRE (DIARIO EMOCIONAL)
+           ========================================== */
+        .calendario-header-mes { text-align: center; font-size: 1.5rem; color: var(--primary-color); font-weight: bold; margin-bottom: 1rem; }
+        .calendario-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+        .dia-semana { text-align: center; font-weight: bold; color: white; background: var(--secondary-color); padding: 8px; border-radius: 8px; font-size: 0.9rem; }
+        
+        .celda-dia {
+            background: white; border: 2px dashed #D6EAF8; border-radius: 10px;
+            min-height: 85px; padding: 5px; display: flex; flex-direction: column;
+            position: relative; transition: all 0.2s; cursor: pointer;
+        }
+        
+        .celda-dia:hover { border-color: var(--primary-color); background: #EBF5FB; transform: scale(1.02); }
+        .celda-dia.vacia { background: transparent; border: none; cursor: default; pointer-events: none;}
+        .numero-dia { font-weight: bold; color: #7F8C8D; font-size: 0.9rem; margin-bottom: 3px; }
+        .celda-dia.hoy { border: 3px solid var(--primary-color); background: #E8F4FD; }
+        .celda-dia.hoy .numero-dia { color: var(--primary-color); }
+        .celda-dia.seleccionada { border: 3px solid #2F80ED !important; background-color: #EBF5FB; box-shadow: 0 0 10px rgba(47, 128, 237, 0.3); }
+        
+        .emocion-registro {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            flex-grow: 1; font-size: 1.6rem; line-height: 1;
+        }
+        .emocion-texto { font-size: 0.55rem; font-weight: bold; margin-top: 1px; text-transform: uppercase; text-align: center; }
+        .indicador-multiples { position: absolute; bottom: 3px; right: 5px; background: #333; color: white; font-size: 0.6rem; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        /* Contenedor Inferior para las Emociones del Día */
+        .detalle-dia-contenedor {
+            margin-top: 20px; background: white; padding: 15px; border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--primary-color);
+        }
+        .detalle-dia-titulo { font-weight: bold; font-size: 1rem; color: #333; margin-bottom: 10px; display: flex; justify-content: space-between;}
+        .lista-emociones-lineal { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .badge-emocion { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; color: white; font-size: 0.85rem; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); animation: aparecerBadge 0.3s ease; }
+        @keyframes aparecerBadge { from { transform: translateY(5px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* ==========================================
+           MASCOTA VIRTUAL FLOTANTE Y SELECTOR
+           ========================================== */
+        #mascota-virtual {
+            position: fixed; bottom: 20px; left: calc(var(--sidebar-collapsed-width) + 20px);
+            background: white; padding: 10px 15px; border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); text-align: center; z-index: 1000;
+            border: 2px solid var(--happy-color); width: 120px; transition: transform 0.3s ease, left 0.3s ease;
+        }
+        
+        body.sidebar-expanded #mascota-virtual {
+            left: calc(var(--sidebar-expanded-width) + 20px);
+        }
+
+        #mascota-virtual:hover { transform: scale(1.05); }
+        #mascota-emoji { font-size: 2.8rem; margin-bottom: 2px; transition: transform 0.3s; }
+        #mascota-texto { font-size: 0.75rem; font-weight: bold; color: #555; margin-bottom: 5px; }
+        .mascota-barra { width: 100%; height: 8px; background: #E0E0E0; border-radius: 10px; overflow: hidden; }
+        #mascota-progreso { height: 100%; width: 0%; background: var(--happy-color); transition: width 0.5s ease; }
+        #mascota-limite-texto { font-size: 0.65rem; color: #888; margin-top: 3px; }
+
+        #modal-selector-mascota {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 3000; justify-content: center; align-items: center;
+        }
+        .selector-content { background: white; padding: 2rem; border-radius: 15px; text-align: center; max-width: 500px; width: 90%; }
+        .opcion-mascota { display: inline-block; background: #F0F4F8; border: 2px solid transparent; border-radius: 10px; padding: 15px; margin: 10px; cursor: pointer; width: 80px; transition: 0.2s;}
+        .opcion-mascota:hover { border-color: var(--primary-color); background: #E8F4FD; transform: scale(1.05);}
+
+        /* ==========================================
+           JUEGOS Y RESPIRACIÓN
+           ========================================== */
+        #seccion-juego { display: none; margin: 25px auto; padding: 25px; max-width: 650px; background-color: #ffffff; border: 3px dashed #2F80ED; border-radius: 12px; text-align: center; }
+        .game-controls { display: flex; justify-content: center; gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; }
+        .btn-control { padding: 10px 18px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; }
+        .btn-reset { background-color: #F2994A; color: white; }
+        .btn-change { background-color: #2F80ED; color: white; }
+        .progress-bar-container { width: 85%; background-color: #E0E0E0; border-radius: 15px; overflow: hidden; margin: 15px auto; height: 24px; }
+        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #56CCF2, #2F80ED); transition: width 1s linear; }
+        .timer-number { font-size: 2.8rem; font-weight: bold; color: #2F80ED; }
+        .breathing-instruction { font-size: 1.3rem; font-weight: bold; }
+        .bubble-grid { display: flex; gap: 20px; justify-content: center; align-items: center; margin: 25px 0; flex-wrap: wrap; }
+        .happy-bubble { border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; box-shadow: 0 6px 12px rgba(0,0,0,0.15); transition: transform 0.1s, opacity 0.2s; user-select: none; animation: floatBubble 3s ease-in-out infinite alternate; }
+        @keyframes floatBubble { from { transform: translateY(0px); } to { transform: translateY(-8px); } }
+        .happy-bubble.popped { animation: popAnimation 0.25s ease-out forwards; pointer-events: none; }
+        @keyframes popAnimation { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; filter: brightness(1.2); } 100% { transform: scale(0); opacity: 0; } }
+        .puzzle-board-container { display: flex; flex-direction: column; align-items: center; gap: 20px; margin: 20px 0; width: 100%; }
+        .puzzle-slots-grid { display: grid; background-color: #EBF5FB; gap: 2px; padding: 6px; border-radius: 8px; border: 3px dashed #2F80ED; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); }
+        .puzzle-slot { background: rgba(255,255,255,0.6); box-sizing: border-box; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px dashed rgba(47, 128, 237, 0.3); border-radius: 4px; }
+        .puzzle-pieces-pool { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; padding: 20px; background: #F2F4F4; border-radius: 8px; width: 100%; min-height: 140px; box-sizing: border-box; border: 2px dotted #BDC3C7; }
+        .puzzle-piece-canvas { cursor: grab; border: 1px solid rgba(0,0,0,0.2); border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); user-select: none; transition: transform 0.1s; background-repeat: no-repeat; }
+
+        /* ==========================================
+           CHATBOT ALEGRIA
+           ========================================== */
+        #chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+        #chat-button { background-color: var(--primary-color); color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s; }
+        #chat-button:hover { transform: scale(1.1); }
+        #chat-window { display: none; position: absolute; bottom: 80px; right: 0; width: 350px; background-color: var(--white); border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); overflow: hidden; flex-direction: column; }
+        #chat-header { background-color: var(--primary-color); color: var(--white); padding: 1rem; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        #close-chat { background: none; border: none; color: var(--white); font-size: 1.2rem; cursor: pointer; }
+        #chat-messages { height: 280px; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background-color: #F9F9F9; }
+        .chat-bubble { max-width: 85%; padding: 10px 15px; border-radius: 15px; font-size: 0.95rem; line-height: 1.4; }
+        .bot-message { background-color: #E8F4FD; color: var(--text-dark); align-self: flex-start; border-bottom-left-radius: 2px; }
+        .user-message { background-color: var(--primary-color); color: var(--white); align-self: flex-end; border-bottom-right-radius: 2px; }
+        #chat-input-area { display: flex; border-top: 1px solid #DDDDDD; }
+        #chat-input { flex-grow: 1; border: none; padding: 15px; outline: none; font-family: inherit; }
+        #send-btn { background-color: var(--primary-color); color: var(--white); border: none; padding: 0 20px; cursor: pointer; font-weight: bold; }
+        .typing-indicator { font-style: italic; color: #888; font-size: 0.85rem; display: none; padding-left: 1rem; margin-bottom: 5px; }
+        #quick-replies-container { display: flex; gap: 8px; padding: 10px; background-color: #FFFFFF; overflow-x: auto; border-top: 1px solid #EEEEEE; scrollbar-width: none; }
+        #quick-replies-container::-webkit-scrollbar { display: none; }
+        .quick-reply-btn { background-color: var(--white); color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 20px; padding: 6px 14px; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: all 0.2s ease; }
+        .quick-reply-btn:hover { background-color: var(--primary-color); color: var(--white); }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA LATERAL DINÁMICA (SIDEBAR) -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo-text">Alegría</div>
+            <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="sidebar-item" onclick="abrirModal('modal-galeria')">
+                <div class="sidebar-icon">🏆</div>
+                <div class="sidebar-text">Galería</div>
+            </div>
+            <div class="sidebar-item" id="btn-sidebar-diario" onclick="abrirModal('modal-diario')" style="display: none;">
+                <div class="sidebar-icon">📅</div>
+                <div class="sidebar-text">Diario</div>
+            </div>
+        </div>
+
+        <!-- FOOTER DEL SIDEBAR: INICIO DE SESIÓN / PERFIL -->
+        <div class="sidebar-footer">
+            <div id="auth-container">
+                <a href="login.html" class="auth-profile">
+                    <div class="sidebar-icon" style="margin:0; color: white;">👤</div>
+                    <div class="auth-info">
+                        <span style="font-size: 14px; font-weight: bold; color: white;">Iniciar Sesión</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MASCOTA VIRTUAL FLOTANTE -->
+    <div id="mascota-virtual">
+        <div id="mascota-emoji">🌱</div>
+        <div id="mascota-texto">Mi Compañero</div>
+        <div class="mascota-barra">
+            <div id="mascota-progreso"></div>
+        </div>
+        <div id="mascota-limite-texto">0/3 Hoy</div>
+    </div>
+
+    <!-- MODAL:  DE COMPAÑEROS -->
+    <div id="modal-galeria" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Libro de Compañeros Evolucionados</h2>
+                <button class="btn-close-modal" onclick="cerrarModal('modal-galeria')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; margin-bottom: 20px; color: #555;">Aquí descansan las mascotas que has cuidado con éxito. ¡Cada una representa tu progreso!</p>
+                <div id="galeria-logros-contenedor" class="galeria-grid">
+                    <!-- Se llena con JS -->
+                </div>
+                <p id="mensaje-sin-logros" style="color: #888; font-style: italic; text-align: center;">Aún no tienes mascotas completadas. ¡Sigue completando ejercicios!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DIARIO EMOCIONAL (CALENDARIO) -->
+    <div id="modal-diario" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header" style="background: var(--secondary-color);">
+                <h2>Tu Calendario Emocional</h2>
+                <button class="btn-close-modal" onclick="cerrarModal('modal-diario')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; margin-bottom: 20px; color: #555;">Observa tu progreso. Reconocer cómo te sientes cada día es el primer paso para estar mejor.</p>
+                
+                <div id="calendario-titulo" class="calendario-header-mes">Mes Actual</div>
+                
+                <div class="calendario-grid" id="calendario-dias-header">
+                    <div class="dia-semana">LUN</div><div class="dia-semana">MAR</div><div class="dia-semana">MIÉ</div>
+                    <div class="dia-semana">JUE</div><div class="dia-semana">VIE</div><div class="dia-semana">SÁB</div><div class="dia-semana">DOM</div>
+                </div>
+                
+                <div class="calendario-grid" id="calendario-contenedor" style="margin-top: 8px;">
+                    <!-- Se genera dinámicamente con Firebase -->
+                </div>
+
+                <!-- SECCIÓN DE DETALLE INFERIOR ADICIONAL -->
+                <div id="detalle-dia-seccion" class="detalle-dia-contenedor" style="display: none;">
+                    <div class="detalle-dia-titulo">
+                        <span id="detalle-fecha-texto">Emociones del día</span>
+                        <span style="font-size: 0.85rem; color: #888; font-weight: normal;">En orden de registro 🕒</span>
+                    </div>
+                    <div id="detalle-emociones-lista" class="lista-emociones-lineal">
+                        <!-- Las burbujas de emociones se agregan dinámicamente aquí -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: SELECTOR DE NUEVA MASCOTA -->
+    <div id="modal-selector-mascota">
+        <div class="selector-content">
+            <h2 style="color: var(--happy-color); margin-top:0;">¡Felicidades! 🎉</h2>
+            <p>Tu mascota ha crecido al máximo. Ahora está en tu Galería.</p>
+            <h3>Elige a tu próximo compañero:</h3>
+            <div>
+                <div class="opcion-mascota" onclick="seleccionarNuevaMascota('planta')"><div style="font-size:2.5rem;">🌱</div>Planta</div>
+                <div class="opcion-mascota" onclick="seleccionarNuevaMascota('perro')"><div style="font-size:2.5rem;">🦴</div>Perro</div>
+                <div class="opcion-mascota" onclick="seleccionarNuevaMascota('gato')"><div style="font-size:2.5rem;">🥛</div>Gato</div>
+                <div class="opcion-mascota" onclick="seleccionarNuevaMascota('loro')"><div style="font-size:2.5rem;">🥚</div>Loro</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <header class="hero">
+        <h1>Orientación y Salud Mental para Adolescentes</h1>
+        <p>Tu bienestar emocional es nuestra prioridad. Un espacio seguro para estudiantes de secundaria y jóvenes.</p>
+    </header>
+
+    <div class="container">
+        <!-- SECCIÓN INTERACTIVA DE EMOCIONES -->
+        <section class="interactive-section">
+            <h2>¿Cómo te sientes en este momento?</h2>
+            <div class="emotion-buttons">
+                <button class="btn-emotion btn-feliz" onclick="showAdvice('feliz')">🤩 Feliz / Con Energía</button>
+                <button class="btn-emotion btn-ansiedad" onclick="showAdvice('ansiedad')">Ansioso / Estresado</button>
+                <button class="btn-emotion btn-tristeza" onclick="showAdvice('tristeza')">Triste / Apagado</button>
+                <button class="btn-emotion btn-enojo" onclick="showAdvice('enojo')">Enojado / Frustrado</button>
+                <button class="btn-emotion btn-desmotivado" onclick="showAdvice('desmotivado')">Cansado / Sin motivación</button>
+            </div>
+
+            <div id="advice-container">
+                <h3 id="advice-title"></h3>
+                <p id="advice-text"></p>
+                <ul id="advice-list"></ul>
+            </div>
+
+            <!-- Zona Interactiva de Juegos -->
+            <div id="seccion-juego">
+                <h3 id="juego-titulo-header" style="color: #2F80ED; margin-top: 0;">🎯 ¡Zona Interactiva de Bienestar!</h3>
+                <p id="juego-descripcion" style="color: #4F4F4F; margin-bottom: 15px;"></p>
+                
+                <div id="juego-interactivo"></div>
+                <div id="resultado-juego" style="display: none; margin-top: 15px; padding: 12px; border-radius: 6px; font-weight: bold;"></div>
+                
+                <div class="game-controls">
+                    <button class="btn-control btn-reset" onclick="reiniciarJuegoActual()">🔄 Restablecer</button>
+                    <button class="btn-control btn-change" onclick="cambiarDeJuegoAleatorio()">🔀 Cambiar de juego</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ZONA DE AYUDA SOS -->
+        <section class="sos-section">
+            <h2>🚨 Zona de Ayuda Inmediata</h2>
+            <p><strong>No estás solo.</strong> Si sientes que la situación te supera, estás en crisis o tienes pensamientos de hacerte daño, hay profesionales capacitados listos para escucharte <strong>gratis y de forma anónima</strong>.</p>
+            <div class="sos-grid">
+                <div class="sos-card">
+                    <h3 style="margin-top:0; color:#E53935;">Salud Mental (MINSA)</h3>
+                    <p>Orientación psicológica gratuita brindada por especialistas del Ministerio de Salud.</p>
+                    <a href="tel:113" class="sos-phone">📞 113 (Opción 5)</a>
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom:0;">Disponible 24 horas a nivel nacional</p>
+                </div>
+                <div class="sos-card">
+                    <h3 style="margin-top:0; color:#E53935;">Línea 100</h3>
+                    <p>Orientación y soporte emocional si enfrentas violencia familiar, escolar o sexual.</p>
+                    <a href="tel:100" class="sos-phone">📞 100</a>
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom:0;">Confidencial, gratuito y 24/7</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DE PROBLEMA (Estadísticas) -->
+        <section class="problem-section">
+            <h2>El Reto: Bajo acceso a orientación</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-number">60%</div><p>De adolescentes no busca ayuda profesional.</p></div>
+                <div class="stat-card"><div class="stat-number">300 de 500</div><p>Estudiantes podrían enfrentar dificultades emocionales sin orientación.</p></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- EL CHAT WIDGET DE ALEGRIA -->
+    <div id="chat-widget">
+        <button id="chat-button" onclick="toggleChat()">💬</button>
+        
+        <div id="chat-window">
+            <div id="chat-header">
+                <span>Asistente ALEGRIA ✨</span>
+                <button id="close-chat" onclick="toggleChat()">✖</button>
+            </div>
+            <div id="chat-messages">
+                <div class="chat-bubble bot-message">¡Hola! Soy ALEGRIA, tu compañera virtual. Este es un espacio seguro. ¿Cómo te has sentido hoy?</div>
+            </div>
+            <div id="typing" class="typing-indicator">ALEGRIA está escribiendo...</div>
+            
+            <div id="quick-replies-container">
+                <button class="quick-reply-btn" onclick="sendQuickReply('Me siento solo 😔')">Me siento solo</button>
+                <button class="quick-reply-btn" onclick="sendQuickReply('No puedo dormir 🌙')">No puedo dormir</button>
+                <button class="quick-reply-btn" onclick="sendQuickReply('Tengo un examen y estoy estresado 📚')">Estrés por examen</button>
+                <button class="quick-reply-btn" onclick="sendQuickReply('Solo quiero desahogarme 🗣️')">Quiero hablar</button>
+            </div>
+
+            <div id="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Escribe aquí..." onkeypress="handleKeyPress(event)">
+                <button id="send-btn" onclick="sendMessage()">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // ==========================================
+        // CONTROL DE BARRA LATERAL (SIDEBAR)
+        // ==========================================
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const body = document.body;
+            
+            sidebar.classList.toggle('expanded');
+            body.classList.toggle('sidebar-expanded');
+        }
+
+        // ==========================================
+        // CONTROL DE VENTANAS MODALES
+        // ==========================================
+        function abrirModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function cerrarModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.style.display = "none";
+            }
+        }
+
+        // ==========================================
+        // SISTEMA DE MASCOTAS Y LOGROS
+        // ==========================================
+        const MAX_UPGRADES_DIA = 3;
+        const tiposMascotas = {
+            planta: { nombre: "Planta de Paz", tipoIcon: "🌿 Naturaleza", etapas: ["🌱", "🌿", "🪴", "🌳", "✨🌳✨"] },
+            perro: { nombre: "Perrito Fiel", tipoIcon: "🐾 Lealtad", etapas: ["🦴", "🐕‍🦺", "🐕", "🐩", "✨🐶✨"] },
+            gato: { nombre: "Gatito Zen", tipoIcon: "🌙 Misterio", etapas: ["🥛", "🐈‍⬛", "🐈", "🐅", "✨🐱✨"] },
+            loro: { nombre: "Loro Sabio", tipoIcon: "🦜 Inteligencia", etapas: ["🥚", "🐣", "🐥", "🦜", "✨🐦✨"] }
+        };
+
+        let datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || {
+            tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: new Date().toLocaleDateString(), upgradesHoy: 0, logros: []
+        };
+
+        function iniciarSistemaMascota() {
+            const hoy = new Date().toLocaleDateString();
+            if (datosProgreso.fechaUltimoUpgrade !== hoy) {
+                datosProgreso.upgradesHoy = 0;
+                datosProgreso.fechaUltimoUpgrade = hoy;
+                guardarProgresoMascota();
+            }
+            actualizarUIMascota();
+            renderizarLogros();
+        }
+
+        function guardarProgresoMascota() { localStorage.setItem('alegria_mascota_data', JSON.stringify(datosProgreso)); }
+
+        function actualizarUIMascota() {
+            const config = tiposMascotas[datosProgreso.tipoActivo];
+            const indiceEtapa = Math.min(4, Math.floor(datosProgreso.nivel / 25));
+            document.getElementById('mascota-emoji').innerText = config.etapas[indiceEtapa];
+            document.getElementById('mascota-progreso').style.width = datosProgreso.nivel + '%';
+            document.getElementById('mascota-limite-texto').innerText = `${datosProgreso.upgradesHoy}/${MAX_UPGRADES_DIA} Hoy`;
+
+            const textoEl = document.getElementById('mascota-texto');
+            if (datosProgreso.nivel < 40) textoEl.innerText = "Fase 1: Inicio";
+            else if (datosProgreso.nivel < 80) textoEl.innerText = "Fase 2: Creciendo";
+            else if (datosProgreso.nivel < 100) textoEl.innerText = "Fase 3: Casi listo";
+            else textoEl.innerText = "¡Completado!";
+        }
+
+        function mejorarMascota() {
+            if (datosProgreso.nivel >= 100) return;
+            const hoy = new Date().toLocaleDateString();
+            if (datosProgreso.fechaUltimoUpgrade !== hoy) { datosProgreso.upgradesHoy = 0; datosProgreso.fechaUltimoUpgrade = hoy; }
+
+            if (datosProgreso.upgradesHoy >= MAX_UPGRADES_DIA) {
+                mostrarMensajeEnPagina("¡Tu compañero ya descansó por hoy! Vuelve mañana.", false); return;
+            }
+
+            datosProgreso.nivel += 20;
+            datosProgreso.upgradesHoy++;
+            
+            const emojiEl = document.getElementById('mascota-emoji');
+            emojiEl.style.transform = 'scale(1.4)'; setTimeout(() => emojiEl.style.transform = 'scale(1)', 400);
+
+            guardarProgresoMascota(); actualizarUIMascota();
+
+            if (datosProgreso.nivel >= 100) {
+                datosProgreso.logros.push({ tipo: datosProgreso.tipoActivo, fecha: hoy, id: Date.now() });
+                guardarProgresoMascota(); renderizarLogros();
+                document.getElementById('modal-selector-mascota').style.display = 'flex';
+            }
+        }
+
+        function seleccionarNuevaMascota(nuevoTipo) {
+            datosProgreso.tipoActivo = nuevoTipo; datosProgreso.nivel = 0;
+            guardarProgresoMascota(); actualizarUIMascota();
+            document.getElementById('modal-selector-mascota').style.display = 'none';
+        }
+
+        function renderizarLogros() {
+            const contenedor = document.getElementById('galeria-logros-contenedor');
+            const msgVacio = document.getElementById('mensaje-sin-logros');
+            
+            if (datosProgreso.logros.length === 0) { msgVacio.style.display = 'block'; return; }
+            
+            msgVacio.style.display = 'none';
+            contenedor.innerHTML = '';
+            
+            datosProgreso.logros.forEach((logro, index) => {
+                const config = tiposMascotas[logro.tipo];
+                const numColeccion = (index + 1).toString().padStart(3, '0');
+                
+                const div = document.createElement('div');
+                div.className = 'card-coleccion';
+                div.innerHTML = `
+                    <div class="card-coleccion-header">#${numColeccion} ${config.nombre}</div>
+                    <div class="card-coleccion-body">
+                        <div class="card-coleccion-emoji">${config.etapas[4]}</div>
+                    </div>
+                    <div class="card-coleccion-footer">
+                        <span>${config.tipoIcon}</span> | <span>🗓️ ${logro.fecha}</span>
+                    </div>
+                `;
+                contenedor.appendChild(div);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', iniciarSistemaMascota);
+
+        // ==========================================
+        // VARIABLES GLOBALES Y FUNCIONES DE JUEGOS
+        // ==========================================
+        let intervaloRespiracion = null;
+        let emocionActual = '';
+        let juegoActivoTipo = ''; 
+        let piezaSeleccionada = null;
+
+        const bancoImagenesIA = [
+            { tipo: "🌄 Paisaje Inteligente", url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop&q=80" },
+            { tipo: "🏙️ Ciudad del Futuro", url: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&auto=format&fit=crop&q=80" },
+            { tipo: "🎨 Arte Impresionista", url: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600&auto=format&fit=crop&q=80" },
+            { tipo: "🌌 Galaxia Fantástica", url: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=600&auto=format&fit=crop&q=80" },
+            { tipo: "🧸 Animación e Ilustración", url: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80" }
+        ];
+
+        window.configEmociones = {
+            feliz: { title: "¡Qué increíble verte así! 🌟", text: "Tu positividad y buena energía son contagiosas.", tips: ["Anota qué te hizo feliz hoy.", "Comparte tu alegría con alguien."], color: "#27AE60", emoji: "🤩", texto: "Feliz" },
+            ansiedad: { title: "Respira profundo", text: "Es normal sentir estrés. Enfócate en tu respiración.", tips: ["Inhala 4 segundos", "Exhala 6 segundos"], color: "#F2994A", emoji: "😰", texto: "Ansioso" },
+            tristeza: { title: "Es válido estar triste", text: "No tienes que fingir que todo está bien todo el tiempo.", tips: ["Escribe lo que sientes", "Escucha tu canción favorita"], color: "#9B51E0", emoji: "😢", texto: "Triste" },
+            enojo: { title: "Canaliza tu enojo", text: "El enojo nos avisa que algo nos incomoda.", tips: ["Sal a caminar un momento", "Dibuja líneas fuertes en un papel"], color: "#EB5757", emoji: "😡", texto: "Enojado" },
+            desmotivado: { title: "Escucha a tu cuerpo", text: "La desmotivación puede ser cansancio mental.", tips: ["Descansa sin pantallas", "Haz solo una acción muy pequeña hoy"], color: "#78909C", emoji: "😮‍💨", texto: "Cansado" }
+        };
+        const configEmociones = window.configEmociones;
+
+        function showAdvice(emotion) {
+            emocionActual = emotion;
+            const container = document.getElementById('advice-container');
+            const data = configEmociones[emotion];
+            document.getElementById('advice-title').textContent = data.title;
+            document.getElementById('advice-title').style.color = data.color;
+            container.style.borderLeftColor = data.color;
+            document.getElementById('advice-text').textContent = data.text;
+            
+            const list = document.getElementById('advice-list');
+            list.innerHTML = '';
+            data.tips.forEach(tip => { const li = document.createElement('li'); li.textContent = tip; list.appendChild(li); });
+            container.style.display = 'block';
+
+            if (window.guardarEmocionBD) { window.guardarEmocionBD(emotion); }
+
+            if (intervaloRespiracion) clearInterval(intervaloRespiracion);
+            activarJuegoPorEmocion(emotion, false);
+
+            // ACCIÓN COMPLEMENTARIA: Abre automáticamente la interfaz de ALEGRIA si se encuentra oculta.
+            const chatWindow = document.getElementById('chat-window');
+            if (chatWindow && chatWindow.style.display !== 'flex') {
+                toggleChat();
+            }
+        }
+
+        function mostrarMensajeEnPagina(texto, esExito) {
+            const cajaRes = document.getElementById('resultado-juego');
+            cajaRes.innerText = texto;
+            cajaRes.style.display = 'block';
+            cajaRes.style.backgroundColor = esExito ? '#E8F8F5' : '#FCE4D6';
+            cajaRes.style.color = esExito ? '#27AE60' : '#EB5757';
+            cajaRes.style.border = esExito ? '1px solid #27AE60' : '1px solid #EB5757';
+        }
+
+        function reiniciarJuegoActual() {
+            if (intervaloRespiracion) clearInterval(intervaloRespiracion);
+            document.getElementById('resultado-juego').style.display = 'none';
+            const containerInteractivo = document.getElementById('juego-interactivo');
+            containerInteractivo.innerHTML = "";
+            
+            if (juegoActivoTipo === 'rompecabezas_visual') lanzarRompecabezasVisual(containerInteractivo);
+            else if (juegoActivoTipo === 'trivia') lanzarTriviaDinamica(containerInteractivo);
+            else if (juegoActivoTipo === 'globos') lanzarGlobosAleatorios(containerInteractivo);
+            else lanzarRespiracion(containerInteractivo);
+        }
+
+        function cambiarDeJuegoAleatorio() { activarJuegoPorEmocion(emocionActual, true); }
+
+        function activarJuegoPorEmocion(emocion, forzarDiferente = false) {
+            const containerSeccion = document.getElementById('seccion-juego');
+            const containerDesc = document.getElementById('juego-descripcion');
+            const containerInteractivo = document.getElementById('juego-interactivo');
+            document.getElementById('resultado-juego').style.display = 'none';
+            if (intervaloRespiracion) clearInterval(intervaloRespiracion);
+            
+            containerInteractivo.innerHTML = "";
+            containerSeccion.style.display = "block";
+
+            let juegos = ['trivia', 'rompecabezas_visual', 'globos'];
+            if (emocion !== 'feliz') juegos.push('respiracion');
+            if (forzarDiferente && juegoActivoTipo) { juegos = juegos.filter(juego => juego !== juegoActivoTipo); }
+
+            const eleccion = juegos[Math.floor(Math.random() * juegos.length)];
+
+            if (eleccion === 'rompecabezas_visual') {
+                containerDesc.innerText = "Reorganiza las partes de la imagen para enfocar tu atención en el presente.";
+                lanzarRompecabezasVisual(containerInteractivo);
+            } else if (eleccion === 'trivia') {
+                containerDesc.innerText = "Responde a esta pregunta reflexiva sobre gestión emocional.";
+                lanzarTriviaDinamica(containerInteractivo);
+            } else if (eleccion === 'globos') {
+                containerDesc.innerText = "Usa tu agilidad para hacer explotar las burbujas mutantes aleatorias.";
+                lanzarGlobosAleatorios(containerInteractivo);
+            } else {
+                containerDesc.innerText = "Sigue la guía interactiva para relajar tu sistema nervioso.";
+                lanzarRespiracion(containerInteractivo);
+            }
+        }
+
+        function verificarRompecabezas(board, totalPiezas) {
+            let correctas = 0;
+            const slots = board.querySelectorAll('.puzzle-slot');
+            slots.forEach(slot => {
+                if (slot.hasChildNodes()) {
+                    const pieza = slot.firstChild;
+                    if (slot.dataset.index === pieza.dataset.correctIndex) { correctas++; }
+                }
+            });
+            if (correctas === totalPiezas) { 
+                mostrarMensajeEnPagina("🎉 ¡Excelente trabajo! Completaste el arte y ordenaste tus ideas.", true); 
+                mejorarMascota(); 
+            }
+        }
+
+        function lanzarRompecabezasVisual(container) {
+            juegoActivoTipo = 'rompecabezas_visual';
+            const dataImagenSeleccionada = bancoImagenesIA[Math.floor(Math.random() * bancoImagenesIA.length)];
+            const textoTema = document.createElement('p');
+            textoTema.innerHTML = `🧩 <strong>Arte de concentración:</strong> Armoniza las piezas dispersas de tipo: <strong>${dataImagenSeleccionada.tipo}</strong>`;
+            container.appendChild(textoTema);
+
+            const filas = 3, columnas = 3;
+            const totalPiezas = filas * columnas;
+            const anchoTotalTablero = 300, altoTotalTablero = 300;
+            const anchoPieza = anchoTotalTablero / columnas, altoPieza = altoTotalTablero / filas;
+
+            const puzzleContainer = document.createElement('div'); puzzleContainer.className = "puzzle-board-container";
+            const board = document.createElement('div'); board.className = "puzzle-slots-grid";
+            board.style.gridTemplateColumns = `repeat(${columnas}, 1fr)`;
+            board.style.width = `${anchoTotalTablero}px`; board.style.height = `${altoTotalTablero}px`;
+
+            const pool = document.createElement('div'); pool.className = "puzzle-pieces-pool";
+            pool.addEventListener('dragover', (e) => e.preventDefault());
+            pool.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (piezaSeleccionada) { pool.appendChild(piezaSeleccionada); verificarRompecabezas(board, totalPiezas); }
+            });
+
+            let listadoDePiezas = [];
+            for (let i = 0; i < totalPiezas; i++) {
+                const r = Math.floor(i / columnas), c = i % columnas;
+                const slot = document.createElement('div'); slot.className = "puzzle-slot";
+                slot.dataset.index = i; slot.style.width = `${anchoPieza}px`; slot.style.height = `${altoPieza}px`;
+                board.appendChild(slot);
+
+                const pieza = document.createElement('div'); pieza.className = "puzzle-piece-canvas";
+                pieza.style.width = `${anchoPieza - 2}px`; pieza.style.height = `${altoPieza - 2}px`;
+                pieza.style.backgroundImage = `url('${dataImagenSeleccionada.url}')`;
+                pieza.style.backgroundSize = `${anchoTotalTablero}px ${altoTotalTablero}px`;
+                pieza.style.backgroundPosition = `${-(c * anchoPieza)}px ${-(r * altoPieza)}px`;
+                pieza.draggable = true; pieza.dataset.correctIndex = i;
+
+                pieza.addEventListener('dragstart', () => { piezaSeleccionada = pieza; });
+                listadoDePiezas.push(pieza);
+
+                slot.addEventListener('dragover', (e) => e.preventDefault());
+                slot.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    if (piezaSeleccionada && !slot.hasChildNodes()) {
+                        slot.appendChild(piezaSeleccionada); verificarRompecabezas(board, totalPiezas);
+                    }
+                });
+            }
+            listadoDePiezas.sort(() => Math.random() - 0.5);
+            listadoDePiezas.forEach(p => pool.appendChild(p));
+            puzzleContainer.appendChild(board); puzzleContainer.appendChild(pool); container.appendChild(puzzleContainer);
+        }
+
+        function lanzarTriviaDinamica(container) {
+            juegoActivoTipo = 'trivia';
+            const preguntasFailsafe = [
+                { q: "¿Cuál es una forma sana de expresar molestia?", o: ["Hablar con respeto de lo que te incomoda.", "Guardarte el enojo para siempre.", "Gritar fuerte."], c: 0 },
+                { q: "Si un amigo te cuenta que está muy estresado, ¿qué es mejor hacer?", o: ["Decirle que no exagere.", "Escucharle con atención y empatía.", "Cambiar de tema rápido."], c: 1 },
+                { q: "¿Qué ayuda más cuando estás muy desmotivado?", o: ["Forzarte a hacer todo a la vez.", "Tomar un pequeño descanso físico y mental.", "Ver pantallas toda la noche."], c: 1 }
+            ];
+            const datosJuego = preguntasFailsafe[Math.floor(Math.random() * preguntasFailsafe.length)];
+
+            const qText = document.createElement('p'); qText.style.fontWeight = "bold"; qText.innerText = datosJuego.q;
+            container.appendChild(qText);
+
+            datosJuego.o.forEach((opc, idx) => {
+                const btn = document.createElement('button'); btn.innerText = opc;
+                btn.style = "margin:6px; padding:10px; width:85%; background:#e8f4fd; border:2px solid #2F80ED; border-radius:6px; cursor:pointer;";
+                btn.onclick = () => {
+                    if (idx === datosJuego.c) {
+                        btn.style.background = "#27AE60"; btn.style.color = "white";
+                        mostrarMensajeEnPagina("✨ ¡Excelente razonamiento de bienestar!", true);
+                        mejorarMascota(); 
+                    } else {
+                        btn.style.background = "#EB5757"; btn.style.color = "white";
+                        mostrarMensajeEnPagina("Inténtalo de nuevo. ¡Tú puedes analizarlo!", false);
+                    }
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function lanzarGlobosAleatorios(container) {
+            juegoActivoTipo = 'globos';
+            const txt = document.createElement('p'); txt.innerText = "🎈 ¡Revienta los globos asimétricos para liberar bienestar!";
+            container.appendChild(txt);
+
+            const grid = document.createElement('div'); grid.className = "bubble-grid";
+            const emojis = ["🎈", "🫧", "🌟", "🚀", "🦄", "🌸", "⭐"];
+            const colores = ["#F2994A", "#9B51E0", "#EB5757", "#27AE60", "#2F80ED"];
+            let restantes = 4;
+
+            for (let i = 0; i < 4; i++) {
+                const bubble = document.createElement('div'); bubble.className = "happy-bubble";
+                const tamaño = Math.floor(Math.random() * 41) + 55;
+                const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                const col = colores[Math.floor(Math.random() * colores.length)];
+
+                bubble.style.width = `${tamaño}px`; bubble.style.height = `${tamaño}px`;
+                bubble.style.backgroundColor = col; bubble.style.fontSize = `${tamaño * 0.45}px`;
+                bubble.innerText = emoji;
+
+                bubble.onclick = () => {
+                    if (!bubble.classList.contains('popped')) {
+                        bubble.classList.add('popped'); restantes--;
+                        if (restantes === 0) { 
+                            mostrarMensajeEnPagina("🌟 ¡Fantástico! Renovaste tu energía por completo.", true); 
+                            mejorarMascota(); 
+                        }
+                    }
+                };
+                grid.appendChild(bubble);
+            }
+            container.appendChild(grid);
+        }
+
+        function lanzarRespiracion(container) {
+            juegoActivoTipo = 'respiracion';
+            const ins = document.createElement('div'); ins.className = "breathing-instruction"; ins.innerText = "¡PREPÁRATE!";
+            const num = document.createElement('div'); num.className = "timer-number"; num.innerText = "4";
+            const barBox = document.createElement('div'); barBox.className = "progress-bar-container";
+            const fill = document.createElement('div'); fill.className = "progress-bar-fill";
+            barBox.appendChild(fill);
+            container.appendChild(ins); container.appendChild(num); container.appendChild(barBox);
+
+            let f = 0, seg = 4;
+            intervaloRespiracion = setInterval(() => {
+                num.innerText = seg; fill.style.width = `${(seg / 4) * 100}%`;
+                ins.innerText = f === 0 ? "💨 INHALA..." : f === 1 ? "🛑 MANTÉN..." : "😮‍💨 EXHALA...";
+                seg--;
+                if(seg < 0) { f = (f + 1) % 3; seg = 4; }
+            }, 1000);
+
+            const btn = document.createElement('button'); btn.innerText = "Me siento mejor";
+            btn.style = "margin-top:10px; padding:8px 15px; cursor:pointer; background:#2F80ED; color:white; border:none; border-radius:5px;";
+            btn.onclick = () => { 
+                clearInterval(intervaloRespiracion); 
+                mostrarMensajeEnPagina("¡Increíble!", true); 
+                mejorarMascota(); 
+            };
+            container.appendChild(btn);
+        }
+
+        // ==========================================
+        // CEREBRO AVANZADO DE ALEGRIA (NO SE TOCA)
+        // ==========================================
+        function toggleChat() {
+            const chatWindow = document.getElementById('chat-window');
+            chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') sendMessage();
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const messageText = input.value.trim();
+            
+            if (messageText !== "") {
+                addChatBubble(messageText, 'user-message');
+                input.value = '';
+                
+                document.getElementById('typing').style.display = 'block';
+                document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+
+                const delay = Math.floor(Math.random() * 1500) + 1000;
+                setTimeout(() => {
+                    document.getElementById('typing').style.display = 'none';
+                    procesarRespuestaIA(messageText.toLowerCase());
+                }, delay);
+            }
+        }
+
+        function addChatBubble(text, className) {
+            const chatMessages = document.getElementById('chat-messages');
+            const bubble = document.createElement('div');
+            bubble.classList.add('chat-bubble', className);
+            bubble.textContent = text;
+            chatMessages.appendChild(bubble);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function procesarRespuestaIA(textoUsuario) {
+            try {
+                const respuesta = await fetch('http://localhost:3000/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mensaje: textoUsuario })
+                });
+
+                const datos = await respuesta.json();
+                addChatBubble(datos.respuesta, 'bot-message');
+
+            } catch (error) {
+                addChatBubble("Uy, parece que perdí la conexión con mi servidor. Por favor revisa si la ventana negra está encendida.", 'bot-message');
+            }
+        }
+
+        function sendQuickReply(texto) {
+            document.getElementById('chat-input').value = texto;
+            sendMessage();
+        }
+    </script>
+
+    <!-- LÓGICA DE FIREBASE Y CALENDARIO -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
+            authDomain: "alegria-web-977ea.firebaseapp.com",
+            projectId: "alegria-web-977ea",
+            storageBucket: "alegria-web-977ea.firebasestorage.app",
+            messagingSenderId: "561418892075",
+            appId: "1:561418892075:web:133a1ff3948b86a4e88b6e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const authContainer = document.getElementById('auth-container');
+
+        window.usuarioLogueado = null;
+        window.db = db;
+        
+        // Almacenamiento temporal unificado para el mes actual
+        let mapaEmocionesGlobal = {};
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.usuarioLogueado = user;
+                document.getElementById('btn-sidebar-diario').style.display = 'flex';
+                
+                authContainer.innerHTML = `
+                    <div class="auth-profile" style="cursor: default; text-decoration: none;">
+                        <img src="${user.photoURL || 'https://via.placeholder.com/35'}" class="auth-avatar" alt="Avatar">
+                        <div class="auth-info">
+                            <span style="font-size: 13px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; color: white;">${user.displayName || 'Usuario'}</span>
+                            <button id="logout-btn" style="background: none; border: none; color: #EB5757; font-size: 11px; cursor: pointer; padding: 0; text-align: left; margin-top: 2px;">Cerrar sesión</button>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('logout-btn').addEventListener('click', () => {
+                    signOut(auth).then(() => { window.location.reload(); });
+                });
+
+                window.cargarHistorialYCalendario();
+            } else {
+                window.usuarioLogueado = null;
+                document.getElementById('btn-sidebar-diario').style.display = 'none';
+                
+                authContainer.innerHTML = `
+                    <a href="login.html" class="auth-profile">
+                        <div class="sidebar-icon" style="margin:0; color: white;">👤</div>
+                        <div class="auth-info">
+                            <span style="font-size: 14px; font-weight: bold; color: white;">Iniciar Sesión</span>
+                        </div>
+                    </a>
+                `;
+                window.cargarHistorialYCalendario();
+            }
+        });
+
+        window.guardarEmocionBD = async function(emocion) {
+            const hoy = new Date();
+            const claveLocal = `${hoy.getFullYear()}-${hoy.getMonth()}-${hoy.getDate()}`;
+
+            // 1. Guardar localmente en forma de Lista (Array) para admitir múltiples emociones
+            let historialLocal = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
+            if (!historialLocal[claveLocal]) {
+                historialLocal[claveLocal] = [];
+            }
+            historialLocal[claveLocal].push(emocion);
+            localStorage.setItem('alegria_emociones_local_list', JSON.stringify(historialLocal));
+
+            // 2. Guardar en Firebase de fondo con timestamp preciso de envío
+            if (window.usuarioLogueado) {
+                try {
+                    await addDoc(collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones"), {
+                        emocion: emocion,
+                        fecha: serverTimestamp(),
+                        fechaLocalStr: claveLocal,
+                        timestampCreado: Date.now() // Orden cronológico exacto de inserción
+                    });
+                } catch (error) {
+                    console.error("Error guardando tu emoción: ", error);
+                }
+            }
+            
+            window.cargarHistorialYCalendario();
+        };
+
+        window.cargarHistorialYCalendario = async function() {
+            // Cargar datos locales iniciales
+            const emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
+            
+            // Si el usuario está logueado en la nube, combinamos los datos
+            if (window.usuarioLogueado) {
+                try {
+                    // Ordenamos por fecha ascendente para insertarlos en orden exacto
+                    const consulta = query(collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones"), orderBy("fecha", "asc"), limit(200));
+                    const resultados = await getDocs(consulta);
+                    
+                    // Limpiamos listas remotas previas para evitar duplicación con el local
+                    resultados.forEach((doc) => {
+                        const data = doc.data();
+                        let clave = null;
+                        
+                        if (data.fechaLocalStr) {
+                            clave = data.fechaLocalStr;
+                        } else if (data.fecha) {
+                            const d = data.fecha.toDate();
+                            clave = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+                        }
+
+                        if(clave) {
+                            // Si detectamos datos en la nube de ese día, priorizamos sincronizar la lista completa
+                            if (!emocionesPorDia[clave] || !Array.isArray(emocionesPorDia[clave])) {
+                                emocionesPorDia[clave] = [];
+                            }
+                            
+                            // Evitar insertar repetidos si ya existen en el array local del día actual
+                            if (!emocionesPorDia[clave].includes(data.emocion) || emocionesPorDia[clave].length < resultados.size) {
+                                // Para reconstrucción perfecta, rearmamos la lista según registros
+                                if (resultados.metadata.fromCache === false) {
+                                    // Sincronización limpia si viene fresco del server
+                                    if(!emocionesPorDia[clave].remotoProcesado) {
+                                        emocionesPorDia[clave] = [];
+                                        emocionesPorDia[clave].remotoProcesado = true;
+                                    }
+                                }
+                                emocionesPorDia[clave].push(data.emocion);
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error("Error cargando calendario", error);
+                }
+            }
+
+            mapaEmocionesGlobal = emocionesPorDia;
+            window.generarCalendarioUI(emocionesPorDia);
+
+            // Mostrar por defecto las emociones de HOY en la sección de abajo al abrir
+            const hoy = new Date();
+            const claveHoy = `${hoy.getFullYear()}-${hoy.getMonth()}-${hoy.getDate()}`;
+            window.mostrarDetalleDia(claveHoy, hoy.getDate());
+        }
+
+        window.generarCalendarioUI = function(emocionesPorDia) {
+            const fechaActual = new Date();
+            const anio = fechaActual.getFullYear();
+            const mes = fechaActual.getMonth();
+            const diaHoy = fechaActual.getDate();
+
+            const opcionesMes = { month: 'long', year: 'numeric' };
+            const mesAnio = fechaActual.toLocaleDateString('es-ES', opcionesMes);
+            document.getElementById('calendario-titulo').innerText = mesAnio.charAt(0).toUpperCase() + mesAnio.slice(1);
+
+            const contenedor = document.getElementById('calendario-contenedor');
+            contenedor.innerHTML = '';
+
+            let primerDiaMes = new Date(anio, mes, 1).getDay();
+            primerDiaMes = primerDiaMes === 0 ? 6 : primerDiaMes - 1; 
+            
+            const diasEnMes = new Date(anio, mes + 1, 0).getDate();
+
+            for (let i = 0; i < primerDiaMes; i++) {
+                const celdaVacia = document.createElement('div');
+                celdaVacia.className = 'celda-dia vacia';
+                contenedor.appendChild(celdaVacia);
+            }
+
+            for (let dia = 1; dia <= diasEnMes; dia++) {
+                const celda = document.createElement('div');
+                celda.className = 'celda-dia';
+                if (dia === diaHoy) celda.classList.add('hoy');
+
+                const numDiv = document.createElement('div');
+                numDiv.className = 'numero-dia';
+                numDiv.innerText = dia;
+                celda.appendChild(numDiv);
+
+                const claveDia = `${anio}-${mes}-${dia}`;
+                
+                // Si hay emociones registradas en el día
+                if (emocionesPorDia[claveDia] && emocionesPorDia[claveDia].length > 0) {
+                    const listaDelDia = emocionesPorDia[claveDia];
+                    
+                    // En el cuadro principal del calendario mostramos la ÚLTIMA ingresada
+                    const ultimaEmocionStr = listaDelDia[listaDelDia.length - 1];
+                    const configE = window.configEmociones ? window.configEmociones[ultimaEmocionStr] : null; 
+                    
+                    if(configE) {
+                        const emDiv = document.createElement('div');
+                        emDiv.className = 'emocion-registro';
+                        emDiv.style.color = configE.color;
+                        emDiv.innerHTML = `
+                            <div>${configE.emoji}</div>
+                            <div class="emocion-texto">${configE.texto}</div>
+                        `;
+                        celda.appendChild(emDiv);
+                        celda.style.borderColor = configE.color; 
+                    }
+
+                    // Si hay más de una emoción este día, pintamos un contador (+2, +3, etc.)
+                    if (listaDelDia.length > 1) {
+                        const badgeMultiples = document.createElement('div');
+                        badgeMultiples.className = 'indicador-multiples';
+                        badgeMultiples.innerText = `+${listaDelDia.length}`;
+                        celda.appendChild(badgeMultiples);
+                    }
+                }
+
+                // Evento para que al dar clic al día, se cargue la lista abajo
+                celda.addEventListener('click', () => {
+                    document.querySelectorAll('.celda-dia').forEach(c => c.classList.remove('seleccionada'));
+                    celda.classList.add('seleccionada');
+                    window.mostrarDetalleDia(claveDia, dia);
+                });
+
+                contenedor.appendChild(celda);
+            }
+        };
+
+        // Nueva función encargada de pintar la lista cronológica abajo del calendario
+        window.mostrarDetalleDia = function(claveDia, numeroDia) {
+            const seccionDetalle = document.getElementById('detalle-dia-seccion');
+            const contenedorLista = document.getElementById('detalle-emociones-lista');
+            const textoFecha = document.getElementById('detalle-fecha-texto');
+
+            seccionDetalle.style.display = "block";
+            contenedorLista.innerHTML = "";
+            textoFecha.innerText = `Historial del día ${numeroDia} de este mes:`;
+
+            const emocionesDelDia = mapaEmocionesGlobal[claveDia];
+
+            if (emocionesDelDia && emocionesDelDia.length > 0) {
+                emocionesDelDia.forEach((emocionStr) => {
+                    const configE = window.configEmociones[emocionStr];
+                    if (configE) {
+                        const badge = document.createElement('div');
+                        badge.className = 'badge-emocion';
+                        badge.style.backgroundColor = configE.color;
+                        badge.innerHTML = `<span>${configE.emoji}</span> <span>${configE.texto}</span>`;
+                        contenedorLista.appendChild(badge);
+                    }
+                });
+            } else {
+                contenedorLista.innerHTML = `<span style="color: #888; font-style: italic; font-size: 0.9rem;">No registraste emociones en este día.</span>`;
+            }
+        };
+    </script>
+</body>
+</html>
