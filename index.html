@@ -1356,36 +1356,41 @@ window.generarCalendarioUI = function(emocionesPorDia) {
             }
         });
 
-        contenedorDias.appendChild(celdaDia);
+       contenedorDias.appendChild(celdaDia);
     }
 };
-        // Nueva función encargada de pintar la lista cronológica abajo del calendario
-        window.mostrarDetalleDia = function(claveDia, numeroDia) {
-            const seccionDetalle = document.getElementById('detalle-dia-seccion');
-            const contenedorLista = document.getElementById('detalle-emociones-lista');
-            const textoFecha = document.getElementById('detalle-fecha-texto');
 
-            seccionDetalle.style.display = "block";
-            contenedorLista.innerHTML = "";
-            textoFecha.innerText = `Historial del día ${numeroDia} de este mes:`;
+// ==========================================
+// MOSTRAR DETALLE DEL DÍA (CRONOLÓGICO)
+// ==========================================
+window.mostrarDetalleDia = function(claveDia, numeroDia) {
+    const seccionDetalle = document.getElementById('detalle-dia-seccion');
+    const contenedorLista = document.getElementById('detalle-emociones-lista');
+    const textoFecha = document.getElementById('detalle-fecha-texto');
 
-            const emocionesDelDia = mapaEmocionesGlobal[claveDia];
+    if (seccionDetalle) seccionDetalle.style.display = "block";
+    if (contenedorLista) contenedorLista.innerHTML = "";
+    if (textoFecha) textoFecha.innerText = `Historial del día ${numeroDia} de este mes:`;
 
-            if (emocionesDelDia && emocionesDelDia.length > 0) {
-                emocionesDelDia.forEach((emocionStr) => {
-                    const configE = window.configEmociones[emocionStr];
-                    if (configE) {
-                        const badge = document.createElement('div');
-                        badge.className = 'badge-emocion';
-                        badge.style.backgroundColor = configE.color;
-                        badge.innerHTML = `<span>${configE.emoji}</span> <span>${configE.texto}</span>`;
-                        contenedorLista.appendChild(badge);
-                    }
-                });
-            } else {
-                contenedorLista.innerHTML = `<span style="color: #888; font-style: italic; font-size: 0.9rem;">No registraste emociones en este día.</span>`;
+    const emocionesDelDia = window.mapaEmocionesGlobal ? window.mapaEmocionesGlobal[claveDia] : null;
+
+    if (emocionesDelDia && emocionesDelDia.length > 0) {
+        emocionesDelDia.forEach((emocionStr) => {
+            const configE = window.configEmociones ? window.configEmociones[emocionStr] : null;
+            if (configE) {
+                const badge = document.createElement('div');
+                badge.className = 'badge-emocion';
+                badge.style.backgroundColor = configE.color;
+                badge.innerHTML = `<span>${configE.emoji}</span> <span>${configE.texto}</span>`;
+                contenedorLista.appendChild(badge);
             }
-        };
-    </script>
+        });
+    } else {
+        if (contenedorLista) {
+            contenedorLista.innerHTML = `<span style="color: #888; font-style: italic; font-size: 0.9rem;">No registraste emociones este día.</span>`;
+        }
+    }
+};
+</script>
 </body>
 </html>
