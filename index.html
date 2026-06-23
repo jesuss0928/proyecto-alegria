@@ -6,9 +6,6 @@
     <title>Apoyo Emocional para Adolescentes</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234facfe'/%3E%3Cstop offset='100%25' stop-color='%2300f2fe'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23g)'/%3E%3Cpath d='M35,65 Q35,45 50,45 Q65,45 65,65' stroke='white' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Cpath d='M50,45 Q40,30 50,20 Q60,30 50,45' fill='%2366bb6a'/%3E%3Cpath d='M50,35 Q35,30 40,20 Q50,28 50,35' fill='%2381c784'/%3E%3Cpath d='M50,35 Q65,30 60,20 Q50,28 50,35' fill='%2381c784'/%3E%3Ccircle cx='50' cy='52' r='3' fill='white'/%3E%3C/svg%3E">
     <meta name="description" content="Proyecto Alegría: Un espacio seguro de orientación y apoyo emocional para adolescentes.">
-    <meta name="keywords" content="apoyo emocional, adolescentes, salud mental, proyecto alegria">
-    <meta name="author" content="Jesús">
-    <meta name="google-site-verification" content="mp1u1C5tnwCEllg1T1_WDpiPN3x_BlVT4gOFWViVawg" />
     <style>
         /* ==========================================
            VARIABLES Y ESTILOS GENERALES
@@ -170,7 +167,6 @@
             display: block;
         }
 
-        /* Footer del Sidebar (Perfil / Login) */
         .sidebar-footer {
             padding: 15px 10px;
             border-top: 1px solid rgba(255,255,255,0.1);
@@ -251,7 +247,6 @@
             text-align: center;
         }
 
-        /* Botones de Emociones */
         .emotion-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
         .btn-emotion { border: none; padding: 1rem 2rem; font-size: 1.1rem; border-radius: 50px; cursor: pointer; color: var(--white); font-weight: bold; transition: transform 0.2s; }
         .btn-emotion:hover { transform: scale(1.05); }
@@ -273,25 +268,21 @@
         .sos-card { background: var(--white); padding: 1.5rem; border-radius: 8px; border: 1px solid #FFCDD2; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s ease;}
         .sos-card:hover { transform: translateY(-5px); }
         .sos-phone { font-size: 1.8rem; font-weight: bold; color: var(--sos-color); margin: 10px 0; display: block; text-decoration: none; }
-        .sos-phone:hover { text-decoration: underline; }
 
         .stats-grid { display: grid; gap: 2rem; margin-top: 2rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); text-align: left;}
         .stat-card { background-color: #E8F4FD; padding: 1.5rem; border-radius: 8px; text-align: center; border-top: 4px solid var(--primary-color); }
         .stat-number { font-size: 2.5rem; font-weight: bold; color: var(--primary-color); margin-bottom: 0.5rem; }
 
         /* ==========================================
-           VENTANAS MODALES (GALERÍA Y CALENDARIO)
+           VENTANAS MODALES
            ========================================== */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center;
-            backdrop-filter: blur(5px);
-            padding-left: var(--sidebar-collapsed-width);
+            backdrop-filter: blur(5px); padding-left: var(--sidebar-collapsed-width);
         }
         
-        body.sidebar-expanded .modal-overlay {
-            padding-left: var(--sidebar-expanded-width);
-        }
+        body.sidebar-expanded .modal-overlay { padding-left: var(--sidebar-expanded-width); }
 
         .modal-container {
             background: var(--white); width: 90%; max-width: 900px; max-height: 95vh;
@@ -299,95 +290,47 @@
             flex-direction: column; overflow: hidden; position: relative;
         }
 
-        .modal-header {
-            background: var(--primary-color); color: white; padding: 1rem 2rem;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        
+        .modal-header { background: var(--primary-color); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
         .modal-header h2 { margin: 0; color: white; font-size: 1.5rem; }
-        
-        .btn-close-modal {
-            background: none; border: none; color: white; font-size: 2rem; cursor: pointer; line-height: 1;
-        }
+        .btn-close-modal { background: none; border: none; color: white; font-size: 2rem; cursor: pointer; line-height: 1; }
+        .modal-body { padding: 1.5rem; overflow-y: auto; background: #F4F7F6; flex-grow: 1; }
 
-        .modal-body {
-            padding: 1.5rem; overflow-y: auto; background: #F4F7F6; flex-grow: 1;
-        }
-
-        /* ==========================================
-           ESTILOS: GALERÍA DE COMPAÑEROS
-           ========================================== */
-        .galeria-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;
-        }
-        
-        .card-coleccion {
-            background: #2C3E50; border: 3px solid #34495E; border-radius: 12px;
-            overflow: hidden; text-align: center; color: white;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.2s;
-        }
-        
+        /* GALERÍA DE COMPAÑEROS */
+        .galeria-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+        .card-coleccion { background: #2C3E50; border: 3px solid #34495E; border-radius: 12px; overflow: hidden; text-align: center; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: transform 0.2s; }
         .card-coleccion:hover { transform: translateY(-5px); border-color: var(--secondary-color); }
-        
-        .card-coleccion-header {
-            background: rgba(0,0,0,0.3); padding: 5px; font-size: 0.8rem; font-weight: bold; border-bottom: 2px solid #34495E;
-        }
-        
+        .card-coleccion-header { background: rgba(0,0,0,0.3); padding: 5px; font-size: 0.8rem; font-weight: bold; border-bottom: 2px solid #34495E; }
         .card-coleccion-body { background: #ECF0F1; padding: 20px 0; }
         .card-coleccion-emoji { font-size: 4rem; line-height: 1; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.2)); }
         .card-coleccion-footer { padding: 8px; font-size: 0.7rem; color: #BDC3C7; display: flex; justify-content: center; gap: 5px; }
 
-        /* ==========================================
-           ESTILOS: CALENDARIO ALEGRE (DIARIO EMOCIONAL)
-           ========================================== */
+        /* CALENDARIO */
         .calendario-header-mes { text-align: center; font-size: 1.5rem; color: var(--primary-color); font-weight: bold; margin-bottom: 1rem; }
         .calendario-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
         .dia-semana { text-align: center; font-weight: bold; color: white; background: var(--secondary-color); padding: 8px; border-radius: 8px; font-size: 0.9rem; }
-        
-        .celda-dia {
-            background: white; border: 2px dashed #D6EAF8; border-radius: 10px;
-            min-height: 85px; padding: 5px; display: flex; flex-direction: column;
-            position: relative; transition: all 0.2s; cursor: pointer;
-        }
-        
+        .celda-dia { background: white; border: 2px dashed #D6EAF8; border-radius: 10px; min-height: 85px; padding: 5px; display: flex; flex-direction: column; position: relative; transition: all 0.2s; cursor: pointer; }
         .celda-dia:hover { border-color: var(--primary-color); background: #EBF5FB; transform: scale(1.02); }
         .celda-dia.vacia { background: transparent; border: none; cursor: default; pointer-events: none;}
         .numero-dia { font-weight: bold; color: #7F8C8D; font-size: 0.9rem; margin-bottom: 3px; }
         .celda-dia.hoy { border: 3px solid var(--primary-color); background: #E8F4FD; }
         .celda-dia.hoy .numero-dia { color: var(--primary-color); }
         .celda-dia.seleccionada { border: 3px solid #2F80ED !important; background-color: #EBF5FB; box-shadow: 0 0 10px rgba(47, 128, 237, 0.3); }
-        
-        .emocion-registro {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            flex-grow: 1; font-size: 1.6rem; line-height: 1;
-        }
-        .emocion-texto { font-size: 0.55rem; font-weight: bold; margin-top: 1px; text-transform: uppercase; text-align: center; }
+        .emocion-registro { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-grow: 1; font-size: 1.6rem; line-height: 1; }
         .indicador-multiples { position: absolute; bottom: 3px; right: 5px; background: #333; color: white; font-size: 0.6rem; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 
-        /* Contenedor Inferior para las Emociones del Día */
-        .detalle-dia-contenedor {
-            margin-top: 20px; background: white; padding: 15px; border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--primary-color);
-        }
+        .detalle-dia-contenedor { margin-top: 20px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--primary-color); }
         .detalle-dia-titulo { font-weight: bold; font-size: 1rem; color: #333; margin-bottom: 10px; display: flex; justify-content: space-between;}
         .lista-emociones-lineal { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-        .badge-emocion { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; color: white; font-size: 0.85rem; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); animation: aparecerBadge 0.3s ease; }
-        @keyframes aparecerBadge { from { transform: translateY(5px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .badge-emocion { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; color: white; font-size: 0.85rem; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
-        /* ==========================================
-           MASCOTA VIRTUAL FLOTANTE Y SELECTOR
-           ========================================== */
+        /* MASCOTA VIRTUAL FLOTANTE */
         #mascota-virtual {
             position: fixed; bottom: 20px; left: calc(var(--sidebar-collapsed-width) + 20px);
             background: white; padding: 10px 15px; border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15); text-align: center; z-index: 1000;
             border: 2px solid var(--happy-color); width: 120px; transition: transform 0.3s ease, left 0.3s ease;
         }
-        
-        body.sidebar-expanded #mascota-virtual {
-            left: calc(var(--sidebar-expanded-width) + 20px);
-        }
-
+        body.sidebar-expanded #mascota-virtual { left: calc(var(--sidebar-expanded-width) + 20px); }
         #mascota-virtual:hover { transform: scale(1.05); }
         #mascota-emoji { font-size: 2.8rem; margin-bottom: 2px; transition: transform 0.3s; }
         #mascota-texto { font-size: 0.75rem; font-weight: bold; color: #555; margin-bottom: 5px; }
@@ -395,17 +338,12 @@
         #mascota-progreso { height: 100%; width: 0%; background: var(--happy-color); transition: width 0.5s ease; }
         #mascota-limite-texto { font-size: 0.65rem; color: #888; margin-top: 3px; }
 
-        #modal-selector-mascota {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 3000; justify-content: center; align-items: center;
-        }
+        #modal-selector-mascota { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; justify-content: center; align-items: center; }
         .selector-content { background: white; padding: 2rem; border-radius: 15px; text-align: center; max-width: 500px; width: 90%; }
         .opcion-mascota { display: inline-block; background: #F0F4F8; border: 2px solid transparent; border-radius: 10px; padding: 15px; margin: 10px; cursor: pointer; width: 80px; transition: 0.2s;}
         .opcion-mascota:hover { border-color: var(--primary-color); background: #E8F4FD; transform: scale(1.05);}
 
-        /* ==========================================
-           JUEGOS Y RESPIRACIÓN
-           ========================================== */
+        /* JUEGOS Y RESPIRACIÓN */
         #seccion-juego { display: none; margin: 25px auto; padding: 25px; max-width: 650px; background-color: #ffffff; border: 3px dashed #2F80ED; border-radius: 12px; text-align: center; }
         .game-controls { display: flex; justify-content: center; gap: 15px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; }
         .btn-control { padding: 10px 18px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; }
@@ -426,9 +364,7 @@
         .puzzle-pieces-pool { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center; padding: 20px; background: #F2F4F4; border-radius: 8px; width: 100%; min-height: 140px; box-sizing: border-box; border: 2px dotted #BDC3C7; }
         .puzzle-piece-canvas { cursor: grab; border: 1px solid rgba(0,0,0,0.2); border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); user-select: none; transition: transform 0.1s; background-repeat: no-repeat; }
 
-        /* ==========================================
-           CHATBOT ALEGRIA
-           ========================================== */
+        /* CHATBOT ALEGRIA */
         #chat-widget { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
         #chat-button { background-color: var(--primary-color); color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.3s; }
         #chat-button:hover { transform: scale(1.1); }
@@ -496,10 +432,9 @@
                 <button class="btn-close-modal" onclick="cerrarModal('modal-galeria')">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="text-align: center; margin-bottom: 20px; color: #555;">Aquí descansan las mascotas que has cuidado con éxito. ¡Cada una representa tu progreso!</p>
-                <div id="galeria-logros-contenedor" class="galeria-grid">
-                    </div>
-                <p id="mensaje-sin-logros" style="color: #888; font-style: italic; text-align: center;">Aún no tienes mascotas completadas. ¡Sigue completando ejercicios!</p>
+                <p style="text-align: center; margin-bottom: 20px; color: #555;">Aquí descansan las mascotas que has cuidado con éxito.</p>
+                <div id="galeria-logros-contenedor" class="galeria-grid"></div>
+                <p id="mensaje-sin-logros" style="color: #888; font-style: italic; text-align: center;">Aún no tienes mascotas completadas. ¡Sigue así!</p>
             </div>
         </div>
     </div>
@@ -511,25 +446,15 @@
                 <button class="btn-close-modal" onclick="cerrarModal('modal-diario')">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="text-align: center; margin-bottom: 20px; color: #555;">Observa tu progreso. Reconocer cómo te sientes cada día es el primer paso para estar mejor.</p>
-                
                 <div id="calendario-titulo" class="calendario-header-mes">Mes Actual</div>
-                
                 <div class="calendario-grid" id="calendario-dias-header">
                     <div class="dia-semana">LUN</div><div class="dia-semana">MAR</div><div class="dia-semana">MIÉ</div>
                     <div class="dia-semana">JUE</div><div class="dia-semana">VIE</div><div class="dia-semana">SÁB</div><div class="dia-semana">DOM</div>
                 </div>
-                
-                <div class="calendario-grid" id="calendario-contenedor" style="margin-top: 8px;">
-                    </div>
-
+                <div class="calendario-grid" id="calendario-contenedor" style="margin-top: 8px;"></div>
                 <div id="detalle-dia-seccion" class="detalle-dia-contenedor" style="display: none;">
-                    <div class="detalle-dia-titulo">
-                        <span id="detalle-fecha-texto">Emociones del día</span>
-                        <span style="font-size: 0.85rem; color: #888; font-weight: normal;">En orden de registro 🕒</span>
-                    </div>
-                    <div id="detalle-emociones-lista" class="lista-emociones-lineal">
-                        </div>
+                    <div class="detalle-dia-titulo"><span id="detalle-fecha-texto">Emociones del día</span></div>
+                    <div id="detalle-emociones-lista" class="lista-emociones-lineal"></div>
                 </div>
             </div>
         </div>
@@ -538,8 +463,7 @@
     <div id="modal-selector-mascota">
         <div class="selector-content">
             <h2 style="color: var(--happy-color); margin-top:0;">¡Felicidades! 🎉</h2>
-            <p>Tu mascota ha crecido al máximo. Ahora está en tu Galería.</p>
-            <h3>Elige a tu próximo compañero:</h3>
+            <p>Tu mascota ha crecido al máximo. Elige a tu próximo compañero:</p>
             <div>
                 <div class="opcion-mascota" onclick="seleccionarNuevaMascota('planta')"><div style="font-size:2.5rem;">🌱</div>Planta</div>
                 <div class="opcion-mascota" onclick="seleccionarNuevaMascota('perro')"><div style="font-size:2.5rem;">🦴</div>Perro</div>
@@ -551,7 +475,7 @@
 
     <header class="hero">
         <h1>Orientación y Salud Mental para Adolescentes</h1>
-        <p>Tu bienestar emocional es nuestra prioridad. Un espacio seguro para estudiantes de secundaria y jóvenes.</p>
+        <p>Tu bienestar emocional es nuestra prioridad.</p>
     </header>
 
     <div class="container">
@@ -574,10 +498,8 @@
             <div id="seccion-juego">
                 <h3 id="juego-titulo-header" style="color: #2F80ED; margin-top: 0;">🎯 ¡Zona Interactiva de Bienestar!</h3>
                 <p id="juego-descripcion" style="color: #4F4F4F; margin-bottom: 15px;"></p>
-                
                 <div id="juego-interactivo"></div>
                 <div id="resultado-juego" style="display: none; margin-top: 15px; padding: 12px; border-radius: 6px; font-weight: bold;"></div>
-                
                 <div class="game-controls">
                     <button class="btn-control btn-reset" onclick="reiniciarJuegoActual()">🔄 Restablecer</button>
                     <button class="btn-control btn-change" onclick="cambiarDeJuegoAleatorio()">🔀 Cambiar de juego</button>
@@ -587,35 +509,22 @@
 
         <section class="sos-section">
             <h2>🚨 Zona de Ayuda Inmediata</h2>
-            <p><strong>No estás solo.</strong> Si sientes que la situación te supera, estás en crisis o tienes pensamientos de hacerte daño, hay profesionales capacitados listos para escucharte <strong>gratis y de forma anónima</strong>.</p>
+            <p><strong>No estás solo.</strong> Profesionales capacitados listos para escucharte <strong>gratis y de forma anónima</strong>.</p>
             <div class="sos-grid">
                 <div class="sos-card">
                     <h3 style="margin-top:0; color:#E53935;">Salud Mental (MINSA)</h3>
-                    <p>Orientación psicológica gratuita brindada por especialistas del Ministerio de Salud.</p>
                     <a href="tel:113" class="sos-phone">📞 113 (Opción 5)</a>
-                    <p style="font-size: 0.9rem; color: #666; margin-bottom:0;">Disponible 24 horas a nivel nacional</p>
                 </div>
                 <div class="sos-card">
                     <h3 style="margin-top:0; color:#E53935;">Línea 100</h3>
-                    <p>Orientación y soporte emocional si enfrentas violencia familiar, escolar o sexual.</p>
                     <a href="tel:100" class="sos-phone">📞 100</a>
-                    <p style="font-size: 0.9rem; color: #666; margin-bottom:0;">Confidencial, gratuito y 24/7</p>
                 </div>
-            </div>
-        </section>
-
-        <section class="problem-section">
-            <h2>El Reto: Bajo acceso a orientación</h2>
-            <div class="stats-grid">
-                <div class="stat-card"><div class="stat-number">60%</div><p>De adolescentes no busca ayuda profesional.</p></div>
-                <div class="stat-card"><div class="stat-number">300 de 500</div><p>Estudiantes podrían enfrentar dificultades emocionales sin orientación.</p></div>
             </div>
         </section>
     </div>
 
     <div id="chat-widget">
         <button id="chat-button" onclick="toggleChat()">💬</button>
-        
         <div id="chat-window">
             <div id="chat-header">
                 <span>Asistente ALEGRIA ✨</span>
@@ -625,14 +534,12 @@
                 <div class="chat-bubble bot-message">¡Hola! Soy ALEGRIA, tu compañera virtual. Este es un espacio seguro. ¿Cómo te has sentido hoy?</div>
             </div>
             <div id="typing" class="typing-indicator">ALEGRIA está escribiendo...</div>
-            
             <div id="quick-replies-container">
                 <button class="quick-reply-btn" onclick="sendQuickReply('Me siento solo 😔')">Me siento solo</button>
                 <button class="quick-reply-btn" onclick="sendQuickReply('No puedo dormir 🌙')">No puedo dormir</button>
                 <button class="quick-reply-btn" onclick="sendQuickReply('Tengo un examen y estoy estresado 📚')">Estrés por examen</button>
                 <button class="quick-reply-btn" onclick="sendQuickReply('Solo quiero desahogarme 🗣️')">Quiero hablar</button>
             </div>
-
             <div id="chat-input-area">
                 <input type="text" id="chat-input" placeholder="Escribe aquí..." onkeypress="handleKeyPress(event)">
                 <button id="send-btn" onclick="sendMessage()">Enviar</button>
@@ -641,36 +548,13 @@
     </div>
 
     <script>
-        // ==========================================
-        // CONTROL DE BARRA LATERAL (SIDEBAR)
-        // ==========================================
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const body = document.body;
-            
-            sidebar.classList.toggle('expanded');
-            body.classList.toggle('sidebar-expanded');
-        }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('expanded'); document.body.classList.toggle('sidebar-expanded'); }
+        function abrirModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
+        window.onclick = function(event) { if (event.target.classList.contains('modal-overlay')) event.target.style.display = "none"; }
 
         // ==========================================
-        // CONTROL DE VENTANAS MODALES
-        // ==========================================
-        function abrirModal(id) {
-            document.getElementById(id).style.display = 'flex';
-        }
-
-        function cerrarModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal-overlay')) {
-                event.target.style.display = "none";
-            }
-        }
-
-        // ==========================================
-        // SISTEMA DE MASCOTAS Y LOGROS
+        // CEREBRO DE LA MASCOTA
         // ==========================================
         const MAX_UPGRADES_DIA = 3;
         const tiposMascotas = {
@@ -680,9 +564,6 @@
             loro: { nombre: "Loro Sabio", tipoIcon: "🦜 Inteligencia", etapas: ["🥚", "🐣", "🐥", "🦜", "✨🐦✨"] }
         };
 
-        // ==========================================
-        // LOGICA DE LA MASCOTA (Sincronizada a Firestore)
-        // ==========================================
         let datosProgreso = {
             tipoActivo: 'planta',
             nivel: 0,
@@ -691,52 +572,36 @@
             logros: []
         };
 
-        async function guardarProgresoMascota() {
-            if (window.usuarioLogueado && window.db) {
-                try {
-                    const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                    const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
-                    await setDoc(usuarioRef, { mascota: datosProgreso }, { merge: true });
-                    console.log("Mascota guardada en la nube con éxito.");
-                } catch (error) {
-                    console.error("Error al guardar mascota en la nube: ", error);
-                }
-            } else {
-                localStorage.setItem('alegria_mascota_data', JSON.stringify(datosProgreso));
-            }
-        }
-
-        async function iniciarSistemaMascota() {
+        // Esta función se llama desde Firebase cuando se descarga la mascota
+        window.sincronizarMascotaUI = function(datosRemotos) {
             const hoy = new Date().toLocaleDateString();
-
-            if (window.usuarioLogueado && window.db) {
-                try {
-                    const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                    const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
-                    const docSnap = await getDoc(usuarioRef);
-                    
-                    if (docSnap.exists() && docSnap.data().mascota) {
-                        datosProgreso = docSnap.data().mascota;
-                        console.log("Mascota cargada desde Google Cloud.");
-                    } else {
-                        datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
-                    }
-                } catch (error) {
-                    console.error("Error cargando mascota remota, usando local:", error);
-                    datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
-                }
+            
+            // Priorizamos la nube, si no hay nube, usamos memoria local
+            if (datosRemotos) {
+                datosProgreso = datosRemotos;
             } else {
                 datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] };
             }
 
+            // Si es un nuevo día, reiniciar contador
             if (datosProgreso.fechaUltimoUpgrade !== hoy) {
                 datosProgreso.upgradesHoy = 0;
                 datosProgreso.fechaUltimoUpgrade = hoy;
-                guardarProgresoMascota();
+                guardarProgresoMascota(); 
             }
 
             actualizarUIMascota();
             renderizarLogros();
+        };
+
+        function guardarProgresoMascota() {
+            // Guardar local por si se pierde el internet
+            localStorage.setItem('alegria_mascota_data', JSON.stringify(datosProgreso));
+            
+            // Mandar orden a Firebase de guardar
+            if (typeof window.guardarMascotaBD === "function") {
+                window.guardarMascotaBD(datosProgreso);
+            }
         }
 
         function actualizarUIMascota() {
@@ -786,27 +651,20 @@
         function renderizarLogros() {
             const contenedor = document.getElementById('galeria-logros-contenedor');
             const msgVacio = document.getElementById('mensaje-sin-logros');
-            
             if (!contenedor) return;
             if (datosProgreso.logros.length === 0) { if (msgVacio) msgVacio.style.display = 'block'; return; }
-            
             if (msgVacio) msgVacio.style.display = 'none';
             contenedor.innerHTML = '';
             
             datosProgreso.logros.forEach((logro, index) => {
                 const config = tiposMascotas[logro.tipo];
                 const numColeccion = (index + 1).toString().padStart(3, '0');
-                
                 const div = document.createElement('div');
                 div.className = 'card-coleccion';
                 div.innerHTML = `
                     <div class="card-coleccion-header">#${numColeccion} ${config.nombre}</div>
-                    <div class="card-coleccion-body">
-                        <div class="card-coleccion-emoji">${config.etapas[4]}</div>
-                    </div>
-                    <div class="card-coleccion-footer">
-                        <span>${config.tipoIcon}</span> | <span>🗓️ ${logro.fecha}</span>
-                    </div>
+                    <div class="card-coleccion-body"><div class="card-coleccion-emoji">${config.etapas[4]}</div></div>
+                    <div class="card-coleccion-footer"><span>${config.tipoIcon}</span> | <span>🗓️ ${logro.fecha}</span></div>
                 `;
                 contenedor.appendChild(div);
             });
@@ -822,10 +680,7 @@
 
         const bancoImagenesIA = [
             { tipo: "🌄 Paisaje Inteligente", url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop&q=80" },
-            { tipo: "🏙️ Ciudad del Futuro", url: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&auto=format&fit=crop&q=80" },
-            { tipo: "🎨 Arte Impresionista", url: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=600&auto=format&fit=crop&q=80" },
-            { tipo: "🌌 Galaxia Fantástica", url: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=600&auto=format&fit=crop&q=80" },
-            { tipo: "🧸 Animación e Ilustración", url: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80" }
+            { tipo: "🌌 Galaxia Fantástica", url: "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=600&auto=format&fit=crop&q=80" }
         ];
 
         window.configEmociones = {
@@ -835,246 +690,214 @@
             enojo: { title: "Canaliza tu enojo", text: "El enojo nos avisa que algo nos incomoda.", tips: ["Sal a caminar un momento", "Dibuja líneas fuertes en un papel"], color: "#EB5757", emoji: "😡", texto: "Enojado" },
             desmotivado: { title: "Escucha a tu cuerpo", text: "La desmotivación puede ser cansancio mental.", tips: ["Descansa sin pantallas", "Haz solo una acción muy pequeña hoy"], color: "#78909C", emoji: "😮‍💨", texto: "Cansado" }
         };
-        const configEmociones = window.configEmociones;
 
         function showAdvice(emotion) {
             emocionActual = emotion;
             const container = document.getElementById('advice-container');
-            const data = configEmociones[emotion];
+            const data = window.configEmociones[emotion];
             document.getElementById('advice-title').textContent = data.title;
             document.getElementById('advice-title').style.color = data.color;
             container.style.borderLeftColor = data.color;
             document.getElementById('advice-text').textContent = data.text;
             
-            const list = document.getElementById('advice-list');
-            list.innerHTML = '';
+            const list = document.getElementById('advice-list'); list.innerHTML = '';
             data.tips.forEach(tip => { const li = document.createElement('li'); li.textContent = tip; list.appendChild(li); });
             container.style.display = 'block';
 
-            if (window.guardarEmocionBD) { window.guardarEmocionBD(emotion); }
-
+            if (typeof window.guardarEmocionBD === "function") { window.guardarEmocionBD(emotion); }
             if (intervaloRespiracion) clearInterval(intervaloRespiracion);
             activarJuegoPorEmocion(emotion, false);
 
-            // ACCIÓN COMPLEMENTARIA: Abre automáticamente la interfaz de ALEGRIA si se encuentra oculta.
             const chatWindow = document.getElementById('chat-window');
-            if (chatWindow && chatWindow.style.display !== 'flex') {
-                toggleChat();
+            if (chatWindow && chatWindow.style.display !== 'flex') { toggleChat(); }
+        }
+
+        function mostrarMensajeEnPagina(mensaje, exito = true) {
+            const div = document.getElementById('resultado-juego');
+            div.innerText = mensaje; div.style.display = 'block';
+            div.style.backgroundColor = exito ? "#E8F5E9" : "#FFF3E0";
+            div.style.color = exito ? "#2E7D32" : "#E65100";
+            setTimeout(() => { div.style.display = 'none'; }, 5000);
+        }
+
+        // --- SISTEMAS DE JUEGOS ---
+        function iniciarRespiracionGuiada() {
+            juegoActivoTipo = 'respiracion';
+            document.getElementById('juego-titulo-header').innerText = "🌿 Ejercicio de Respiración Box";
+            document.getElementById('juego-descripcion').innerText = "Reduce la ansiedad en 1 minuto. Sigue las instrucciones:";
+            
+            const contenedor = document.getElementById('juego-interactivo');
+            contenedor.innerHTML = `
+                <div class="breathing-instruction" id="texto-respiracion">Inhala</div>
+                <div class="timer-number" id="tiempo-respiracion">4</div>
+                <div class="progress-bar-container"><div class="progress-bar-fill" id="barra-respiracion" style="background: linear-gradient(90deg, #F2994A, #EB5757);"></div></div>
+            `;
+            
+            let segundos = 4; let fase = 0; // 0 Inhala, 1 Sostén, 2 Exhala, 3 Sostén
+            let totalCiclos = 0; const MAX_CICLOS = 4;
+            const fases = [{ txt: "Inhala...", bar: "100%" }, { txt: "Sostén...", bar: "100%" }, { txt: "Exhala...", bar: "0%" }, { txt: "Sostén...", bar: "0%" }];
+            
+            const textoEl = document.getElementById('texto-respiracion');
+            const tiempoEl = document.getElementById('tiempo-respiracion');
+            const barraEl = document.getElementById('barra-respiracion');
+            
+            if(intervaloRespiracion) clearInterval(intervaloRespiracion);
+            barraEl.style.width = "0%";
+            setTimeout(() => { barraEl.style.width = "100%"; }, 50);
+
+            intervaloRespiracion = setInterval(() => {
+                segundos--; tiempoEl.innerText = segundos;
+                if (segundos <= 0) {
+                    fase = (fase + 1) % 4; segundos = 4;
+                    textoEl.innerText = fases[fase].txt; barraEl.style.width = fases[fase].bar;
+                    if (fase === 0) totalCiclos++;
+                    if (totalCiclos >= MAX_CICLOS) {
+                        clearInterval(intervaloRespiracion);
+                        contenedor.innerHTML = `<div class="breathing-instruction" style="color: #27AE60;">¡Excelente! Tu cuerpo está más relajado.</div>`;
+                        mostrarMensajeEnPagina("Has completado tu respiración. Tu mascota está feliz."); mejorarMascota();
+                    }
+                }
+            }, 1000);
+        }
+
+        function iniciarExplosionBurbujas() {
+            juegoActivoTipo = 'burbujas';
+            document.getElementById('juego-titulo-header').innerText = "🎈 Revienta los globos de frustración";
+            document.getElementById('juego-descripcion').innerText = "Haz clic rápido para reventar tu enojo.";
+            
+            const contenedor = document.getElementById('juego-interactivo');
+            contenedor.innerHTML = '<div class="bubble-grid" id="contenedor-burbujas"></div>';
+            const areaBurbujas = document.getElementById('contenedor-burbujas');
+            
+            const colores = ["#EB5757", "#F2994A", "#9B51E0"];
+            let burbujasReventadas = 0; const totalBurbujas = 10;
+            
+            for(let i=0; i<totalBurbujas; i++) {
+                let btn = document.createElement('div');
+                btn.className = "happy-bubble"; btn.innerText = "😡";
+                btn.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
+                
+                let size = 50 + Math.random() * 40;
+                btn.style.width = size + "px"; btn.style.height = size + "px";
+                btn.style.fontSize = (size * 0.5) + "px";
+                btn.style.animationDelay = (Math.random() * 2) + "s";
+                
+                btn.onclick = function() {
+                    if(this.classList.contains('popped')) return;
+                    this.classList.add('popped'); burbujasReventadas++;
+                    if(burbujasReventadas >= totalBurbujas) {
+                        mostrarMensajeEnPagina("¡Toda esa energía negativa se ha esfumado!");
+                        setTimeout(mejorarMascota, 1000);
+                    }
+                };
+                areaBurbujas.appendChild(btn);
             }
         }
 
-        function mostrarMensajeEnPagina(texto, esExito) {
-            const cajaRes = document.getElementById('resultado-juego');
-            cajaRes.innerText = texto;
-            cajaRes.style.display = 'block';
-            cajaRes.style.backgroundColor = esExito ? '#E8F8F5' : '#FCE4D6';
-            cajaRes.style.color = esExito ? '#27AE60' : '#EB5757';
-            cajaRes.style.border = esExito ? '1px solid #27AE60' : '1px solid #EB5757';
+        function iniciarRompecabezasIA() {
+            juegoActivoTipo = 'puzzle';
+            document.getElementById('juego-titulo-header').innerText = "🧩 Rompecabezas Visual Relajante";
+            
+            const imagenElegida = bancoImagenesIA[Math.floor(Math.random() * bancoImagenesIA.length)];
+            document.getElementById('juego-descripcion').innerText = "Rearma este: " + imagenElegida.tipo;
+            
+            const contenedor = document.getElementById('juego-interactivo');
+            contenedor.innerHTML = `
+                <div class="puzzle-board-container">
+                    <div class="puzzle-slots-grid" id="puzzle-tablero"></div>
+                    <div class="puzzle-pieces-pool" id="puzzle-piezas"></div>
+                </div>
+            `;
+            
+            const filas = 2; const columnas = 3; const anchoTablero = 300; const altoTablero = 200;
+            const anchoPieza = anchoTablero / columnas; const altoPieza = altoTablero / filas;
+            
+            const tablero = document.getElementById('puzzle-tablero');
+            tablero.style.gridTemplateColumns = `repeat(${columnas}, ${anchoPieza}px)`;
+            tablero.style.gridTemplateRows = `repeat(${filas}, ${altoPieza}px)`;
+            tablero.style.width = `${anchoTablero + 12}px`; 
+            
+            let idPieza = 0; let posiciones = [];
+            for(let f=0; f<filas; f++) {
+                for(let c=0; c<columnas; c++) {
+                    const slot = document.createElement('div');
+                    slot.className = 'puzzle-slot'; slot.dataset.targetId = idPieza;
+                    slot.ondragover = (e) => e.preventDefault();
+                    slot.ondrop = manejarDrop;
+                    tablero.appendChild(slot);
+                    
+                    posiciones.push({ id: idPieza, x: c * anchoPieza, y: f * altoPieza });
+                    idPieza++;
+                }
+            }
+            
+            posiciones.sort(() => Math.random() - 0.5);
+            const pool = document.getElementById('puzzle-piezas');
+            
+            posiciones.forEach(pos => {
+                const pieza = document.createElement('div');
+                pieza.className = 'puzzle-piece-canvas';
+                pieza.draggable = true; pieza.dataset.id = pos.id;
+                pieza.style.width = `${anchoPieza}px`; pieza.style.height = `${altoPieza}px`;
+                pieza.style.backgroundImage = `url(${imagenElegida.url})`;
+                pieza.style.backgroundSize = `${anchoTablero}px ${altoTablero}px`;
+                pieza.style.backgroundPosition = `-${pos.x}px -${pos.y}px`;
+                
+                pieza.ondragstart = (e) => { e.dataTransfer.setData('text/plain', pos.id); pieza.style.opacity = '0.5'; };
+                pieza.ondragend = () => { pieza.style.opacity = '1'; };
+                pool.appendChild(pieza);
+            });
         }
 
-        function reiniciarJuegoActual() {
-            if (intervaloRespiracion) clearInterval(intervaloRespiracion);
-            document.getElementById('resultado-juego').style.display = 'none';
-            const containerInteractivo = document.getElementById('juego-interactivo');
-            containerInteractivo.innerHTML = "";
-            
-            if (juegoActivoTipo === 'rompecabezas_visual') lanzarRompecabezasVisual(containerInteractivo);
-            else if (juegoActivoTipo === 'trivia') lanzarTriviaDinamica(containerInteractivo);
-            else if (juegoActivoTipo === 'globos') lanzarGlobosAleatorios(containerInteractivo);
-            else lanzarRespiracion(containerInteractivo);
-        }
-
-        function cambiarDeJuegoAleatorio() { activarJuegoPorEmocion(emocionActual, true); }
-
-        function activarJuegoPorEmocion(emocion, forzarDiferente = false) {
-            const containerSeccion = document.getElementById('seccion-juego');
-            const containerDesc = document.getElementById('juego-descripcion');
-            const containerInteractivo = document.getElementById('juego-interactivo');
-            document.getElementById('resultado-juego').style.display = 'none';
-            if (intervaloRespiracion) clearInterval(intervaloRespiracion);
-            
-            containerInteractivo.innerHTML = "";
-            containerSeccion.style.display = "block";
-
-            let juegos = ['trivia', 'rompecabezas_visual', 'globos'];
-            if (emocion !== 'feliz') juegos.push('respiracion');
-            if (forzarDiferente && juegoActivoTipo) { juegos = juegos.filter(juego => juego !== juegoActivoTipo); }
-
-            const eleccion = juegos[Math.floor(Math.random() * juegos.length)];
-
-            if (eleccion === 'rompecabezas_visual') {
-                containerDesc.innerText = "Reorganiza las partes de la imagen para enfocar tu atención en el presente.";
-                lanzarRompecabezasVisual(containerInteractivo);
-            } else if (eleccion === 'trivia') {
-                containerDesc.innerText = "Responde a esta pregunta reflexiva sobre gestión emocional.";
-                lanzarTriviaDinamica(containerInteractivo);
-            } else if (eleccion === 'globos') {
-                containerDesc.innerText = "Usa tu agilidad para hacer explotar las burbujas mutantes aleatorias.";
-                lanzarGlobosAleatorios(containerInteractivo);
-            } else {
-                containerDesc.innerText = "Sigue la guía interactiva para relajar tu sistema nervioso.";
-                lanzarRespiracion(containerInteractivo);
+        function manejarDrop(e) {
+            e.preventDefault();
+            const idArrastrado = e.dataTransfer.getData('text/plain');
+            const piezaArrastrada = document.querySelector(`.puzzle-piece-canvas[data-id="${idArrastrado}"]`);
+            if (piezaArrastrada && e.target.classList.contains('puzzle-slot') && !e.target.hasChildNodes()) {
+                e.target.appendChild(piezaArrastrada); verificarRompecabezas();
             }
         }
 
-        function verificarRompecabezas(board, totalPiezas) {
-            let correctas = 0;
-            const slots = board.querySelectorAll('.puzzle-slot');
+        function verificarRompecabezas() {
+            const slots = document.querySelectorAll('.puzzle-slot');
+            let resuelto = true;
             slots.forEach(slot => {
-                if (slot.hasChildNodes()) {
-                    const pieza = slot.firstChild;
-                    if (slot.dataset.index === pieza.dataset.correctIndex) { correctas++; }
+                if (!slot.hasChildNodes()) resuelto = false;
+                else {
+                    const piezaId = slot.firstChild.dataset.id;
+                    if (slot.dataset.targetId !== piezaId) resuelto = false;
                 }
             });
-            if (correctas === totalPiezas) { 
-                mostrarMensajeEnPagina("🎉 ¡Excelente trabajo! Completaste el arte y ordenaste tus ideas.", true); 
-                mejorarMascota(); 
+            if (resuelto) {
+                mostrarMensajeEnPagina("¡Genial! Has conectado todas las piezas.");
+                setTimeout(mejorarMascota, 1500);
             }
         }
 
-        function lanzarRompecabezasVisual(container) {
-            juegoActivoTipo = 'rompecabezas_visual';
-            const dataImagenSeleccionada = bancoImagenesIA[Math.floor(Math.random() * bancoImagenesIA.length)];
-            const textoTema = document.createElement('p');
-            textoTema.innerHTML = `🧩 <strong>Arte de concentración:</strong> Armoniza las piezas dispersas de tipo: <strong>${dataImagenSeleccionada.tipo}</strong>`;
-            container.appendChild(textoTema);
-
-            const filas = 3, columnas = 3;
-            const totalPiezas = filas * columnas;
-            const anchoTotalTablero = 300, altoTotalTablero = 300;
-            const anchoPieza = anchoTotalTablero / columnas, altoPieza = altoTotalTablero / filas;
-
-            const puzzleContainer = document.createElement('div'); puzzleContainer.className = "puzzle-board-container";
-            const board = document.createElement('div'); board.className = "puzzle-slots-grid";
-            board.style.gridTemplateColumns = `repeat(${columnas}, 1fr)`;
-            board.style.width = `${anchoTotalTablero}px`; board.style.height = `${altoTotalTablero}px`;
-
-            const pool = document.createElement('div'); pool.className = "puzzle-pieces-pool";
-            pool.addEventListener('dragover', (e) => e.preventDefault());
-            pool.addEventListener('drop', (e) => {
-                e.preventDefault();
-                if (piezaSeleccionada) { pool.appendChild(piezaSeleccionada); verificarRompecabezas(board, totalPiezas); }
-            });
-
-            let listadoDePiezas = [];
-            for (let i = 0; i < totalPiezas; i++) {
-                const r = Math.floor(i / columnas), c = i % columnas;
-                const slot = document.createElement('div'); slot.className = "puzzle-slot";
-                slot.dataset.index = i; slot.style.width = `${anchoPieza}px`; slot.style.height = `${altoPieza}px`;
-                board.appendChild(slot);
-
-                const pieza = document.createElement('div'); pieza.className = "puzzle-piece-canvas";
-                pieza.style.width = `${anchoPieza - 2}px`; pieza.style.height = `${altoPieza - 2}px`;
-                pieza.style.backgroundImage = `url('${dataImagenSeleccionada.url}')`;
-                pieza.style.backgroundSize = `${anchoTotalTablero}px ${altoTotalTablero}px`;
-                pieza.style.backgroundPosition = `${-(c * anchoPieza)}px ${-(r * altoPieza)}px`;
-                pieza.draggable = true; pieza.dataset.correctIndex = i;
-
-                pieza.addEventListener('dragstart', () => { piezaSeleccionada = pieza; });
-                listadoDePiezas.push(pieza);
-
-                slot.addEventListener('dragover', (e) => e.preventDefault());
-                slot.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    if (piezaSeleccionada && !slot.hasChildNodes()) {
-                        slot.appendChild(piezaSeleccionada); verificarRompecabezas(board, totalPiezas);
-                    }
-                });
+        function activarJuegoPorEmocion(emocion, esAleatorio) {
+            const seccion = document.getElementById('seccion-juego'); seccion.style.display = 'block';
+            if(intervaloRespiracion) clearInterval(intervaloRespiracion);
+            
+            if (esAleatorio) {
+                const juegos = ['respiracion', 'burbujas', 'puzzle'];
+                const juegoRnd = juegos[Math.floor(Math.random() * juegos.length)];
+                if(juegoRnd === 'respiracion') iniciarRespiracionGuiada();
+                else if(juegoRnd === 'burbujas') iniciarExplosionBurbujas();
+                else iniciarRompecabezasIA();
+            } else {
+                if (emocion === 'ansiedad') iniciarRespiracionGuiada();
+                else if (emocion === 'enojo') iniciarExplosionBurbujas();
+                else if (emocion === 'desmotivado' || emocion === 'tristeza') iniciarRompecabezasIA();
+                else {
+                    document.getElementById('juego-titulo-header').innerText = "🌟 ¡Zona de Buenas Vibras!";
+                    document.getElementById('juego-descripcion').innerText = "Te sientes genial hoy. ¡Toma un impulso extra para tu compañero!";
+                    document.getElementById('juego-interactivo').innerHTML = `<button onclick="mostrarMensajeEnPagina('¡Energía positiva absorbida!'); mejorarMascota(); this.disabled=true;" style="padding:15px; font-size:1.2rem; background:#27AE60; color:white; border:none; border-radius:10px; cursor:pointer;">⚡ Enviar Energía a mi Mascota</button>`;
+                }
             }
-            listadoDePiezas.sort(() => Math.random() - 0.5);
-            listadoDePiezas.forEach(p => pool.appendChild(p));
-            puzzleContainer.appendChild(board); puzzleContainer.appendChild(pool); container.appendChild(puzzleContainer);
         }
 
-        function lanzarTriviaDinamica(container) {
-            juegoActivoTipo = 'trivia';
-            const preguntasFailsafe = [
-                { q: "¿Cuál es una forma sana de expresar molestia?", o: ["Hablar con respeto de lo que te incomoda.", "Guardarte el enojo para siempre.", "Gritar fuerte."], c: 0 },
-                { q: "Si un amigo te cuenta que está muy estresado, ¿qué es mejor hacer?", o: ["Decirle que no exagere.", "Escucharle con atención y empatía.", "Cambiar de tema rápido."], c: 1 },
-                { q: "¿Qué ayuda más cuando estás muy desmotivado?", o: ["Forzarte a hacer todo a la vez.", "Tomar un pequeño descanso físico y mental.", "Ver pantallas toda la noche."], c: 1 }
-            ];
-            const datosJuego = preguntasFailsafe[Math.floor(Math.random() * preguntasFailsafe.length)];
-
-            const qText = document.createElement('p'); qText.style.fontWeight = "bold"; qText.innerText = datosJuego.q;
-            container.appendChild(qText);
-
-            datosJuego.o.forEach((opc, idx) => {
-                const btn = document.createElement('button'); btn.innerText = opc;
-                btn.style = "margin:6px; padding:10px; width:85%; background:#e8f4fd; border:2px solid #2F80ED; border-radius:6px; cursor:pointer;";
-                btn.onclick = () => {
-                    if (idx === datosJuego.c) {
-                        btn.style.background = "#27AE60"; btn.style.color = "white";
-                        mostrarMensajeEnPagina("✨ ¡Excelente razonamiento de bienestar!", true);
-                        mejorarMascota(); 
-                    } else {
-                        btn.style.background = "#EB5757"; btn.style.color = "white";
-                        mostrarMensajeEnPagina("Inténtalo de nuevo. ¡Tú puedes analizarlo!", false);
-                    }
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        function lanzarGlobosAleatorios(container) {
-            juegoActivoTipo = 'globos';
-            const txt = document.createElement('p'); txt.innerText = "🎈 ¡Revienta los globos asimétricos para liberar bienestar!";
-            container.appendChild(txt);
-
-            const grid = document.createElement('div'); grid.className = "bubble-grid";
-            const emojis = ["🎈", "🫧", "🌟", "🚀", "🦄", "🌸", "⭐"];
-            const colores = ["#F2994A", "#9B51E0", "#EB5757", "#27AE60", "#2F80ED"];
-            let restantes = 4;
-
-            for (let i = 0; i < 4; i++) {
-                const bubble = document.createElement('div'); bubble.className = "happy-bubble";
-                const tamaño = Math.floor(Math.random() * 41) + 55;
-                const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-                const col = colores[Math.floor(Math.random() * colores.length)];
-
-                bubble.style.width = `${tamaño}px`; bubble.style.height = `${tamaño}px`;
-                bubble.style.backgroundColor = col; bubble.style.fontSize = `${tamaño * 0.45}px`;
-                bubble.innerText = emoji;
-
-                bubble.onclick = () => {
-                    if (!bubble.classList.contains('popped')) {
-                        bubble.classList.add('popped'); restantes--;
-                        if (restantes === 0) { 
-                            mostrarMensajeEnPagina("🌟 ¡Fantástico! Renovaste tu energía por completo.", true); 
-                            mejorarMascota(); 
-                        }
-                    }
-                };
-                grid.appendChild(bubble);
-            }
-            container.appendChild(grid);
-        }
-
-        function lanzarRespiracion(container) {
-            juegoActivoTipo = 'respiracion';
-            const ins = document.createElement('div'); ins.className = "breathing-instruction"; ins.innerText = "¡PREPÁRATE!";
-            const num = document.createElement('div'); num.className = "timer-number"; num.innerText = "4";
-            const barBox = document.createElement('div'); barBox.className = "progress-bar-container";
-            const fill = document.createElement('div'); fill.className = "progress-bar-fill";
-            barBox.appendChild(fill);
-            container.appendChild(ins); container.appendChild(num); container.appendChild(barBox);
-
-            let f = 0, seg = 4;
-            intervaloRespiracion = setInterval(() => {
-                num.innerText = seg; fill.style.width = `${(seg / 4) * 100}%`;
-                ins.innerText = f === 0 ? "💨 INHALA..." : f === 1 ? "🛑 MANTÉN..." : "😮‍💨 EXHALA...";
-                seg--;
-                if(seg < 0) { f = (f + 1) % 3; seg = 4; }
-            }, 1000);
-
-            const btn = document.createElement('button'); btn.innerText = "Me siento mejor";
-            btn.style = "margin-top:10px; padding:8px 15px; cursor:pointer; background:#2F80ED; color:white; border:none; border-radius:5px;";
-            btn.onclick = () => { 
-                clearInterval(intervaloRespiracion); 
-                mostrarMensajeEnPagina("¡Increíble!", true); 
-                mejorarMascota(); 
-            };
-            container.appendChild(btn);
-        }
+        function reiniciarJuegoActual() { if(emocionActual) activarJuegoPorEmocion(emocionActual, false); else activarJuegoPorEmocion('', true); }
+        function cambiarDeJuegoAleatorio() { activarJuegoPorEmocion('', true); }
 
         // ==========================================
         // CEREBRO AVANZADO DE ALEGRIA (NO SE TOCA)
@@ -1136,14 +959,16 @@
             document.getElementById('chat-input').value = texto;
             sendMessage();
         }
+
     </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        // ESTA ES LA LÍNEA QUE ROMPÍA EL CALENDARIO Y YA FUE CORREGIDA (debe decir firebase-firestore.js)
-        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        // IMPORTAMOS TODO LO DE FIRESTORE, INCLUYENDO DOC Y SETDOC
+        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // *** AQUÍ YA ESTÁ TU API KEY EXACTA ***
         const firebaseConfig = {
             apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
             authDomain: "alegria-web-977ea.firebaseapp.com",
@@ -1155,249 +980,189 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
-        const authContainer = document.getElementById('auth-container');
-
+        window.db = getFirestore(app);
         window.usuarioLogueado = null;
-        window.db = db;
-        
-        // Almacenamiento temporal unificado para el mes actual
-        let mapaEmocionesGlobal = {};
 
+        // ==========================================
+        // CEREBRO FIRESTORE PARA MASCOTA
+        // ==========================================
+        window.guardarMascotaBD = async function(datosMascota) {
+            if (window.usuarioLogueado && window.db) {
+                try {
+                    const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
+                    await setDoc(usuarioRef, { mascota: datosMascota }, { merge: true });
+                    console.log("Mascota guardada en la nube ✅");
+                } catch (error) {
+                    console.error("Error subiendo mascota a la nube: ", error);
+                }
+            }
+        };
+
+        window.cargarMascotaBD = async function() {
+            let datosDescargados = null;
+            if (window.usuarioLogueado && window.db) {
+                try {
+                    const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
+                    const docSnap = await getDoc(usuarioRef);
+                    if (docSnap.exists() && docSnap.data().mascota) {
+                        datosDescargados = docSnap.data().mascota;
+                    }
+                } catch(error) {
+                    console.error("Error descargando mascota: ", error);
+                }
+            }
+            // Actualizar la UI
+            if (typeof window.sincronizarMascotaUI === "function") {
+                window.sincronizarMascotaUI(datosDescargados);
+            }
+        };
+
+
+        // ==========================================
+        // CEREBRO FIRESTORE PARA EMOCIONES / CALENDARIO
+        // ==========================================
+        window.guardarEmocionBD = async function(emocionName) {
+            if (!window.usuarioLogueado) return;
+            try {
+                const subcoleccionRef = collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones");
+                await addDoc(subcoleccionRef, {
+                    emocion: emocionName,
+                    fechaFiltro: new Date().toLocaleDateString(),
+                    timestamp: serverTimestamp()
+                });
+                window.cargarHistorialYCalendario(); 
+            } catch (error) { console.error("Error guardando emoción:", error); }
+        };
+
+        window.cargarHistorialYCalendario = async function() {
+            if (!window.usuarioLogueado) return;
+            try {
+                const q = query(collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones"), orderBy("timestamp", "asc"));
+                const querySnapshot = await getDocs(q);
+                
+                const historialPorDia = {};
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const fechaTxt = data.fechaFiltro;
+                    if (!historialPorDia[fechaTxt]) historialPorDia[fechaTxt] = [];
+                    historialPorDia[fechaTxt].push(data.emocion);
+                });
+                dibujarCalendarioUI(historialPorDia);
+            } catch (error) { console.error("Error cargando historial:", error); }
+        };
+
+        function dibujarCalendarioUI(historialPorDia) {
+            const grid = document.getElementById("calendario-contenedor");
+            const tituloMes = document.getElementById("calendario-titulo");
+            const seccionDetalle = document.getElementById("detalle-dia-seccion");
+            const listaEmociones = document.getElementById("detalle-emociones-lista");
+            const textoFechaDetalle = document.getElementById("detalle-fecha-texto");
+
+            if(!grid) return; grid.innerHTML = '';
+            
+            const hoyDate = new Date();
+            const year = hoyDate.getFullYear(); const month = hoyDate.getMonth();
+            const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            
+            tituloMes.innerText = `${nombresMeses[month]} ${year}`;
+            
+            const primerDiaMes = new Date(year, month, 1).getDay();
+            const diasEnMes = new Date(year, month + 1, 0).getDate();
+            const diasVaciios = (primerDiaMes === 0) ? 6 : primerDiaMes - 1;
+
+            for (let i = 0; i < diasVaciios; i++) {
+                const divVacio = document.createElement("div");
+                divVacio.className = "celda-dia vacia"; grid.appendChild(divVacio);
+            }
+
+            for (let dia = 1; dia <= diasEnMes; dia++) {
+                const fechaCeldaStr = new Date(year, month, dia).toLocaleDateString();
+                const celda = document.createElement("div");
+                celda.className = "celda-dia";
+                if (dia === hoyDate.getDate()) celda.classList.add("hoy");
+
+                const numeroDiv = document.createElement("div");
+                numeroDiv.className = "numero-dia"; numeroDiv.innerText = dia;
+                celda.appendChild(numeroDiv);
+
+                const divEmocion = document.createElement("div");
+                divEmocion.className = "emocion-registro";
+                
+                if (historialPorDia[fechaCeldaStr] && historialPorDia[fechaCeldaStr].length > 0) {
+                    const emocionesDia = historialPorDia[fechaCeldaStr];
+                    const ultimaEmocion = emocionesDia[emocionesDia.length - 1];
+                    const dataEmocion = window.configEmociones[ultimaEmocion];
+                    
+                    if (dataEmocion) {
+                        divEmocion.innerText = dataEmocion.emoji;
+                        if (emocionesDia.length > 1) {
+                            const indicador = document.createElement("div");
+                            indicador.className = "indicador-multiples";
+                            indicador.innerText = emocionesDia.length;
+                            celda.appendChild(indicador);
+                        }
+                    }
+                    
+                    celda.onclick = () => {
+                        document.querySelectorAll('.celda-dia').forEach(c => c.classList.remove('seleccionada'));
+                        celda.classList.add('seleccionada');
+                        
+                        textoFechaDetalle.innerText = `Registro del ${dia} de ${nombresMeses[month]}`;
+                        listaEmociones.innerHTML = '';
+                        emocionesDia.forEach(emo => {
+                            const conf = window.configEmociones[emo];
+                            if(conf) {
+                                const b = document.createElement("span");
+                                b.className = "badge-emocion"; b.style.backgroundColor = conf.color;
+                                b.innerText = `${conf.emoji} ${conf.texto}`;
+                                listaEmociones.appendChild(b);
+                            }
+                        });
+                        seccionDetalle.style.display = 'block';
+                    };
+                } else {
+                    celda.onclick = () => {
+                         document.querySelectorAll('.celda-dia').forEach(c => c.classList.remove('seleccionada'));
+                         celda.classList.add('seleccionada');
+                         textoFechaDetalle.innerText = `Registro del ${dia} de ${nombresMeses[month]}`;
+                         listaEmociones.innerHTML = '<span style="color:#888; font-style:italic;">No hay registros este día.</span>';
+                         seccionDetalle.style.display = 'block';
+                    };
+                }
+                
+                celda.appendChild(divEmocion); grid.appendChild(celda);
+            }
+        }
+
+        // ==========================================
+        // OBSERVADOR DE SESIÓN
+        // ==========================================
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 window.usuarioLogueado = user;
+                const sidebarInfo = document.querySelector('.auth-info');
+                sidebarInfo.innerHTML = `
+                    <span style="font-size: 14px; font-weight: bold; color: white;">Cuenta Activa</span>
+                    <span style="font-size: 11px; color: #BDC3C7;">Sincronizado</span>
+                `;
                 document.getElementById('btn-sidebar-diario').style.display = 'flex';
                 
-                authContainer.innerHTML = `
-                    <div class="auth-profile" style="cursor: default; text-decoration: none;">
-                        <img src="${user.photoURL || 'https://via.placeholder.com/35'}" class="auth-avatar" alt="Avatar">
-                        <div class="auth-info">
-                            <span style="font-size: 13px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; color: white;">${user.displayName || 'Usuario'}</span>
-                            <button id="logout-btn" style="background: none; border: none; color: #EB5757; font-size: 11px; cursor: pointer; padding: 0; text-align: left; margin-top: 2px;">Cerrar sesión</button>
-                        </div>
-                    </div>
-                `;
-
-                document.getElementById('logout-btn').addEventListener('click', () => {
-                    signOut(auth).then(() => { window.location.reload(); });
-                });
-
-                // Carga la mascota y luego el historial del calendario
-                iniciarSistemaMascota().then(() => {
+                // DESCARGAMOS PRIMERO LA MASCOTA LUEGO EL CALENDARIO
+                window.cargarMascotaBD().then(() => {
                     window.cargarHistorialYCalendario();
                 });
+                
             } else {
                 window.usuarioLogueado = null;
                 document.getElementById('btn-sidebar-diario').style.display = 'none';
                 
-                authContainer.innerHTML = `
-                    <a href="login.html" class="auth-profile">
-                        <div class="sidebar-icon" style="margin:0; color: white;">👤</div>
-                        <div class="auth-info">
-                            <span style="font-size: 14px; font-weight: bold; color: white;">Iniciar Sesión</span>
-                        </div>
-                    </a>
-                `;
-                
-                iniciarSistemaMascota().then(() => {
-                    window.cargarHistorialYCalendario();
-                });
+                // Si no hay usuario, iniciamos con la mascota local
+                if (typeof window.sincronizarMascotaUI === "function") {
+                    window.sincronizarMascotaUI(null);
+                }
             }
         });
 
-        window.guardarEmocionBD = async function(emocion) {
-            const hoy = new Date();
-            const claveLocal = `${hoy.getFullYear()}-${hoy.getMonth() + 1}-${hoy.getDate()}`;
-
-            if (window.usuarioLogueado && window.db) {
-                try {
-                    const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                    await addDoc(collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones"), {
-                        emocion: emocion,
-                        fecha: serverTimestamp(),
-                        fechaLocalStr: claveLocal,
-                        timestampCreado: Date.now()
-                    });
-                    console.log("Emoción sincronizada con Google.");
-                } catch (error) {
-                    console.error("Error guardando tu emoción en la nube: ", error);
-                }
-            } else {
-                let historialLocal = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
-                if (!historialLocal[claveLocal]) historialLocal[claveLocal] = [];
-                historialLocal[claveLocal].push(emocion);
-                localStorage.setItem('alegria_emociones_local_list', JSON.stringify(historialLocal));
-            }
-            
-            if (typeof window.cargarHistorialYCalendario === "function") {
-                window.cargarHistorialYCalendario();
-            }
-        };
-
-        window.cargarHistorialYCalendario = async function() {
-            if (!window.db) {
-                console.log("Firebase no está listo aún. Usando base de datos local temporal...");
-                let emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
-                window.mapaEmocionesGlobal = emocionesPorDia;
-                if (typeof window.generarCalendarioUI === "function") {
-                    window.generarCalendarioUI(emocionesPorDia);
-                }
-                return;
-            }
-
-            let emocionesPorDia = {};
-
-            if (window.usuarioLogueado && window.db) {
-                try {
-                    const { collection, query, orderBy, getDocs, limit } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                    const consulta = query(collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones"), orderBy("fecha", "asc"), limit(200));
-                    const resultados = await getDocs(consulta);
-
-                    resultados.forEach((doc) => {
-                        const data = doc.data();
-                        let clave = null;
-
-                        if (data.fechaLocalStr) {
-                            clave = data.fechaLocalStr;
-                        } else if (data.fecha) {
-                            const d = data.fecha.toDate();
-                            clave = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-                        }
-
-                        if (clave) {
-                            if (!emocionesPorDia[clave]) emocionesPorDia[clave] = [];
-                            emocionesPorDia[clave].push(data.emocion);
-                        }
-                    });
-                    console.log("Historial descargado completo desde Google.");
-                } catch (error) {
-                    console.error("Error al obtener documentos remotos: ", error);
-                    emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
-                }
-            } else {
-                emocionesPorDia = JSON.parse(localStorage.getItem('alegria_emociones_local_list')) || {};
-            }
-
-            window.mapaEmocionesGlobal = emocionesPorDia;
-            if (typeof window.generarCalendarioUI === "function") {
-                window.generarCalendarioUI(emocionesPorDia);
-            }
-
-            const claveHoy = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
-            if (typeof window.mostrarDetalleDia === "function") {
-                window.mostrarDetalleDia(claveHoy, new Date().getDate());
-            }
-        };
-
-        window.generarCalendarioUI = function(emocionesPorDia) {
-            const fechaActual = new Date();
-            const anio = fechaActual.getFullYear();
-            const mes = fechaActual.getMonth();
-            const diaHoy = fechaActual.getDate();
-
-            const primerDiaMes = new Date(anio, mes, 1).getDay();
-            const totalDiasMes = new Date(anio, mes + 1, 0).getDate();
-
-            const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            const mesAnio = `${nombresMeses[mes]} ${anio}`;
-            
-            const calTitulo = document.getElementById('calendario-titulo');
-            if (calTitulo) {
-                calTitulo.innerText = mesAnio.charAt(0).toUpperCase() + mesAnio.slice(1);
-            }
-
-            const contenedorDias = document.getElementById('calendario-contenedor');
-            if (!contenedorDias) return;
-            contenedorDias.innerHTML = '';
-
-            const desp = primerDiaMes === 0 ? 6 : primerDiaMes - 1;
-            for (let i = 0; i < desp; i++) {
-                const celdaVacia = document.createElement('div');
-                celdaVacia.classList.add('celda-dia', 'vacia');
-                contenedorDias.appendChild(celdaVacia);
-            }
-
-            for (let d = 1; d <= totalDiasMes; d++) {
-                const celdaDia = document.createElement('div');
-                celdaDia.classList.add('celda-dia');
-                
-                const numDia = document.createElement('div');
-                numDia.className = 'numero-dia';
-                numDia.innerText = d;
-                celdaDia.appendChild(numDia);
-
-                const claveDia = `${anio}-${mes + 1}-${d}`;
-                if (emocionesPorDia && emocionesPorDia[claveDia] && emocionesPorDia[claveDia].length > 0) {
-                    const listaEmociones = emocionesPorDia[claveDia];
-                    const ultimaEmocion = listaEmociones[listaEmociones.length - 1];
-                    const configE = window.configEmociones[ultimaEmocion];
-
-                    if (configE) {
-                        const divReg = document.createElement('div');
-                        divReg.className = 'emocion-registro';
-                        divReg.innerHTML = `<span style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">${configE.emoji}</span>`;
-                        celdaDia.appendChild(divReg);
-                        celdaDia.style.backgroundColor = configE.color + "15"; 
-                        celdaDia.style.borderColor = configE.color;
-                    }
-
-                    if (listaEmociones.length > 1) {
-                        const indMultiples = document.createElement('div');
-                        indMultiples.className = 'indicador-multiples';
-                        indMultiples.innerText = listaEmociones.length;
-                        celdaDia.appendChild(indMultiples);
-                    }
-                }
-
-                if (d === diaHoy) {
-                    celdaDia.classList.add('hoy');
-                }
-
-                celdaDia.addEventListener('click', () => {
-                    const celdas = contenedorDias.querySelectorAll('.celda-dia');
-                    celdas.forEach(c => c.classList.remove('seleccionada'));
-                    celdaDia.classList.add('seleccionada');
-                    if (typeof window.mostrarDetalleDia === "function") {
-                        window.mostrarDetalleDia(claveDia, d);
-                    }
-                });
-
-                contenedorDias.appendChild(celdaDia);
-            }
-        };
-
-        // ==========================================
-        // MOSTRAR DETALLE DEL DÍA (CRONOLÓGICO)
-        // ==========================================
-        window.mostrarDetalleDia = function(claveDia, numeroDia) {
-            const seccionDetalle = document.getElementById('detalle-dia-seccion');
-            const contenedorLista = document.getElementById('detalle-emociones-lista');
-            const textoFecha = document.getElementById('detalle-fecha-texto');
-
-            if (seccionDetalle) seccionDetalle.style.display = "block";
-            if (contenedorLista) contenedorLista.innerHTML = "";
-            if (textoFecha) textoFecha.innerText = `Historial del día ${numeroDia} de este mes:`;
-
-            const emocionesDelDia = window.mapaEmocionesGlobal ? window.mapaEmocionesGlobal[claveDia] : null;
-
-            if (emocionesDelDia && emocionesDelDia.length > 0) {
-                emocionesDelDia.forEach((emocionStr) => {
-                    const configE = window.configEmociones ? window.configEmociones[emocionStr] : null;
-                    if (configE) {
-                        const badge = document.createElement('div');
-                        badge.className = 'badge-emocion';
-                        badge.style.backgroundColor = configE.color;
-                        badge.innerHTML = `<span>${configE.emoji}</span> <span>${configE.texto}</span>`;
-                        contenedorLista.appendChild(badge);
-                    }
-                });
-            } else {
-                if (contenedorLista) {
-                    contenedorLista.innerHTML = `<span style="color: #888; font-style: italic; font-size: 0.9rem;">No registraste emociones este día.</span>`;
-                }
-            }
-        };
     </script>
 </body>
 </html>
