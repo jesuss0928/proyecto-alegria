@@ -995,6 +995,24 @@
         const auth = getAuth(app);
         window.db = getFirestore(app);
         window.usuarioLogueado = null;
+<script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, getDocs, serverTimestamp, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
+            authDomain: "alegria-web-977ea.firebaseapp.com",
+            projectId: "alegria-web-977ea",
+            storageBucket: "alegria-web-977ea.firebasestorage.app",
+            messagingSenderId: "561418892075",
+            appId: "1:561418892075:web:133a1ff3948b86a4e88b6e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        window.db = getFirestore(app);
+        window.usuarioLogueado = null;
 
         // ==========================================
         // FUNCIONES HOISTED (A PRUEBA DE ERRORES)
@@ -1004,10 +1022,7 @@
                 try {
                     const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
                     await setDoc(usuarioRef, { mascota: datosMascota }, { merge: true });
-                    console.log("Mascota guardada en la nube ✅");
-                } catch (error) {
-                    console.error("Error subiendo mascota a la nube: ", error);
-                }
+                } catch (error) { console.error("Error subiendo mascota a la nube: ", error); }
             }
         }
         window.guardarMascotaBD = guardarMascotaBD;
@@ -1021,9 +1036,7 @@
                     if (docSnap.exists() && docSnap.data().mascota) {
                         datosDescargados = docSnap.data().mascota;
                     }
-                } catch(error) {
-                    console.error("Error descargando mascota: ", error);
-                }
+                } catch(error) { console.error("Error descargando mascota: ", error); }
             }
             if (typeof window.sincronizarMascotaUI === "function") {
                 window.sincronizarMascotaUI(datosDescargados);
@@ -1040,7 +1053,9 @@
                     fechaFiltro: new Date().toLocaleDateString(),
                     timestamp: serverTimestamp()
                 });
-                cargarHistorialYCalendario(); 
+                if (typeof window.cargarHistorialYCalendario === "function") {
+                    window.cargarHistorialYCalendario(); 
+                }
             } catch (error) { console.error("Error guardando emoción:", error); }
         }
         window.guardarEmocionBD = guardarEmocionBD;
@@ -1076,7 +1091,7 @@
             const year = hoyDate.getFullYear(); const month = hoyDate.getMonth();
             const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
             
-            tituloMes.innerText = `${nombresMeses[month]} ${year}`;
+            if(tituloMes) tituloMes.innerText = `${nombresMeses[month]} ${year}`;
             
             const primerDiaMes = new Date(year, month, 1).getDay();
             const diasEnMes = new Date(year, month + 1, 0).getDate();
@@ -1103,7 +1118,7 @@
                 if (historialPorDia[fechaCeldaStr] && historialPorDia[fechaCeldaStr].length > 0) {
                     const emocionesDia = historialPorDia[fechaCeldaStr];
                     const ultimaEmocion = emocionesDia[emocionesDia.length - 1];
-                    const dataEmocion = window.configEmociones[ultimaEmocion];
+                    const dataEmocion = window.configEmociones ? window.configEmociones[ultimaEmocion] : null;
                     
                     if (dataEmocion) {
                         divEmocion.innerText = dataEmocion.emoji;
@@ -1119,26 +1134,28 @@
                         document.querySelectorAll('.celda-dia').forEach(c => c.classList.remove('seleccionada'));
                         celda.classList.add('seleccionada');
                         
-                        textoFechaDetalle.innerText = `Registro del ${dia} de ${nombresMeses[month]}`;
-                        listaEmociones.innerHTML = '';
-                        emocionesDia.forEach(emo => {
-                            const conf = window.configEmociones[emo];
-                            if(conf) {
-                                const b = document.createElement("span");
-                                b.className = "badge-emocion"; b.style.backgroundColor = conf.color;
-                                b.innerText = `${conf.emoji} ${conf.texto}`;
-                                listaEmociones.appendChild(b);
-                            }
-                        });
-                        seccionDetalle.style.display = 'block';
+                        if(textoFechaDetalle) textoFechaDetalle.innerText = `Registro del ${dia} de ${nombresMeses[month]}`;
+                        if(listaEmociones) {
+                            listaEmociones.innerHTML = '';
+                            emocionesDia.forEach(emo => {
+                                const conf = window.configEmociones[emo];
+                                if(conf) {
+                                    const b = document.createElement("span");
+                                    b.className = "badge-emocion"; b.style.backgroundColor = conf.color;
+                                    b.innerText = `${conf.emoji} ${conf.texto}`;
+                                    listaEmociones.appendChild(b);
+                                }
+                            });
+                        }
+                        if(seccionDetalle) seccionDetalle.style.display = 'block';
                     };
                 } else {
                     celda.onclick = () => {
                         document.querySelectorAll('.celda-dia').forEach(c => c.classList.remove('seleccionada'));
                         celda.classList.add('seleccionada');
-                        textoFechaDetalle.innerText = `Registro del ${dia} de ${nombresMeses[month]}`;
-                        listaEmociones.innerHTML = '<span style="color:#888; font-style:italic;">No hay registros este día.</span>';
-                        seccionDetalle.style.display = 'block';
+                        if(textoFechaDetalle) textoFechaDetalle.innerText = `Registro del ${dia} de ${nombresMeses[month]}`;
+                        if(listaEmociones) listaEmociones.innerHTML = '<span style="color:#888; font-style:italic;">No hay registros este día.</span>';
+                        if(seccionDetalle) seccionDetalle.style.display = 'block';
                     };
                 }
                 
@@ -1147,11 +1164,13 @@
         }
 
         // ==========================================
-        // OBSERVADOR DE SESIÓN
+        // OBSERVADOR DE SESIÓN (CORREGIDO A PRUEBA DE BALAS)
         // ==========================================
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 window.usuarioLogueado = user;
+                
+                // 1. Verificamos que el contenedor de perfil exista antes de modificarlo
                 const sidebarInfo = document.querySelector('.auth-info');
                 if (sidebarInfo) {
                     sidebarInfo.innerHTML = `
@@ -1159,15 +1178,28 @@
                         <span style="font-size: 11px; color: #BDC3C7;">Sincronizado</span>
                     `;
                 }
-                document.getElementById('btn-sidebar-diario').style.display = 'flex';
                 
-                cargarMascotaBD().then(() => {
-                    cargarHistorialYCalendario();
-                }).catch(err => console.error("Error en flujo de sesión:", err));
+                // 2. Verificamos que el botón del diario exista antes de mostrarlo
+                const btnDiario = document.getElementById('btn-sidebar-diario');
+                if (btnDiario) {
+                    btnDiario.style.display = 'flex';
+                }
+                
+                // 3. Cargamos los datos
+                if (typeof window.cargarMascotaBD === "function") {
+                    window.cargarMascotaBD().then(() => {
+                        if (typeof window.cargarHistorialYCalendario === "function") {
+                            window.cargarHistorialYCalendario();
+                        }
+                    }).catch(err => console.error("Error en flujo de sesión:", err));
+                }
                 
             } else {
                 window.usuarioLogueado = null;
-                document.getElementById('btn-sidebar-diario').style.display = 'none';
+                const btnDiario = document.getElementById('btn-sidebar-diario');
+                if (btnDiario) {
+                    btnDiario.style.display = 'none';
+                }
                 
                 if (typeof window.sincronizarMascotaUI === "function") {
                     window.sincronizarMascotaUI(null);
