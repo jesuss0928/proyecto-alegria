@@ -573,7 +573,7 @@
         // ==========================================
         const MAX_UPGRADES_DIA = 3;
         const tiposMascotas = {
-            planta: { nombre: "Planta de Paz", tipoIcon: "🌿 Naturaleza", etapas: ["🌱", "🌿", "🌱+🍀", "🌳", "✨🌳✨"] },
+            planta: { nombre: "Planta de Paz", tipoIcon: "🌿 Naturaleza", etapas: ["🌱", "🌿", "🪴", "🌳", "✨🌳✨"] },
             perro: { nombre: "Perrito Fiel", tipoIcon: "🐾 Lealtad", etapas: ["🦴", "🐕‍🦺", "🐕", "🐩", "✨🐶✨"] },
             gato: { nombre: "Gatito Zen", tipoIcon: "🌙 Misterio", etapas: ["🥛", "🐈‍⬛", "🐈", "🐅", "✨🐱✨"] },
             loro: { nombre: "Loro Sabio", tipoIcon: "🦜 Inteligencia", etapas: ["🥚", "🐣", "🐥", "🦜", "✨🐦✨"] }
@@ -980,10 +980,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        // IMPORTAMOS TODO LO DE FIRESTORE, INCLUYENDO DOC Y SETDOC
-        import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, orderBy, getDocs, serverTimestamp, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // API KEY EXACTA 
         const firebaseConfig = {
             apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
             authDomain: "alegria-web-977ea.firebaseapp.com",
@@ -999,9 +997,9 @@
         window.usuarioLogueado = null;
 
         // ==========================================
-        // CEREBRO FIRESTORE PARA MASCOTA
+        // FUNCIONES HOISTED (A PRUEBA DE ERRORES)
         // ==========================================
-        window.guardarMascotaBD = async function(datosMascota) {
+        async function guardarMascotaBD(datosMascota) {
             if (window.usuarioLogueado && window.db) {
                 try {
                     const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
@@ -1011,9 +1009,10 @@
                     console.error("Error subiendo mascota a la nube: ", error);
                 }
             }
-        };
+        }
+        window.guardarMascotaBD = guardarMascotaBD;
 
-        window.cargarMascotaBD = async function() {
+        async function cargarMascotaBD() {
             let datosDescargados = null;
             if (window.usuarioLogueado && window.db) {
                 try {
@@ -1026,16 +1025,13 @@
                     console.error("Error descargando mascota: ", error);
                 }
             }
-            // Actualizar la UI
             if (typeof window.sincronizarMascotaUI === "function") {
                 window.sincronizarMascotaUI(datosDescargados);
             }
-        };
+        }
+        window.cargarMascotaBD = cargarMascotaBD;
 
-        // ==========================================
-        // CEREBRO FIRESTORE PARA EMOCIONES / CALENDARIO
-        // ==========================================
-        window.guardarEmocionBD = async function(emocionName) {
+        async function guardarEmocionBD(emocionName) {
             if (!window.usuarioLogueado) return;
             try {
                 const subcoleccionRef = collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones");
@@ -1044,11 +1040,12 @@
                     fechaFiltro: new Date().toLocaleDateString(),
                     timestamp: serverTimestamp()
                 });
-                window.cargarHistorialYCalendario(); 
+                cargarHistorialYCalendario(); 
             } catch (error) { console.error("Error guardando emoción:", error); }
-        };
+        }
+        window.guardarEmocionBD = guardarEmocionBD;
 
-        window.cargarHistorialYCalendario = async function() {
+        async function cargarHistorialYCalendario() {
             if (!window.usuarioLogueado) return;
             try {
                 const q = query(collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones"), orderBy("timestamp", "asc"));
@@ -1063,7 +1060,8 @@
                 });
                 dibujarCalendarioUI(historialPorDia);
             } catch (error) { console.error("Error cargando historial:", error); }
-        };
+        }
+        window.cargarHistorialYCalendario = cargarHistorialYCalendario;
 
         function dibujarCalendarioUI(historialPorDia) {
             const grid = document.getElementById("calendario-contenedor");
@@ -1136,11 +1134,11 @@
                     };
                 } else {
                     celda.onclick = () => {
-                         document.querySelectorAll('.celda-dia').forEach(c => c.classList.remove('seleccionada'));
-                         celda.classList.add('seleccionada');
-                         textoFechaDetalle.innerText = `Registro del ${dia} de ${nombresMeses[month]}`;
-                         listaEmociones.innerHTML = '<span style="color:#888; font-style:italic;">No hay registros este día.</span>';
-                         seccionDetalle.style.display = 'block';
+                        document.querySelectorAll('.celda-dia').forEach(c => c.classList.remove('seleccionada'));
+                        celda.classList.add('seleccionada');
+                        textoFechaDetalle.innerText = `Registro del ${dia} de ${nombresMeses[month]}`;
+                        listaEmociones.innerHTML = '<span style="color:#888; font-style:italic;">No hay registros este día.</span>';
+                        seccionDetalle.style.display = 'block';
                     };
                 }
                 
@@ -1155,28 +1153,27 @@
             if (user) {
                 window.usuarioLogueado = user;
                 const sidebarInfo = document.querySelector('.auth-info');
-                sidebarInfo.innerHTML = `
-                    <span style="font-size: 14px; font-weight: bold; color: white;">Cuenta Activa</span>
-                    <span style="font-size: 11px; color: #BDC3C7;">Sincronizado</span>
-                `;
+                if (sidebarInfo) {
+                    sidebarInfo.innerHTML = `
+                        <span style="font-size: 14px; font-weight: bold; color: white;">Cuenta Activa</span>
+                        <span style="font-size: 11px; color: #BDC3C7;">Sincronizado</span>
+                    `;
+                }
                 document.getElementById('btn-sidebar-diario').style.display = 'flex';
                 
-                // DESCARGAMOS PRIMERO LA MASCOTA LUEGO EL CALENDARIO
-                window.cargarMascotaBD().then(() => {
-                    window.cargarHistorialYCalendario();
-                });
+                cargarMascotaBD().then(() => {
+                    cargarHistorialYCalendario();
+                }).catch(err => console.error("Error en flujo de sesión:", err));
                 
             } else {
                 window.usuarioLogueado = null;
                 document.getElementById('btn-sidebar-diario').style.display = 'none';
                 
-                // Si no hay usuario, iniciamos con la mascota local
                 if (typeof window.sincronizarMascotaUI === "function") {
                     window.sincronizarMascotaUI(null);
                 }
             }
         });
-
     </script>
 </body>
 </html>
