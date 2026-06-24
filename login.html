@@ -100,12 +100,26 @@
     </style>
 </head>
 <body>
-<!-- Cargamos los scripts necesarios de Firebase de forma directa -->
+
+    <div class="tarjeta-login">
+        <h2>Hola de nuevo 👋</h2>
+        <p>Inicia sesión en <b>ALEGRIA</b> para guardar tu progreso, tus reflexiones y seguir justo donde lo dejaste.</p>
+
+        <button class="btn-social btn-google" id="btn-google-login">
+            Continuar con Google
+        </button>
+        <button class="btn-social btn-facebook">
+            Continuar con Facebook
+        </button>
+
+        <a href="index.html" class="btn-volver">Volver al chat sin registrarme</a>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Tus credenciales sacadas directamente de tu consola de Firebase
+        // Tus credenciales de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
             authDomain: "alegria-web-977ea.firebaseapp.com",
@@ -120,38 +134,28 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // Buscamos el boton de Google en tu pantalla y le damos vida
-        document.querySelector('.btn-google').addEventListener('click', () => {
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    // El usuario inicio sesion con exito
-                    const user = result.user;
-                    alert(`¡Bienvenido/a de nuevo, ${user.displayName}! Tu sesión está guardada.`);
-                    
-                    // Lo redirigimos de vuelta al chat principal
-                    window.location.href = "index.html";
-                })
-                .catch((error) => {
-                    console.error("Error al iniciar sesión:", error);
-                    alert("Ocurrió un inconveniente al conectar con Google. Inténtalo de nuevo.");
-                });
+        // 1. OBSERVADOR DE SESIÓN: Si detecta que ya iniciaste sesión, te lleva al inicio de inmediato.
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.location.href = "index.html";
+            }
         });
+
+        // 2. ACCIÓN DE CLIC: Buscamos el boton de Google y abrimos la ventana
+        const botonGoogle = document.getElementById('btn-google-login');
+        if (botonGoogle) {
+            botonGoogle.addEventListener('click', () => {
+                signInWithPopup(auth, provider)
+                    .then((result) => {
+                        // Si es exitoso, el onAuthStateChanged de arriba hará la redirección automática
+                        console.log("Sesión exitosa con:", result.user.displayName);
+                    })
+                    .catch((error) => {
+                        console.error("Error al iniciar sesión:", error);
+                        alert("Ocurrió un inconveniente al conectar con Google. Inténtalo de nuevo.");
+                    });
+            });
+        }
     </script>
-    <div class="tarjeta-login">
-        <h2>Hola de nuevo 👋</h2>
-        <p>Inicia sesión en <b>ALEGRIA</b> para guardar tu progreso, tus reflexiones y seguir justo donde lo dejaste.</p>
-
-        <!-- Botones -->
-        <button class="btn-social btn-google">
-            Continuar con Google
-        </button>
-        <button class="btn-social btn-facebook">
-            Continuar con Facebook
-        </button>
-
-        <!-- Enlace para volver -->
-        <a href="index.html" class="btn-volver">Volver al chat sin registrarme</a>
-    </div>
-
 </body>
 </html>
