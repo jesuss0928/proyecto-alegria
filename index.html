@@ -388,6 +388,7 @@
 </head>
 <body>
 
+    <!-- BARRA LATERAL DINÁMICA (SIDEBAR) -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="sidebar-logo-text">Alegría</div>
@@ -405,6 +406,7 @@
             </div>
         </div>
 
+        <!-- FOOTER DEL SIDEBAR -->
         <div class="sidebar-footer">
             <div id="auth-container">
                 <a href="login.html" class="auth-profile">
@@ -417,6 +419,7 @@
         </div>
     </nav>
 
+    <!-- MASCOTA VIRTUAL FLOTANTE -->
     <div id="mascota-virtual">
         <div id="mascota-emoji">🌱</div>
         <div id="mascota-texto">Mi Compañero</div>
@@ -426,6 +429,7 @@
         <div id="mascota-limite-texto">0/3 Hoy</div>
     </div>
 
+    <!-- MODAL GALERÍA -->
     <div id="modal-galeria" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
@@ -440,6 +444,7 @@
         </div>
     </div>
 
+    <!-- MODAL DIARIO EMOCIONAL -->
     <div id="modal-diario" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header" style="background: var(--secondary-color);">
@@ -461,6 +466,7 @@
         </div>
     </div>
 
+    <!-- MODAL SELECTOR DE MASCOTA -->
     <div id="modal-selector-mascota">
         <div class="selector-content">
             <h2 style="color: var(--happy-color); margin-top:0;">¡Felicidades! 🎉</h2>
@@ -474,12 +480,14 @@
         </div>
     </div>
 
+    <!-- CONTENIDO PRINCIPAL -->
     <header class="hero">
         <h1>Orientación y Salud Mental para Adolescentes</h1>
         <p>Tu bienestar emocional es nuestra prioridad.</p>
     </header>
 
     <div class="container">
+        <!-- SECCIÓN DE EMOCIONES -->
         <section class="interactive-section">
             <h2>¿Cómo te sientes en este momento?</h2>
             <div class="emotion-buttons">
@@ -496,6 +504,7 @@
                 <ul id="advice-list"></ul>
             </div>
 
+            <!-- Zona de Juegos -->
             <div id="seccion-juego">
                 <h3 id="juego-titulo-header" style="color: #2F80ED; margin-top: 0;">🎯 ¡Zona Interactiva de Bienestar!</h3>
                 <p id="juego-descripcion" style="color: #4F4F4F; margin-bottom: 15px;"></p>
@@ -508,6 +517,7 @@
             </div>
         </section>
 
+        <!-- ZONA SOS -->
         <section class="sos-section">
             <h2>🚨 Zona de Ayuda Inmediata</h2>
             <p><strong>No estás solo.</strong> Profesionales capacitados listos para escucharte <strong>gratis y de forma anónima</strong>.</p>
@@ -523,6 +533,7 @@
             </div>
         </section>
 
+        <!-- SECCIÓN DE PROBLEMA (Estadísticas) -->
         <section class="problem-section">
             <h2>El Reto: Bajo acceso a orientación</h2>
             <div class="stats-grid">
@@ -538,6 +549,7 @@
         </section>
     </div>
 
+    <!-- EL CHAT WIDGET DE ALEGRIA -->
     <div id="chat-widget">
         <button id="chat-button" onclick="toggleChat()">💬</button>
         <div id="chat-window">
@@ -562,6 +574,7 @@
         </div>
     </div>
 
+    <!-- SCRIPTS DE UI Y MASCOTA -->
     <script>
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('expanded'); document.body.classList.toggle('sidebar-expanded'); }
         function abrirModal(id) { document.getElementById(id).style.display = 'flex'; }
@@ -977,9 +990,10 @@
 
     </script>
 
+    <!-- FIREBASE MODULE (AHORA MANEJA MASCOTA Y CALENDARIO JUNTOS) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, orderBy, getDocs, serverTimestamp, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // *** AQUÍ YA ESTÁ TU API KEY EXACTA ***
@@ -1147,19 +1161,32 @@
         }
 
         // ==========================================
-        // OBSERVADOR DE SESIÓN (CORREGIDO A PRUEBA DE BALAS)
+        // OBSERVADOR DE SESIÓN (CORREGIDO)
         // ==========================================
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 window.usuarioLogueado = user;
                 
-                // 1. Verificamos que el contenedor de perfil exista antes de modificarlo
-                const sidebarInfo = document.querySelector('.auth-info');
-                if (sidebarInfo) {
-                    sidebarInfo.innerHTML = `
-                        <span style="font-size: 14px; font-weight: bold; color: white;">Cuenta Activa</span>
-                        <span style="font-size: 11px; color: #BDC3C7;">Sincronizado</span>
+                // 1. Transformamos el botón para que ya no te envíe al login y puedas cerrar sesión
+                const authContainer = document.getElementById('auth-container');
+                if (authContainer) {
+                    authContainer.innerHTML = `
+                        <div class="auth-profile" style="cursor: default;">
+                            <div class="sidebar-icon" style="margin:0; color: #27AE60;">✓</div>
+                            <div class="auth-info" style="display: flex; flex-direction: column;">
+                                <span style="font-size: 14px; font-weight: bold; color: white;">Cuenta Activa</span>
+                                <button id="logout-btn" style="background:none; border:none; color:#EB5757; cursor:pointer; padding:0; text-align:left; font-size:12px; margin-top:3px;">Cerrar sesión</button>
+                            </div>
+                        </div>
                     `;
+                    
+                    // Le damos vida al botón de cerrar sesión
+                    const logoutBtn = document.getElementById('logout-btn');
+                    if (logoutBtn) {
+                        logoutBtn.addEventListener('click', () => {
+                            signOut(auth).then(() => window.location.reload());
+                        });
+                    }
                 }
                 
                 // 2. Verificamos que el botón del diario exista antes de mostrarlo
@@ -1179,6 +1206,20 @@
                 
             } else {
                 window.usuarioLogueado = null;
+                
+                // Si NO hay sesión, devolvemos el enlace para ir a iniciar sesión
+                const authContainer = document.getElementById('auth-container');
+                if (authContainer) {
+                    authContainer.innerHTML = `
+                        <a href="login.html" class="auth-profile">
+                            <div class="sidebar-icon" style="margin:0; color: white;">👤</div>
+                            <div class="auth-info">
+                                <span style="font-size: 14px; font-weight: bold; color: white;">Iniciar Sesión</span>
+                            </div>
+                        </a>
+                    `;
+                }
+
                 const btnDiario = document.getElementById('btn-sidebar-diario');
                 if (btnDiario) {
                     btnDiario.style.display = 'none';
