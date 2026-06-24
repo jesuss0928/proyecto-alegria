@@ -982,24 +982,7 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, orderBy, getDocs, serverTimestamp, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
-            authDomain: "alegria-web-977ea.firebaseapp.com",
-            projectId: "alegria-web-977ea",
-            storageBucket: "alegria-web-977ea.firebasestorage.app",
-            messagingSenderId: "561418892075",
-            appId: "1:561418892075:web:133a1ff3948b86a4e88b6e"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        window.db = getFirestore(app);
-        window.usuarioLogueado = null;
-<script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, getDocs, serverTimestamp, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+        // *** AQUÍ YA ESTÁ TU API KEY EXACTA ***
         const firebaseConfig = {
             apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
             authDomain: "alegria-web-977ea.firebaseapp.com",
