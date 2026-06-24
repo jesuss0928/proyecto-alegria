@@ -586,7 +586,7 @@
         // ==========================================
         const MAX_UPGRADES_DIA = 3;
         const tiposMascotas = {
-            planta: { nombre: "Planta de Paz", tipoIcon: "🌿 Naturaleza", etapas: ["🌱", "🌿", "🪴", "🌳", "✨🌳✨"] },
+            planta: { nombre: "Planta de Paz", tipoIcon: "🌿 Naturaleza", etapas: ["🌱", "🌿", "🌾", "🌳", "✨🌳✨"] },
             perro: { nombre: "Perrito Fiel", tipoIcon: "🐾 Lealtad", etapas: ["🦴", "🐕‍🦺", "🐕", "🐩", "✨🐶✨"] },
             gato: { nombre: "Gatito Zen", tipoIcon: "🌙 Misterio", etapas: ["🥛", "🐈‍⬛", "🐈", "🐅", "✨🐱✨"] },
             loro: { nombre: "Loro Sabio", tipoIcon: "🦜 Inteligencia", etapas: ["🥚", "🐣", "🐥", "🦜", "✨🐦✨"] }
@@ -600,11 +600,11 @@
             logros: []
         };
 
-        // Esta función se llama desde Firebase cuando se descarga la mascota
+        // Esta función q llama desde Firebase cuando se descarga la mascota
         window.sincronizarMascotaUI = function(datosRemotos) {
             const hoy = new Date().toLocaleDateString();
             
-            // Priorizamos la nube, si no hay nube, usamos memoria local
+            // Priorizar la nube, si no hay nube usamos memoria local
             if (datosRemotos) {
                 datosProgreso = datosRemotos;
             } else {
@@ -996,7 +996,7 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, orderBy, getDocs, serverTimestamp, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // *** AQUÍ YA ESTÁ TU API KEY EXACTA ***
+        // ***  API KEY EXACTA **
         const firebaseConfig = {
             apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
             authDomain: "alegria-web-977ea.firebaseapp.com",
