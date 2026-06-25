@@ -348,24 +348,24 @@
         .timer-number { font-size: 2.8rem; font-weight: bold; color: #2F80ED; }
         .breathing-instruction { font-size: 1.3rem; font-weight: bold; }
         
-        /* GLOBO CSS ACTUALIZADO PARA QUITAR EL LAG */
+        /* GLOBO CSS ACTUALIZADO: EFECTO EXPLOSIÓN VISIBLE PERO INSTANTÁNEO */
         .bubble-grid { display: flex; gap: 20px; justify-content: center; align-items: center; margin: 25px 0; flex-wrap: wrap; }
         .happy-bubble { 
             border-radius: 50%; display: flex; align-items: center; justify-content: center; 
             cursor: pointer; color: white; box-shadow: 0 6px 12px rgba(0,0,0,0.15); 
-            user-select: none; touch-action: none; /* Previene retrasos por scroll en móviles */
+            user-select: none; touch-action: none; 
             animation: floatBubble 3s ease-in-out infinite alternate; 
         }
         @keyframes floatBubble { from { transform: translateY(0px); } to { transform: translateY(-8px); } }
         
         .happy-bubble.popped {
-            animation: popAnimation 0.1s ease-out forwards; /* Más rápido */
+            animation: popAnimation 0.25s ease-out forwards; 
             pointer-events: none;
         }
 
         @keyframes popAnimation {
             0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.4); opacity: 0.8; filter: brightness(1.3); }
+            50% { transform: scale(1.5); opacity: 0.8; filter: brightness(1.5); }
             100% { transform: scale(0); opacity: 0; }
         }
 
@@ -806,7 +806,6 @@
             document.querySelector('.btn-change').style.display = 'inline-block';
         }
 
-        // ACTUALIZACIÓN DE GLOBOS: RESPUESTA INMEDIATA SIN LAG
         function iniciarExplosionBurbujas(emocion) {
             juegoActivoTipo = 'burbujas';
             
@@ -828,15 +827,15 @@
                 btn.style.width = size + "px"; btn.style.height = size + "px"; btn.style.fontSize = (size * 0.5) + "px";
                 btn.style.animationDelay = (Math.random() * 2) + "s";
                 
-                // Función de reventar ultra rápida para evitar lag
+                // Función de reventar que permite mostrar la animación CSS completa
                 const reventar = function(e) {
                     if (e && e.cancelable) e.preventDefault();
                     if (btn.classList.contains('popped')) return;
                     
                     btn.classList.add('popped');
                     
-                    // Ocultar rápidamente después de la animación para no dejar rastro
-                    setTimeout(() => { btn.style.visibility = 'hidden'; }, 100);
+                    // Tiempo de espera para que termine la animación de explosión en CSS (0.25s) antes de ocultar
+                    setTimeout(() => { btn.style.display = 'none'; }, 250);
 
                     burbujasReventadas++;
                     if(burbujasReventadas >= totalBurbujas) {
@@ -845,7 +844,6 @@
                     }
                 };
 
-                // Asignamos mousedown y touchstart en lugar de pointerdown o click (más instantáneos)
                 btn.onmousedown = reventar;
                 btn.ontouchstart = reventar;
                 
@@ -986,7 +984,6 @@
             });
         }
 
-        // Activación de juegos personalizada por emoción
         function activarJuegoPorEmocion(emocion, esAleatorio) {
             const seccion = document.getElementById('seccion-juego'); seccion.style.display = 'block';
             if(intervaloRespiracion) clearInterval(intervaloRespiracion);
@@ -1042,7 +1039,19 @@
             }
         }
 
-        function reiniciarJuegoActual() { if(emocionActual) activarJuegoPorEmocion(emocionActual, false); else activarJuegoPorEmocion('', true); }
+        // CORRECCIÓN: Botón "Restablecer" reinicia el juego ACTIVO.
+        function reiniciarJuegoActual() {
+            if (juegoActivoTipo === 'respiracion') {
+                iniciarRespiracionGuiada();
+            } else if (juegoActivoTipo === 'burbujas') {
+                iniciarExplosionBurbujas(emocionActual);
+            } else if (juegoActivoTipo === 'puzzle') {
+                iniciarRompecabezasIA();
+            } else if (juegoActivoTipo === 'preguntas') {
+                iniciarPreguntasReflexivas();
+            }
+        }
+
         function cambiarDeJuegoAleatorio() { activarJuegoPorEmocion('', true); }
 
         // ==========================================
