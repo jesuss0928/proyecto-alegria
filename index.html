@@ -344,7 +344,7 @@
         .btn-change { background-color: #2F80ED; color: white; }
         .btn-stop { background-color: #EB5757; color: white; display: none;} /* Botón Parar */
         .progress-bar-container { width: 85%; background-color: #E0E0E0; border-radius: 15px; overflow: hidden; margin: 15px auto; height: 24px; }
-        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #56CCF2, #2F80ED); transition: width 4s linear; } /* TRANSICION EXACTA DE 4s */
+        .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #56CCF2, #2F80ED); transition: width 4s linear; } 
         .timer-number { font-size: 2.8rem; font-weight: bold; color: #2F80ED; }
         .breathing-instruction { font-size: 1.3rem; font-weight: bold; }
         
@@ -681,7 +681,7 @@
         let intervaloRespiracion = null;
         let emocionActual = ''; let juegoActivoTipo = ''; 
 
-        // BANCO DE ROMPECABEZAS (Restaurado 100%)
+        // BANCO DE ROMPECABEZAS
         const bancoImagenesIA = [
             { tipo: "🌄 Paisaje Inteligente", url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop&q=80" },
             { tipo: "🏙️ Ciudad del Futuro", url: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&auto=format&fit=crop&q=80" },
@@ -815,14 +815,13 @@
             for(let i=0; i<totalBurbujas; i++) {
                 let btn = document.createElement('div');
                 btn.className = "happy-bubble"; 
-                btn.innerText = emojis[Math.floor(Math.random() * emojis.length)]; // Emojis aleatorios
+                btn.innerText = emojis[Math.floor(Math.random() * emojis.length)]; 
                 btn.style.backgroundColor = colores[Math.floor(Math.random() * colores.length)];
                 
                 let size = 50 + Math.random() * 40;
                 btn.style.width = size + "px"; btn.style.height = size + "px"; btn.style.fontSize = (size * 0.5) + "px";
                 btn.style.animationDelay = (Math.random() * 2) + "s";
                 
-                // Usamos onpointerdown para respuesta táctil INSTANTÁNEA en celulares
                 btn.onpointerdown = function(e) {
                     e.preventDefault();
                     if(this.classList.contains('popped')) return;
@@ -849,7 +848,9 @@
                 </div>
             `;
             
-            const filas = 2; const columnas = 3; const anchoTablero = 300; const altoTablero = 200;
+            // ACTUALIZACIÓN: Rompecabezas de 9 piezas (3x3)
+            const filas = 3; const columnas = 3; 
+            const anchoTablero = 300; const altoTablero = 300; // Lo volvemos cuadrado para que encajen perfecto 3x3
             const anchoPieza = anchoTablero / columnas; const altoPieza = altoTablero / filas;
             
             const tablero = document.getElementById('puzzle-tablero');
@@ -873,6 +874,10 @@
             posiciones.sort(() => Math.random() - 0.5);
             const pool = document.getElementById('puzzle-piezas');
             
+            // ACTUALIZACIÓN: Hacer que el contenedor original pueda recibir piezas de vuelta
+            pool.ondragover = (e) => e.preventDefault();
+            pool.ondrop = manejarDrop;
+            
             posiciones.forEach(pos => {
                 const pieza = document.createElement('div');
                 pieza.className = 'puzzle-piece-canvas';
@@ -888,12 +893,34 @@
             });
         }
 
+        // ACTUALIZACIÓN: Nueva lógica para permitir regresar las piezas al inicio
         function manejarDrop(e) {
             e.preventDefault();
             const idArrastrado = e.dataTransfer.getData('text/plain');
             const piezaArrastrada = document.querySelector(`.puzzle-piece-canvas[data-id="${idArrastrado}"]`);
-            if (piezaArrastrada && e.target.classList.contains('puzzle-slot') && !e.target.hasChildNodes()) {
-                e.target.appendChild(piezaArrastrada); verificarRompecabezas();
+            if (!piezaArrastrada) return;
+            
+            const dropTarget = e.target;
+            
+            // Si la soltamos en el cajón de abajo (el pool de piezas)
+            if (dropTarget.id === 'puzzle-piezas' || dropTarget.classList.contains('puzzle-pieces-pool')) {
+                document.getElementById('puzzle-piezas').appendChild(piezaArrastrada);
+                verificarRompecabezas();
+                return;
+            }
+            
+            // Si la soltamos encima de OTRA pieza que está en el cajón de abajo
+            if (dropTarget.classList.contains('puzzle-piece-canvas') && dropTarget.parentElement.id === 'puzzle-piezas') {
+                document.getElementById('puzzle-piezas').appendChild(piezaArrastrada);
+                verificarRompecabezas();
+                return;
+            }
+
+            // Si la soltamos en un slot del tablero que está vacío
+            const targetSlot = dropTarget.closest('.puzzle-slot');
+            if (targetSlot && !targetSlot.hasChildNodes()) {
+                targetSlot.appendChild(piezaArrastrada); 
+                verificarRompecabezas();
             }
         }
 
