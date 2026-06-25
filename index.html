@@ -342,25 +342,30 @@
         .btn-control { padding: 10px 18px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; }
         .btn-reset { background-color: #F2994A; color: white; }
         .btn-change { background-color: #2F80ED; color: white; }
-        .btn-stop { background-color: #EB5757; color: white; display: none;} /* Botón Parar */
+        .btn-stop { background-color: #EB5757; color: white; display: none;} 
         .progress-bar-container { width: 85%; background-color: #E0E0E0; border-radius: 15px; overflow: hidden; margin: 15px auto; height: 24px; }
         .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #56CCF2, #2F80ED); transition: width 4s linear; } 
         .timer-number { font-size: 2.8rem; font-weight: bold; color: #2F80ED; }
         .breathing-instruction { font-size: 1.3rem; font-weight: bold; }
         
-        /* GLOBO CSS MODIFICADO */
+        /* GLOBO CSS ACTUALIZADO PARA QUITAR EL LAG */
         .bubble-grid { display: flex; gap: 20px; justify-content: center; align-items: center; margin: 25px 0; flex-wrap: wrap; }
-        .happy-bubble { border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; box-shadow: 0 6px 12px rgba(0,0,0,0.15); transition: transform 0.1s, opacity 0.2s; user-select: none; touch-action: manipulation; animation: floatBubble 3s ease-in-out infinite alternate; }
+        .happy-bubble { 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; color: white; box-shadow: 0 6px 12px rgba(0,0,0,0.15); 
+            user-select: none; touch-action: none; /* Previene retrasos por scroll en móviles */
+            animation: floatBubble 3s ease-in-out infinite alternate; 
+        }
         @keyframes floatBubble { from { transform: translateY(0px); } to { transform: translateY(-8px); } }
         
         .happy-bubble.popped {
-            animation: popAnimation 0.2s ease-out forwards;
+            animation: popAnimation 0.1s ease-out forwards; /* Más rápido */
             pointer-events: none;
         }
 
         @keyframes popAnimation {
             0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; filter: brightness(1.2); }
+            50% { transform: scale(1.4); opacity: 0.8; filter: brightness(1.3); }
             100% { transform: scale(0); opacity: 0; }
         }
 
@@ -801,6 +806,7 @@
             document.querySelector('.btn-change').style.display = 'inline-block';
         }
 
+        // ACTUALIZACIÓN DE GLOBOS: RESPUESTA INMEDIATA SIN LAG
         function iniciarExplosionBurbujas(emocion) {
             juegoActivoTipo = 'burbujas';
             
@@ -822,15 +828,27 @@
                 btn.style.width = size + "px"; btn.style.height = size + "px"; btn.style.fontSize = (size * 0.5) + "px";
                 btn.style.animationDelay = (Math.random() * 2) + "s";
                 
-                btn.onpointerdown = function(e) {
-                    e.preventDefault();
-                    if(this.classList.contains('popped')) return;
-                    this.classList.add('popped');
+                // Función de reventar ultra rápida para evitar lag
+                const reventar = function(e) {
+                    if (e && e.cancelable) e.preventDefault();
+                    if (btn.classList.contains('popped')) return;
+                    
+                    btn.classList.add('popped');
+                    
+                    // Ocultar rápidamente después de la animación para no dejar rastro
+                    setTimeout(() => { btn.style.visibility = 'hidden'; }, 100);
+
                     burbujasReventadas++;
                     if(burbujasReventadas >= totalBurbujas) {
-                        mostrarMensajeEnPagina("¡Toda esa energía negativa se ha esfumado!"); setTimeout(mejorarMascota, 1000);
+                        mostrarMensajeEnPagina("¡Toda esa energía negativa se ha esfumado!"); 
+                        setTimeout(mejorarMascota, 800);
                     }
                 };
+
+                // Asignamos mousedown y touchstart en lugar de pointerdown o click (más instantáneos)
+                btn.onmousedown = reventar;
+                btn.ontouchstart = reventar;
+                
                 areaBurbujas.appendChild(btn);
             }
         }
@@ -848,9 +866,8 @@
                 </div>
             `;
             
-            // ACTUALIZACIÓN: Rompecabezas de 9 piezas (3x3)
             const filas = 3; const columnas = 3; 
-            const anchoTablero = 300; const altoTablero = 300; // Lo volvemos cuadrado para que encajen perfecto 3x3
+            const anchoTablero = 300; const altoTablero = 300;
             const anchoPieza = anchoTablero / columnas; const altoPieza = altoTablero / filas;
             
             const tablero = document.getElementById('puzzle-tablero');
@@ -874,7 +891,6 @@
             posiciones.sort(() => Math.random() - 0.5);
             const pool = document.getElementById('puzzle-piezas');
             
-            // ACTUALIZACIÓN: Hacer que el contenedor original pueda recibir piezas de vuelta
             pool.ondragover = (e) => e.preventDefault();
             pool.ondrop = manejarDrop;
             
@@ -893,7 +909,6 @@
             });
         }
 
-        // ACTUALIZACIÓN: Nueva lógica para permitir regresar las piezas al inicio
         function manejarDrop(e) {
             e.preventDefault();
             const idArrastrado = e.dataTransfer.getData('text/plain');
@@ -902,21 +917,18 @@
             
             const dropTarget = e.target;
             
-            // Si la soltamos en el cajón de abajo (el pool de piezas)
             if (dropTarget.id === 'puzzle-piezas' || dropTarget.classList.contains('puzzle-pieces-pool')) {
                 document.getElementById('puzzle-piezas').appendChild(piezaArrastrada);
                 verificarRompecabezas();
                 return;
             }
             
-            // Si la soltamos encima de OTRA pieza que está en el cajón de abajo
             if (dropTarget.classList.contains('puzzle-piece-canvas') && dropTarget.parentElement.id === 'puzzle-piezas') {
                 document.getElementById('puzzle-piezas').appendChild(piezaArrastrada);
                 verificarRompecabezas();
                 return;
             }
 
-            // Si la soltamos en un slot del tablero que está vacío
             const targetSlot = dropTarget.closest('.puzzle-slot');
             if (targetSlot && !targetSlot.hasChildNodes()) {
                 targetSlot.appendChild(piezaArrastrada); 
@@ -1013,7 +1025,6 @@
                     iniciarExplosionBurbujas(emocion);
                 }
                 else if (emocion === 'desmotivado' || emocion === 'tristeza') {
-                    // Elegimos al azar entre rompecabezas o preguntas para estas emociones
                     if(Math.random() > 0.5) {
                         document.getElementById('juego-titulo-header').innerText = "🧠 Reflexión de Estado de Ánimo";
                         document.getElementById('juego-descripcion').innerText = "Piensa en tu bienestar con estas preguntas clave.";
