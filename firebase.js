@@ -242,7 +242,7 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 // =========================================
-// GUARDAR DIARIO EN FIREBASE 
+// 1. GUARDAR DIARIO EN FIREBASE (Con correo para el Admin)
 // =========================================
 async function guardarEntradaEnFirebase(texto) {
     const usuarioActual = auth.currentUser; 
@@ -252,10 +252,9 @@ async function guardarEntradaEnFirebase(texto) {
     }
 
     try {
-        // Guardamos la información detallada para tu futuro panel clínico
         await addDoc(collection(db, "diarios"), {
             userId: usuarioActual.uid,
-            correo: usuarioActual.email, // Fundamental para que identifiques al paciente
+            correo: usuarioActual.email, // Fundamental para tu panel clínico
             contenido: texto,
             fecha: new Date().toISOString()
         });
@@ -264,6 +263,32 @@ async function guardarEntradaEnFirebase(texto) {
         throw new Error("No se pudo conectar con la base de datos.");
     }
 }
-
-// Lo publicamos en la ventana global para que app.js lo reconozca
 window.guardarEntradaEnFirebase = guardarEntradaEnFirebase;
+
+
+// =========================================
+// 2. OBTENER DIARIO POR FECHA (Hojear páginas del paciente)
+// =========================================
+async function obtenerEntradasDiarioPorFecha(fechaTarget) {
+    const usuarioActual = auth.currentUser;
+    if (!usuarioActual) return [];
+
+    const q = query(collection(db, "diarios"), where("userId", "==", usuarioActual.uid));
+    const querySnapshot = await getDocs(q);
+    
+    const fechaBuscada = fechaTarget.toLocaleDateString(); 
+    let entradas = [];
+
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const fechaEntrada = new Date(data.fecha);
+        
+        if (fechaEntrada.toLocaleDateString() === fechaBuscada) {
+            entradas.push({ id: doc.id, ...data, fechaObj: fechaEntrada });
+        }
+    });
+
+    entradas.sort((a, b) => b.fechaObj - a.fechaObj); // Ordenar por hora
+    return entradas;
+}
+window.obtenerEntradasDiarioPorFecha = obtenerEntradasDiarioPorFecha;
