@@ -26,7 +26,8 @@
                 <div class="sidebar-icon">📅</div>
                 <div class="sidebar-text">Calendario</div>
             </div>
-            <div class="sidebar-item" onclick="mostrarDiario()">
+            <!-- Botón del diario actualizado para usar el modal -->
+            <div class="sidebar-item" onclick="abrirModal('modal-diario-personal')">
                 <div class="sidebar-icon">📔</div>
                 <div class="sidebar-text">Diario</div>
             </div>
@@ -51,6 +52,7 @@
         <div id="mascota-limite-texto">0/3 Hoy</div>
     </div>
 
+    <!-- MODALES -->
     <div id="modal-galeria" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
@@ -99,6 +101,28 @@
         </div>
     </div>
 
+    <!-- NUEVO MODAL DE DIARIO PERSONAL -->
+    <div id="modal-diario-personal" class="modal-overlay" style="display: none;">
+        <div class="modal-container" style="max-width: 600px; border: 2px dashed #a855f7;">
+            <div class="modal-header" style="background: white; border-bottom: none; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="color: #6b21a8; margin: 0;">📔 Mi Diario Personal</h2>
+                <button class="btn-close-modal" onclick="cerrarModal('modal-diario-personal')" style="color: #a855f7; font-size: 28px; background: none; border: none; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <p style="color: #6b7280; margin-bottom: 20px;">Un espacio seguro y privado solo para ti.</p>
+                
+                <div class="diary-container">
+                    <textarea id="diary-text" placeholder="Hoy me siento..." rows="6" style="width: 100%; padding: 15px; border: 1px solid #d1d5db; border-radius: 10px; font-family: inherit; font-size: 1rem; resize: vertical; box-sizing: border-box; margin-bottom: 15px; outline: none;"></textarea>
+                    
+                    <button id="btn-save-diary" onclick="guardarDiario()" style="background-color: #a855f7; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer;">Guardar Entrada</button>
+                    
+                    <p id="diary-message" style="display: none; margin-top: 10px; font-weight: bold;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- FIN MODALES -->
+
     <header class="hero">
         <h1>Orientación y Salud Mental para Adolescentes</h1>
         <p>Tu bienestar emocional es nuestra prioridad.</p>
@@ -133,41 +157,35 @@
                 </div>
             </div>
         </section>
+        
         <!-- SECCIÓN DE CÁPSULAS DE BIENESTAR -->
-<section class="tips-section" id="consejos">
-    <h2>💡 Cápsulas de Bienestar</h2>
-    <p>Pequeños consejos para crear grandes cambios en tu día.</p>
-    
-    <div class="tips-grid">
-        <!-- Tarjeta 1 -->
-        <div class="tip-card">
-            <h3>Respira 4-7-8</h3>
-            <p>Inhala aire por 4 segundos, aguanta la respiración por 7 segundos y exhala lentamente por 8. Es ideal para reducir la ansiedad rápido.</p>
-        </div>
-        
-        <!-- Tarjeta 2 -->
-        <div class="tip-card">
-            <h3>Desconexión Nocturna</h3>
-            <p>Intenta apagar las pantallas 30 minutos antes de dormir. Tu cerebro descansará mejor y despertarás con mucha más energía.</p>
-        </div>
-        
-        <!-- Tarjeta 3 -->
-        <div class="tip-card">
-            <h3>El poder del "Aún"</h3>
-            <p>Si algo no te sale bien, no digas "no puedo", di "no puedo AÚN". Esa simple palabra cambia toda la perspectiva de tu mente.</p>
-        </div>
-    </div>
-</section>
-        <section class="diary-section" id="mi-diario" style="display: none;">
-    <h2>📔 Mi Diario Personal</h2>
-    <p>Un espacio seguro y privado solo para ti. Escribe cómo te sientes hoy.</p>
-    
-    <div class="diary-container">
-        <textarea id="diary-text" placeholder="Hoy me siento..." rows="5"></textarea>
-        <button id="btn-save-diary" onclick="guardarDiario()">Guardar Entrada</button>
-        <p id="diary-message" style="display: none; margin-top: 10px; font-weight: bold;"></p>
-    </div>
-</section>
+        <section class="tips-section" id="consejos">
+            <h2>💡 Cápsulas de Bienestar</h2>
+            <p>Pequeños consejos para crear grandes cambios en tu día.</p>
+            
+            <div class="tips-grid">
+                <!-- Tarjeta 1 -->
+                <div class="tip-card">
+                    <h3>Respira 4-7-8</h3>
+                    <p>Inhala aire por 4 segundos, aguanta la respiración por 7 segundos y exhala lentamente por 8. Es ideal para reducir la ansiedad rápido.</p>
+                </div>
+                
+                <!-- Tarjeta 2 -->
+                <div class="tip-card">
+                    <h3>Desconexión Nocturna</h3>
+                    <p>Intenta apagar las pantallas 30 minutos antes de dormir. Tu cerebro descansará mejor y despertarás con mucha más energía.</p>
+                </div>
+                
+                <!-- Tarjeta 3 -->
+                <div class="tip-card">
+                    <h3>El poder del "Aún"</h3>
+                    <p>Si algo no te sale bien, no digas "no puedo", di "no puedo AÚN". Esa simple palabra cambia toda la perspectiva de tu mente.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- (Se eliminó la section inline del diario de esta parte) -->
+
         <section class="sos-section">
             <h2>🚨 Zona de Ayuda Inmediata</h2>
             <p><strong>No estás solo.</strong> Profesionales capacitados listos para escucharte <strong>gratis y de forma anónima</strong>.</p>
