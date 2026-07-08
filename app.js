@@ -550,26 +550,8 @@ document.addEventListener('keydown', function(e) {
     }
 });
 // =========================================
-// NAVEGACIÓN Y COMPORTAMIENTO DEL DIARIO
+// COMPORTAMIENTO DEL DIARIO
 // =========================================
-
-function mostrarDiario() {
-    // Ocultamos la zona de juegos y de ayuda SOS
-    if(document.getElementById('seccion-juego')) document.getElementById('seccion-juego').style.display = 'none';
-    if(document.querySelector('.sos-section')) document.querySelector('.sos-section').style.display = 'none';
-    
-    // Mostramos la pestaña del diario
-    document.getElementById('mi-diario').style.display = 'block';
-}
-
-function mostrarInicio() {
-    // Volvemos a mostrar todo el contenido principal
-    if(document.getElementById('seccion-juego')) document.getElementById('seccion-juego').style.display = 'block';
-    if(document.querySelector('.sos-section')) document.querySelector('.sos-section').style.display = 'block';
-    
-    // Ocultamos el diario
-    document.getElementById('mi-diario').style.display = 'none';
-}
 
 async function guardarDiario() {
     const textarea = document.getElementById('diary-text');
