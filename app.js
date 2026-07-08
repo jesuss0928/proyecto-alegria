@@ -550,9 +550,8 @@ document.addEventListener('keydown', function(e) {
     }
 });
 // =========================================
-// COMPORTAMIENTO DEL DIARIO
+// COMPORTAMIENTO DEL DIARIO (Guardar)
 // =========================================
-
 async function guardarDiario() {
     const textarea = document.getElementById('diary-text');
     const texto = textarea.value.trim();
@@ -578,6 +577,9 @@ async function guardarDiario() {
         mensajeDiv.textContent = "¡Tu entrada ha sido guardada con éxito! ✨";
         mensajeDiv.style.display = "block";
         
+        // ¡AQUÍ ESTÁ LA MAGIA! Actualizamos el librito al instante
+        cargarHistorialDiario();
+        
         setTimeout(() => { mensajeDiv.style.display = "none"; }, 4000);
     } catch (error) {
         mensajeDiv.style.color = "#dc2626";
@@ -586,5 +588,71 @@ async function guardarDiario() {
     } finally {
         btn.textContent = "Guardar Entrada";
         btn.disabled = false;
+    }
+}
+
+// =========================================
+// SISTEMA DE PÁGINAS DEL DIARIO (Leer y Hojear)
+// =========================================
+let fechaVisionDiario = new Date(); // Inicia en el día de hoy
+
+function cambiarDiaDiario(dias) {
+    // Suma o resta días según la flecha que presionemos
+    fechaVisionDiario.setDate(fechaVisionDiario.getDate() + dias);
+    cargarHistorialDiario();
+}
+
+async function cargarHistorialDiario() {
+    const historialContenedor = document.getElementById('historial-diario');
+    const textoFecha = document.getElementById('diario-fecha-texto');
+    const btnSiguiente = document.getElementById('btn-diario-siguiente');
+    const zonaEscritura = document.getElementById('zona-escritura-diario');
+    if (!historialContenedor) return;
+
+    // Verificamos si estamos en la página de "Hoy"
+    const hoy = new Date();
+    const esHoy = fechaVisionDiario.toLocaleDateString() === hoy.toLocaleDateString();
+
+    if (esHoy) {
+        textoFecha.textContent = "Hoy";
+        btnSiguiente.style.visibility = "hidden"; // No podemos viajar al futuro
+        zonaEscritura.style.display = "block"; // Permitimos escribir
+    } else {
+        // Mostramos la fecha pasada bonita (ej: jueves, 6 de julio)
+        const opciones = { weekday: 'long', month: 'long', day: 'numeric' };
+        textoFecha.textContent = fechaVisionDiario.toLocaleDateString('es-ES', opciones);
+        btnSiguiente.style.visibility = "visible"; // Permitimos regresar hacia hoy
+        zonaEscritura.style.display = "none"; // Ocultamos el cuadro de texto
+    }
+
+    historialContenedor.innerHTML = "<p style='text-align: center; color: #888;'>Pasando página... 📖</p>";
+
+    try {
+        const entradas = await window.obtenerEntradasDiarioPorFecha(fechaVisionDiario);
+        historialContenedor.innerHTML = ""; 
+
+        if (entradas.length === 0) {
+            historialContenedor.innerHTML = "<p style='text-align: center; color: #888; font-style: italic;'>Esta página está en blanco.</p>";
+            return;
+        }
+
+        entradas.forEach(entrada => {
+            const hora = entrada.fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const div = document.createElement('div');
+            div.style.backgroundColor = "#f3f4f6";
+            div.style.padding = "10px 15px";
+            div.style.borderRadius = "8px";
+            div.style.marginBottom = "10px";
+            div.style.borderLeft = "4px solid #a855f7";
+
+            div.innerHTML = `
+                <div style="font-size: 0.8rem; color: #6b7280; margin-bottom: 5px;">⌚ ${hora}</div>
+                <div style="color: #374151; font-size: 0.95rem; white-space: pre-wrap;">${entrada.contenido}</div>
+            `;
+            historialContenedor.appendChild(div);
+        });
+    } catch (error) {
+        console.error(error);
+        historialContenedor.innerHTML = "<p style='text-align: center; color: #dc2626;'>Error al leer la página.</p>";
     }
 }
