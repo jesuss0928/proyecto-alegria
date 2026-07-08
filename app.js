@@ -549,3 +549,60 @@ document.addEventListener('keydown', function(e) {
         e.preventDefault();
     }
 });
+// =========================================
+// NAVEGACIÓN Y COMPORTAMIENTO DEL DIARIO
+// =========================================
+
+function mostrarDiario() {
+    // Ocultamos la zona de juegos y de ayuda SOS
+    if(document.getElementById('seccion-juego')) document.getElementById('seccion-juego').style.display = 'none';
+    if(document.querySelector('.sos-section')) document.querySelector('.sos-section').style.display = 'none';
+    
+    // Mostramos la pestaña del diario
+    document.getElementById('mi-diario').style.display = 'block';
+}
+
+function mostrarInicio() {
+    // Volvemos a mostrar todo el contenido principal
+    if(document.getElementById('seccion-juego')) document.getElementById('seccion-juego').style.display = 'block';
+    if(document.querySelector('.sos-section')) document.querySelector('.sos-section').style.display = 'block';
+    
+    // Ocultamos el diario
+    document.getElementById('mi-diario').style.display = 'none';
+}
+
+async function guardarDiario() {
+    const textarea = document.getElementById('diary-text');
+    const texto = textarea.value.trim();
+    const mensajeDiv = document.getElementById('diary-message');
+    const btn = document.getElementById('btn-save-diary');
+
+    if (texto === "") {
+        mensajeDiv.style.color = "#dc2626"; // Rojo error
+        mensajeDiv.textContent = "Por favor, escribe algo antes de guardar.";
+        mensajeDiv.style.display = "block";
+        return;
+    }
+
+    btn.textContent = "Guardando... ⏳";
+    btn.disabled = true;
+
+    try {
+        // Ejecutamos la función que se comunicará con Firebase
+        await window.guardarEntradaEnFirebase(texto);
+        
+        textarea.value = ""; // Limpiamos el cuadro de texto
+        mensajeDiv.style.color = "#16a34a"; // Verde éxito
+        mensajeDiv.textContent = "¡Tu entrada ha sido guardada con éxito! ✨";
+        mensajeDiv.style.display = "block";
+        
+        setTimeout(() => { mensajeDiv.style.display = "none"; }, 4000);
+    } catch (error) {
+        mensajeDiv.style.color = "#dc2626";
+        mensajeDiv.textContent = error.message || "Hubo un error al guardar.";
+        mensajeDiv.style.display = "block";
+    } finally {
+        btn.textContent = "Guardar Entrada";
+        btn.disabled = false;
+    }
+}
