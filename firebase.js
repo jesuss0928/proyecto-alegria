@@ -241,3 +241,29 @@ onAuthStateChanged(auth, (user) => {
         }
     }
 });
+// =========================================
+// GUARDAR DIARIO EN FIREBASE 
+// =========================================
+async function guardarEntradaEnFirebase(texto) {
+    const usuarioActual = auth.currentUser; 
+    
+    if (!usuarioActual) {
+        throw new Error("Debes iniciar sesión para poder guardar en tu diario.");
+    }
+
+    try {
+        // Guardamos la información detallada para tu futuro panel clínico
+        await addDoc(collection(db, "diarios"), {
+            userId: usuarioActual.uid,
+            correo: usuarioActual.email, // Fundamental para que identifiques al paciente
+            contenido: texto,
+            fecha: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error("Error al escribir en Firestore: ", error);
+        throw new Error("No se pudo conectar con la base de datos.");
+    }
+}
+
+// Lo publicamos en la ventana global para que app.js lo reconozca
+window.guardarEntradaEnFirebase = guardarEntradaEnFirebase;
