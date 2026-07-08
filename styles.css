@@ -386,3 +386,61 @@ body.sidebar-expanded #mascota-virtual { left: calc(var(--sidebar-expanded-width
 #quick-replies-container::-webkit-scrollbar { display: none; }
 .quick-reply-btn { background-color: var(--white); color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 20px; padding: 6px 14px; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: all 0.2s ease; }
 .quick-reply-btn:hover { background-color: var(--primary-color); color: var(--white); }
+/* =========================================
+   SECCIÓN DE CÁPSULAS DE BIENESTAR (CONSEJOS)
+   ========================================= */
+.tips-section {
+    padding: 40px 20px;
+    background-color: #f3e8ff; /* Un tono morado súper suave y relajante */
+    text-align: center;
+    border-radius: 15px;
+    margin: 30px auto;
+    max-width: 1000px;
+}
+
+.tips-section h2 {
+    color: #6b21a8; /* Morado oscuro para contraste */
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.tips-section > p {
+    color: #4b5563;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+.tips-grid {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap; /* Para que se adapte a celulares */
+}
+
+.tip-card {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    width: 280px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: left;
+    border-top: 4px solid #d946ef; /* Una línea rosa/morada arriba para decorar */
+}
+
+.tip-card:hover {
+    transform: translateY(-8px); /* Efecto de flotar al pasar el mouse */
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+}
+
+.tip-card h3 {
+    color: #d946ef; /* Color alegre para el título de la tarjeta */
+    margin-bottom: 12px;
+    font-size: 1.3rem;
+}
+
+.tip-card p {
+    color: #4b5563;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
