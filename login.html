@@ -157,5 +157,22 @@
             });
         }
     </script>
+    <script>
+  // Bloquear el menú del clic derecho
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  // Bloquear atajos de teclado para inspeccionar (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U)
+  document.addEventListener('keydown', function(e) {
+    if (
+      e.key === 'F12' ||
+      (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
+      (e.ctrlKey && e.key === 'u')
+    ) {
+      e.preventDefault();
+    }
+  });
+</script>
 </body>
 </html>
