@@ -13,7 +13,7 @@
 
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <div class="sidebar-logo-text">Alegría</div>
+            <div class="sidebar-logo-text" onclick="mostrarInicio()" style="cursor: pointer;">Alegría</div>
             <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
         </div>
 
@@ -156,6 +156,16 @@
             <h3>El poder del "Aún"</h3>
             <p>Si algo no te sale bien, no digas "no puedo", di "no puedo AÚN". Esa simple palabra cambia toda la perspectiva de tu mente.</p>
         </div>
+    </div>
+</section>
+        <section class="diary-section" id="mi-diario" style="display: none;">
+    <h2>📔 Mi Diario Personal</h2>
+    <p>Un espacio seguro y privado solo para ti. Escribe cómo te sientes hoy.</p>
+    
+    <div class="diary-container">
+        <textarea id="diary-text" placeholder="Hoy me siento..." rows="5"></textarea>
+        <button id="btn-save-diary" onclick="guardarDiario()">Guardar Entrada</button>
+        <p id="diary-message" style="display: none; margin-top: 10px; font-weight: bold;"></p>
     </div>
 </section>
         <section class="sos-section">
