@@ -17,7 +17,7 @@
             <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
         </div>
 
-        <div class="sidebar-menu">
+        <div class="sidebar-menu" style="display: flex; flex-direction: column; height: 100%;">
             <div class="sidebar-item" onclick="abrirModal('modal-galeria')">
                 <div class="sidebar-icon">🏆</div>
                 <div class="sidebar-text">Galería</div>
@@ -29,6 +29,11 @@
             <div class="sidebar-item" onclick="fechaVisionDiario = new Date(); abrirModal('modal-diario-personal'); cargarHistorialDiario();">
                 <div class="sidebar-icon">📔</div>
                 <div class="sidebar-text">Diario</div>
+            </div>
+            
+            <div id="btn-secreto-admin" class="sidebar-item" onclick="abrirModal('modal-admin')" style="display: none; background-color: #4f46e5; border-radius: 8px; margin-top: auto; margin-bottom: 10px;">
+                <div class="sidebar-icon" style="color: white;">🔑</div>
+                <div class="sidebar-text" style="color: white; font-weight: bold;">Panel Admin</div>
             </div>
         </div>
 
@@ -51,7 +56,6 @@
         <div id="mascota-limite-texto">0/3 Hoy</div>
     </div>
 
-    <!-- MODALES -->
     <div id="modal-galeria" class="modal-overlay">
         <div class="modal-container">
             <div class="modal-header">
@@ -123,14 +127,59 @@
                     </div>
 
                     <div id="historial-diario" style="margin-top: 20px; text-align: left; max-height: 250px; overflow-y: auto; padding-right: 5px;">
-                        <!-- Las entradas se inyectarán aquí -->
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-admin" class="modal-overlay" style="display: none;">
+        <div class="modal-container" style="max-width: 700px; border: 2px solid #4f46e5;">
+            <div class="modal-header" style="background: white; border-bottom: none; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="color: #4338ca; margin: 0;">🔑 Panel de Administración</h2>
+                <button class="btn-close-modal" onclick="cerrarModal('modal-admin')" style="color: #4f46e5; font-size: 28px; background: none; border: none; cursor: pointer;">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="admin-login-section">
+                    <p style="color: #64748b; margin-bottom: 15px; text-align: center;">Introduce la credencial maestra para acceder a los datos globales.</p>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <input type="password" id="admin-pass-input" placeholder="Contraseña de Administrador" onkeypress="handleAdminKey(event)" style="flex-grow: 1; max-width: 300px; padding: 10px; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 1rem;">
+                        <button onclick="verificarAccesoAdmin()" style="background-color: #4f46e5; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Acceder</button>
+                    </div>
+                    <p id="admin-login-error" style="color: #ef4444; display: none; margin-top: 10px; text-align: center; font-weight: bold;"></p>
+                </div>
+
+                <div id="admin-dashboard-section" style="display: none;">
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                        <div style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; text-align: center;">
+                            <h3 style="font-size: 0.9rem; color: #64748b; margin: 0 0 5px 0;">Total Registros</h3>
+                            <p id="stat-total-emociones" style="font-size: 1.8rem; margin: 0; font-weight: bold; color: #4f46e5;">0</p>
+                        </div>
+                        <div style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; text-align: center;">
+                            <h3 style="font-size: 0.9rem; color: #64748b; margin: 0 0 5px 0;">Última Fecha</h3>
+                            <p id="stat-ultima-fecha" style="font-size: 1.5rem; margin: 0; font-weight: bold; color: #4f46e5; line-height: 1.8rem;">--/--/----</p>
+                        </div>
+                    </div>
+
+                    <div style="max-height: 250px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        <h3 style="padding: 10px; margin: 0; background: #f1f5f9; color: #334155; font-size: 1rem; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0;">📈 Historial Reciente de Emociones</h3>
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                            <thead>
+                                <tr>
+                                    <th style="background: #f8fafc; color: #475569; padding: 10px; border-bottom: 2px solid #e2e8f0;">Usuario</th>
+                                    <th style="background: #f8fafc; color: #475569; padding: 10px; border-bottom: 2px solid #e2e8f0;">Emoción</th>
+                                    <th style="background: #f8fafc; color: #475569; padding: 10px; border-bottom: 2px solid #e2e8f0;">Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-admin-emociones">
+                                </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- FIN MODALES -->
-
     <header class="hero">
         <h1>Orientación y Salud Mental para Adolescentes</h1>
         <p>Tu bienestar emocional es nuestra prioridad.</p>
