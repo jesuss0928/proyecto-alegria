@@ -70,7 +70,7 @@ async function cargarListaUsuarios() {
                 id: doc.id,
                 correo: correoReal,
                 nombre: nombreReal,
-                foto: data.foto || null,
+                foto: data.foto || data.Foto || null,
                 datosBase: data
             });
         });
