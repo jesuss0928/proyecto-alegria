@@ -162,7 +162,7 @@ async function seleccionarPaciente(user, cardElement) {
     const imgFoto = document.getElementById('det-foto');
     const divAvatar = document.getElementById('det-avatar-texto');
     
-    if(user.foto) {
+    if(user.foto || user.Foto) {
         imgFoto.src = user.foto;
         imgFoto.style.display = "block";
         divAvatar.style.display = "none";
