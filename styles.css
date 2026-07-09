@@ -467,7 +467,7 @@ body.sidebar-expanded #mascota-virtual { left: calc(var(--sidebar-expanded-width
     position: absolute;
     top: 0;
     bottom: 0;
-    height: 100%;
+    min-height: 100%;
     left: 85px; /* Separación para poner la hora */
     border-left: 2px solid #ef4444; /* Línea roja */
     z-index: 1;
