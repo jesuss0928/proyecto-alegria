@@ -457,10 +457,9 @@ body.sidebar-expanded #mascota-virtual { left: calc(var(--sidebar-expanded-width
     margin-top: 15px;
     overflow-y: auto;
     overflow-x: hidden;
-    min-height: 350px;
+    min-height: 350px; 
     max-height: 350px;
-    display: flex;        
-    flex-direction: column;
+    display: block; 
 }
 
 /* La línea roja del margen izquierdo */
@@ -468,12 +467,12 @@ body.sidebar-expanded #mascota-virtual { left: calc(var(--sidebar-expanded-width
     content: '';
     position: absolute;
     top: 0;
-    bottom: 0;
+   
+    height: 1000%; 
     left: 85px; 
-    border-left: 2px solid #ef4444; 
+    border-left: 2px solid #ef4444; /* Línea roja */
     z-index: 1;
-    height: 100%;           
-    pointer-events: none;
+    pointer-events: none; /* Evita que estorbe al hacer clic */
 }
 
 .notebook-entry {
@@ -485,7 +484,7 @@ body.sidebar-expanded #mascota-virtual { left: calc(var(--sidebar-expanded-width
 }
 
 .notebook-time {
-    width: 85px;
+    width: 80px;
     padding-left: 10px;
     padding-right: 5px;
     font-size: 0.75rem;
