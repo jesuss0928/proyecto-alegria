@@ -118,7 +118,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        // IMPORTAMOS FIRESTORE PARA PODER GUARDAR LA FOTO
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Tus credenciales de Firebase
@@ -131,42 +130,48 @@
             appId: "1:561418892075:web:133a1ff3948b86a4e88b6e"
         };
 
-        // Inicializamos Firebase, la Autenticación y Firestore
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
+        
+        let estaIniciandoManual = false;
 
-        // 1. OBSERVADOR DE SESIÓN: Si detecta que ya iniciaste sesión, te lleva al inicio de inmediato.
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
+        // Función para guardar la foto antes de redirigir
+        async function guardarFoto(user) {
+            if (user && user.photoURL) {
+                try {
+                    await setDoc(doc(db, "usuarios", user.uid), {
+                        nombre: user.displayName,
+                        correo: user.email,
+                        foto: user.photoURL // <--- Guardado de foto corregido
+                    }, { merge: true });
+                } catch (error) { 
+                    console.error("Error al guardar en Firestore:", error); 
+                }
+            }
+        }
+
+        // 1. OBSERVADOR DE SESIÓN: Espera a que se guarde la foto antes de redirigir
+        onAuthStateChanged(auth, async (user) => {
+            if (user && !estaIniciandoManual) {
+                await guardarFoto(user);
                 window.location.href = "index.html";
             }
         });
 
-        // 2. ACCIÓN DE CLIC: Buscamos el boton de Google y abrimos la ventana
+        // 2. ACCIÓN DE CLIC: Bloquea la redirección prematura
         const botonGoogle = document.getElementById('btn-google-login');
         if (botonGoogle) {
             botonGoogle.addEventListener('click', () => {
+                estaIniciandoManual = true; 
                 signInWithPopup(auth, provider)
                     .then(async (result) => {
-                        const user = result.user;
-                        
-                        try {
-                            // AQUÍ GUARDAMOS LA FOTO Y DATOS EN LA BASE DE DATOS
-                            await setDoc(doc(db, "usuarios", user.uid), {
-                                nombre: user.displayName,
-                                correo: user.email,
-                                foto: user.photoURL // <--- ESTO GUARDA LA FOTO
-                            }, { merge: true }); // Merge true evita que se borre su progreso de mascota
-                            
-                            console.log("Sesión exitosa y datos guardados:", user.displayName);
-                        } catch (error) {
-                            console.error("Error al guardar datos del usuario:", error);
-                        }
-                        
+                        await guardarFoto(result.user); // Espera a guardar la foto
+                        window.location.href = "index.html"; // Ahora sí redirige
                     })
                     .catch((error) => {
+                        estaIniciandoManual = false;
                         console.error("Error al iniciar sesión:", error);
                         alert("Ocurrió un inconveniente al conectar con Google. Inténtalo de nuevo.");
                     });
@@ -174,21 +179,21 @@
         }
     </script>
     <script>
-  // Bloquear el menú del clic derecho
-  document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-  });
+        // Bloquear el menú del clic derecho
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
 
-  // Bloquear atajos de teclado para inspeccionar (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U)
-  document.addEventListener('keydown', function(e) {
-    if (
-      e.key === 'F12' ||
-      (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
-      (e.ctrlKey && e.key === 'u')
-    ) {
-      e.preventDefault();
-    }
-  });
-</script>
+        // Bloquear atajos de teclado para inspeccionar (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U)
+        document.addEventListener('keydown', function(e) {
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
+                (e.ctrlKey && e.key === 'u')
+            ) {
+                e.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>
