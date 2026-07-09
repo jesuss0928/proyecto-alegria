@@ -457,7 +457,7 @@ body.sidebar-expanded #mascota-virtual { left: calc(var(--sidebar-expanded-width
     margin-top: 15px;
     overflow-y: auto;
     overflow-x: hidden;
-    min-height: 250px;
+    min-height: 350px;
     max-height: 350px;
 }
 
