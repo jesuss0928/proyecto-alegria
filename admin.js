@@ -132,7 +132,7 @@ async function cargarEmociones(mapaUsuarios) {
 
             snapEmociones.forEach((doc) => {
                 const data = doc.data();
-                if (!data.emocion) return; 
+                if (!data.emocion || typeof data.emocion !== 'string') return;
 
                 totalEmocionesContadas++;
                 const emo = data.emocion.toLowerCase();
