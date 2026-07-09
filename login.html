@@ -118,6 +118,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        // IMPORTAMOS FIRESTORE PARA PODER GUARDAR LA FOTO
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Tus credenciales de Firebase
         const firebaseConfig = {
@@ -129,9 +131,10 @@
             appId: "1:561418892075:web:133a1ff3948b86a4e88b6e"
         };
 
-        // Inicializamos Firebase y la Autenticación
+        // Inicializamos Firebase, la Autenticación y Firestore
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
         // 1. OBSERVADOR DE SESIÓN: Si detecta que ya iniciaste sesión, te lleva al inicio de inmediato.
@@ -146,9 +149,22 @@
         if (botonGoogle) {
             botonGoogle.addEventListener('click', () => {
                 signInWithPopup(auth, provider)
-                    .then((result) => {
-                        // Si es exitoso, el onAuthStateChanged de arriba hará la redirección automática
-                        console.log("Sesión exitosa con:", result.user.displayName);
+                    .then(async (result) => {
+                        const user = result.user;
+                        
+                        try {
+                            // AQUÍ GUARDAMOS LA FOTO Y DATOS EN LA BASE DE DATOS
+                            await setDoc(doc(db, "usuarios", user.uid), {
+                                nombre: user.displayName,
+                                correo: user.email,
+                                foto: user.photoURL // <--- ESTO GUARDA LA FOTO
+                            }, { merge: true }); // Merge true evita que se borre su progreso de mascota
+                            
+                            console.log("Sesión exitosa y datos guardados:", user.displayName);
+                        } catch (error) {
+                            console.error("Error al guardar datos del usuario:", error);
+                        }
+                        
                     })
                     .catch((error) => {
                         console.error("Error al iniciar sesión:", error);
