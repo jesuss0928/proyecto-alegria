@@ -288,7 +288,7 @@ async function obtenerEntradasDiarioPorFecha(fechaTarget) {
         }
     });
 
-    entradas.sort((a, b) => b.fechaObj - a.fechaObj); // Ordenar por hora
+    entradas.sort((a, b) => a.fechaObj - b.fechaObj);
     return entradas;
 }
 window.obtenerEntradasDiarioPorFecha = obtenerEntradasDiarioPorFecha;
