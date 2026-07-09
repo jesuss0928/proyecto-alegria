@@ -28,9 +28,7 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// 2. FUNCIÓN PRINCIPAL PARA EXTRAER TODO
 async function cargarDatosReales() {
-    // Primero, creamos un "diccionario" para traducir los IDs raros a Correos
     const mapaUsuarios = await obtenerMapaCorreos();
 
     await cargarDiarios();
@@ -40,17 +38,28 @@ async function cargarDatosReales() {
 }
 
 // ==========================================
-// NUEVO: TRADUCTOR DE IDs A CORREOS
+// TRUCO MAESTRO: TRADUCTOR DE IDs A CORREOS
 // ==========================================
 async function obtenerMapaCorreos() {
     let mapa = {};
     try {
-        const q = query(collection(db, "usuarios"));
-        const snapshot = await getDocs(q);
-        snapshot.forEach((doc) => {
+        // Intento 1: Buscar en perfiles
+        const q1 = query(collection(db, "usuarios"));
+        const snap1 = await getDocs(q1);
+        snap1.forEach(doc => {
             const data = doc.data();
-            // Si el usuario guardó su correo en su perfil, lo usamos; si no, dejamos el ID
-            mapa[doc.id] = data.correo || data.email || doc.id; 
+            if (data.correo || data.email) mapa[doc.id] = data.correo || data.email;
+        });
+
+        // Intento 2: Extraer los correos desde los Diarios
+        // Como vimos que ahí sí se guardan, los cruzamos con sus respectivos IDs
+        const q2 = query(collection(db, "diarios"));
+        const snap2 = await getDocs(q2);
+        snap2.forEach(doc => {
+            const data = doc.data();
+            if (data.userId && data.correo) {
+                mapa[data.userId] = data.correo;
+            }
         });
     } catch (e) { console.error("Error mapeando correos", e); }
     return mapa;
@@ -87,7 +96,7 @@ async function cargarDiarios() {
 }
 
 // ==========================================
-// B. CARGAR EMOCIONES (AHORA CON CORREO)
+// B. CARGAR EMOCIONES
 // ==========================================
 function obtenerColorEmocion(emocion) {
     const e = emocion.toLowerCase();
@@ -120,7 +129,7 @@ async function cargarEmociones(mapaUsuarios) {
             const data = doc.data();
             const userId = doc.ref.parent.parent ? doc.ref.parent.parent.id : 'Desconocido';
             
-            // Aquí usamos el traductor para poner el correo real
+            // Reemplazo inteligente: Si lo encontró en el traductor, pone el correo. Si no, deja el ID.
             const identificador = mapaUsuarios[userId] || userId;
 
             const emo = data.emocion.toLowerCase();
@@ -149,7 +158,7 @@ async function cargarEmociones(mapaUsuarios) {
 }
 
 // ==========================================
-// C. CARGAR MASCOTAS (AHORA CON CORREO)
+// C. CARGAR MASCOTAS
 // ==========================================
 async function cargarMascotas(mapaUsuarios) {
     const tabla = document.getElementById('tabla-mascotas');
@@ -167,7 +176,7 @@ async function cargarMascotas(mapaUsuarios) {
             const data = doc.data();
             const id = doc.id;
             
-            // Usamos el traductor de IDs a correos
+            // Reemplazo inteligente
             const identificador = mapaUsuarios[id] || id;
 
             const tipo = data.tipoActivo || data.mascota?.tipoActivo || 'Desconocido';
@@ -179,7 +188,7 @@ async function cargarMascotas(mapaUsuarios) {
                 <td><span class="badge nivel">Nivel ${nivel}%</span></td>
             </tr>`;
         });
-    } catch (e) { tabla.innerHTML = "<tr><td colspan='3' style='color: red;'>Aún no hay datos de mascotas en la base.</td></tr>"; }
+    } catch (e) { tabla.innerHTML = "<tr><td colspan='3' style='color: red;'>Aún no hay datos de mascotas.</td></tr>"; }
 }
 
 // ==========================================
@@ -188,7 +197,6 @@ async function cargarMascotas(mapaUsuarios) {
 function configurarBuscador() {
     document.getElementById('buscador').addEventListener('input', function(e) {
         const termino = e.target.value.toLowerCase();
-        
         const cuerposTablas = [
             document.getElementById('tabla-diarios'),
             document.getElementById('tabla-emociones'),
