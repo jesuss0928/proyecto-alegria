@@ -2,7 +2,9 @@
 // 🔐 SISTEMA DE ROLES Y PERMISOS (NUEVO)
 // ==========================================
 const CORREOS_ADMIN_AUTORIZADOS = [
-    "tucorreo@gmail.com" // 👈 PON TU CORREO REAL AQUÍ
+    "jess.vite0609@gmail.com",
+    "socio@gmail.com",   
+    "ayudante@gmail.com"
 ];
 
 window.verificarRolUsuario = function(usuarioFirebase) {
