@@ -68,7 +68,7 @@ async function cargarDatosReales() {
 
         // --- B. CARGAR EMOCIONES DE TODOS LOS USUARIOS ---
         // Usamos collectionGroup para buscar en todas las subcolecciones "emociones" de todos los usuarios
-        const qEmociones = query(collectionGroup(db, "emociones"), orderBy("timestamp", "desc"));
+       const qEmociones = query(collectionGroup(db, "emociones"));
         const emocionesSnapshot = await getDocs(qEmociones);
         
         tablaEmociones.innerHTML = ""; 
