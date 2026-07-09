@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, collectionGroup, orderBy, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
@@ -17,7 +17,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// ==========================================
 // 1. SEGURIDAD
+// ==========================================
 onAuthStateChanged(auth, (user) => {
     if (user && user.email === CORREO_ADMIN_AUTORIZADO) {
         document.getElementById('pantalla-bloqueo').style.display = 'none';
@@ -52,7 +54,6 @@ async function obtenerMapaCorreos() {
         });
 
         // Intento 2: Extraer los correos desde los Diarios
-        // Como vimos que ahí sí se guardan, los cruzamos con sus respectivos IDs
         const q2 = query(collection(db, "diarios"));
         const snap2 = await getDocs(q2);
         snap2.forEach(doc => {
@@ -96,7 +97,7 @@ async function cargarDiarios() {
 }
 
 // ==========================================
-// B. CARGAR EMOCIONES
+// B. CARGAR EMOCIONES (VERSIÓN SEGURA SIN COLLECTIONGROUP)
 // ==========================================
 function obtenerColorEmocion(emocion) {
     const e = emocion.toLowerCase();
@@ -111,42 +112,56 @@ function obtenerColorEmocion(emocion) {
 async function cargarEmociones(mapaUsuarios) {
     const tabla = document.getElementById('tabla-emociones');
     let conteoEmociones = {};
+    let totalEmocionesContadas = 0;
 
     try {
-        const q = query(collectionGroup(db, "emociones")); 
-        const snapshot = await getDocs(q);
-        
-        document.getElementById('stat-emociones').innerText = snapshot.size; 
         tabla.innerHTML = ""; 
+        let filasHtml = [];
 
-        if (snapshot.empty) {
+        // 1. Traemos a todos los usuarios de la base de datos de manera normal
+        const qUsuarios = query(collection(db, "usuarios"));
+        const snapUsuarios = await getDocs(qUsuarios);
+
+        for (const usuarioDoc of snapUsuarios.docs) {
+            const userId = usuarioDoc.id;
+            const identificador = mapaUsuarios[userId] || userId;
+
+            // 2. Por cada usuario, entramos a ver si tiene emociones registradas
+            const qEmociones = collection(db, "usuarios", userId, "emociones");
+            const snapEmociones = await getDocs(qEmociones);
+
+            snapEmociones.forEach((doc) => {
+                const data = doc.data();
+                if (!data.emocion) return; 
+
+                totalEmocionesContadas++;
+                const emo = data.emocion.toLowerCase();
+                conteoEmociones[emo] = (conteoEmociones[emo] || 0) + 1;
+
+                let fecha = data.fechaFiltro || 'Reciente';
+                if (data.timestamp) {
+                    fecha = data.timestamp.toDate().toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
+                }
+
+                const claseColor = obtenerColorEmocion(data.emocion);
+
+                filasHtml.push(`<tr>
+                    <td style="color: #64748b; font-size: 14px; font-weight: bold;">${identificador}</td>
+                    <td><span class="${claseColor}" style="text-transform: capitalize;">${data.emocion}</span></td>
+                    <td><span class="badge neutro">${fecha}</span></td>
+                </tr>`);
+            });
+        }
+
+        // Actualizamos la tarjeta superior con el total de emociones
+        document.getElementById('stat-emociones').innerText = totalEmocionesContadas; 
+
+        if (filasHtml.length === 0) {
             tabla.innerHTML = "<tr><td colspan='3' style='text-align: center;'>No hay emociones registradas.</td></tr>";
             return;
         }
 
-        let filasHtml = [];
-        snapshot.forEach((doc) => {
-            const data = doc.data();
-            const userId = doc.ref.parent.parent ? doc.ref.parent.parent.id : 'Desconocido';
-            
-            // Reemplazo inteligente: Si lo encontró en el traductor, pone el correo. Si no, deja el ID.
-            const identificador = mapaUsuarios[userId] || userId;
-
-            const emo = data.emocion.toLowerCase();
-            conteoEmociones[emo] = (conteoEmociones[emo] || 0) + 1;
-
-            let fecha = data.fechaFiltro || 'Reciente';
-            if (data.timestamp) fecha = data.timestamp.toDate().toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
-
-            const claseColor = obtenerColorEmocion(data.emocion);
-
-            filasHtml.push(`<tr>
-                <td style="color: #64748b; font-size: 14px; font-weight: bold;">${identificador}</td>
-                <td><span class="${claseColor}" style="text-transform: capitalize;">${data.emocion}</span></td>
-                <td><span class="badge neutro">${fecha}</span></td>
-            </tr>`);
-        });
-
+        // Mostramos las emociones
         tabla.innerHTML = filasHtml.reverse().join(''); 
 
         if (Object.keys(conteoEmociones).length > 0) {
@@ -154,7 +169,10 @@ async function cargarEmociones(mapaUsuarios) {
             document.getElementById('stat-tendencia').innerText = dominante.toUpperCase();
         }
 
-    } catch (e) { tabla.innerHTML = "<tr><td colspan='3' style='color: red;'>Error al cargar emociones.</td></tr>"; }
+    } catch (e) { 
+        console.error("Error al cargar emociones:", e);
+        tabla.innerHTML = "<tr><td colspan='3' style='color: red;'>Error al cargar emociones.</td></tr>"; 
+    }
 }
 
 // ==========================================
@@ -176,7 +194,6 @@ async function cargarMascotas(mapaUsuarios) {
             const data = doc.data();
             const id = doc.id;
             
-            // Reemplazo inteligente
             const identificador = mapaUsuarios[id] || id;
 
             const tipo = data.tipoActivo || data.mascota?.tipoActivo || 'Desconocido';
@@ -204,6 +221,7 @@ function configurarBuscador() {
         ];
 
         cuerposTablas.forEach(tbody => {
+            if(!tbody) return;
             const filas = tbody.getElementsByTagName('tr');
             Array.from(filas).forEach(fila => {
                 const textoFila = fila.textContent.toLowerCase();
