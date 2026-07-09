@@ -267,3 +267,26 @@ function obtenerColorEmocion(emocion) {
     if (e.includes('desmotiv') || e.includes('cansad')) return 'badge desmotivado';
     return 'badge neutro';
 }
+// ==========================================
+// 6. CERRAR PANEL (TECLA ESC Y BOTÓN ATRÁS)
+// ==========================================
+function deseleccionarPaciente() {
+    // 1. Ocultar el panel de detalles y mostrar la carpeta vacía
+    document.getElementById('detalle-paciente').style.display = 'none';
+    document.getElementById('estado-vacio').style.display = 'flex';
+    
+    // 2. Quitar el color azul (activo) de la lista de la izquierda
+    document.querySelectorAll('.usuario-card').forEach(c => c.classList.remove('activo'));
+}
+
+// Detectar la tecla "Escape" en computadoras
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        deseleccionarPaciente();
+    }
+});
+
+// Detectar el botón "Atrás" en celulares
+window.addEventListener('popstate', () => {
+    deseleccionarPaciente();
+});
