@@ -18,9 +18,6 @@ const db = getFirestore(app);
 
 let todosLosUsuarios = [];
 
-// ==========================================
-// 1. SEGURIDAD
-// ==========================================
 onAuthStateChanged(auth, (user) => {
     if (user && user.email === CORREO_ADMIN_AUTORIZADO) {
         document.getElementById('pantalla-bloqueo').style.display = 'none';
@@ -32,9 +29,6 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// ==========================================
-// TRUCO PARA RECUPERAR CORREOS PERDIDOS
-// ==========================================
 async function obtenerMapaCorreos() {
     let mapa = {};
     try {
@@ -43,13 +37,10 @@ async function obtenerMapaCorreos() {
             const data = doc.data();
             if (data.userId && data.correo) mapa[data.userId] = data.correo;
         });
-    } catch (e) { console.error("Error buscando correos", e); }
+    } catch (e) {}
     return mapa;
 }
 
-// ==========================================
-// 2. CARGAR PACIENTES
-// ==========================================
 async function cargarListaUsuarios() {
     const contenedorLista = document.getElementById('lista-usuarios');
     try {
@@ -61,16 +52,14 @@ async function cargarListaUsuarios() {
         
         snapshot.forEach((doc) => {
             const data = doc.data();
-            // Buscar el correo en todos lados para que no salga "Anónimo"
             const correoReal = data.correo || data.email || mapaCorreosPerdidos[doc.id] || 'Sin correo registrado';
-            // Nombre real
             const nombreReal = data.nombre || correoReal.split('@')[0];
 
             todosLosUsuarios.push({
                 id: doc.id,
                 correo: correoReal,
                 nombre: nombreReal,
-                foto: data.foto || data.Foto || null,
+                foto: data.foto || null, // <- Aquí lo lee
                 datosBase: data
             });
         });
@@ -125,66 +114,53 @@ function configurarBuscador() {
     });
 }
 
-// ==========================================
-// 3. PESTAÑAS (TABS) INTERACTIVAS
-// ==========================================
 function configurarPestanas() {
     const botones = ['btn-tab-resumen', 'btn-tab-diario', 'btn-tab-emociones'];
     const contenidos = ['tab-resumen', 'tab-diario', 'tab-emociones'];
 
     botones.forEach((btnId, index) => {
         document.getElementById(btnId).addEventListener('click', () => {
-            // Apagar todos
             botones.forEach(b => document.getElementById(b).classList.remove('activo'));
             contenidos.forEach(c => document.getElementById(c).classList.remove('activo'));
-            // Encender el clickeado
             document.getElementById(btnId).classList.add('activo');
             document.getElementById(contenidos[index]).classList.add('activo');
         });
     });
 }
 
-// ==========================================
-// 4. SELECCIONAR PACIENTE Y CARGAR SUS TABS
-// ==========================================
 async function seleccionarPaciente(user, cardElement) {
-    history.pushState({ panelAbierto: true }, "");
+    history.pushState({ panelAbierto: true }, ""); 
+    
     document.querySelectorAll('.usuario-card').forEach(c => c.classList.remove('activo'));
     if(cardElement) cardElement.classList.add('activo');
 
     document.getElementById('estado-vacio').style.display = 'none';
     document.getElementById('detalle-paciente').style.display = 'block';
 
-    // Cabecera
     document.getElementById('det-nombre').innerText = user.nombre;
     document.getElementById('det-correo').innerText = user.correo;
     
     const imgFoto = document.getElementById('det-foto');
     const divAvatar = document.getElementById('det-avatar-texto');
     
-    if(user.foto || user.Foto) {
+    if(user.foto) {
         imgFoto.src = user.foto;
         imgFoto.style.display = "block";
         divAvatar.style.display = "none";
     } else {
         imgFoto.style.display = "none";
-        divAvatar.innerText = user.nombre.charAt(0).toUpperCase();
+        divAvatar.innerText = user.nombre !== 'Sin correo registrado' ? user.nombre.charAt(0).toUpperCase() : '?';
         divAvatar.style.display = "flex";
     }
 
-    // Tab 1: Resumen Mascota
     const mascotaTipo = user.datosBase.tipoActivo || user.datosBase.mascota?.tipoActivo || 'Ninguna';
     const mascotaNivel = user.datosBase.nivel || user.datosBase.mascota?.nivel || 0;
     document.getElementById('det-mascota').innerText = mascotaTipo.charAt(0).toUpperCase() + mascotaTipo.slice(1);
     document.getElementById('det-nivel').innerText = mascotaNivel + "%";
 
-    // Cargar la data de los otros tabs
     await cargarDatosPaciente(user.id);
 }
 
-// ==========================================
-// 5. LLENAR DATOS DE DIARIOS Y EMOCIONES
-// ==========================================
 async function cargarDatosPaciente(userId) {
     const divDiarios = document.getElementById('timeline-diarios');
     const divEmociones = document.getElementById('timeline-emociones');
@@ -193,7 +169,6 @@ async function cargarDatosPaciente(userId) {
     let ultimaConexionMs = 0;
     
     try {
-        // --- A. CARGAR DIARIOS ---
         const qDiarios = query(collection(db, "diarios"), where("userId", "==", userId));
         const snapDiarios = await getDocs(qDiarios);
         let listaDiarios = [];
@@ -208,7 +183,6 @@ async function cargarDatosPaciente(userId) {
         listaDiarios.sort((a,b) => b.ms - a.ms);
         divDiarios.innerHTML = listaDiarios.length ? listaDiarios.map(x => x.html).join('') : "<p style='color:#64748b;'>No hay diarios registrados.</p>";
 
-        // --- B. CARGAR EMOCIONES ---
         const qEmociones = collection(db, "usuarios", userId, "emociones");
         const snapEmociones = await getDocs(qEmociones);
         let listaEmociones = [];
@@ -237,8 +211,6 @@ async function cargarDatosPaciente(userId) {
         listaEmociones.sort((a,b) => b.ms - a.ms);
         divEmociones.innerHTML = listaEmociones.length ? listaEmociones.map(x => x.html).join('') : "<p style='color:#64748b;'>No hay emociones registradas.</p>";
 
-        // --- C. ESTADÍSTICAS DEL RESUMEN ---
-        // Emoción
         if (Object.keys(conteo).length > 0) {
             let dom = Object.keys(conteo).reduce((a, b) => conteo[a] > conteo[b] ? a : b);
             document.getElementById('det-emocion').innerHTML = `<span class="${obtenerColorEmocion(dom)}">${dom.toUpperCase()}</span>`;
@@ -246,7 +218,6 @@ async function cargarDatosPaciente(userId) {
             document.getElementById('det-emocion').innerText = "Sin registros";
         }
 
-        // Última conexión
         if(ultimaConexionMs > 0) {
             document.getElementById('det-conexion').innerText = new Date(ultimaConexionMs).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', hour: '2-digit', minute:'2-digit' });
         } else {
@@ -268,26 +239,12 @@ function obtenerColorEmocion(emocion) {
     if (e.includes('desmotiv') || e.includes('cansad')) return 'badge desmotivado';
     return 'badge neutro';
 }
-// ==========================================
-// 6. CERRAR PANEL (TECLA ESC Y BOTÓN ATRÁS)
-// ==========================================
+
 function deseleccionarPaciente() {
-    // 1. Ocultar el panel de detalles y mostrar la carpeta vacía
     document.getElementById('detalle-paciente').style.display = 'none';
     document.getElementById('estado-vacio').style.display = 'flex';
-    
-    // 2. Quitar el color azul (activo) de la lista de la izquierda
     document.querySelectorAll('.usuario-card').forEach(c => c.classList.remove('activo'));
 }
 
-// Detectar la tecla "Escape" en computadoras
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        deseleccionarPaciente();
-    }
-});
-
-// Detectar el botón "Atrás" en celulares
-window.addEventListener('popstate', () => {
-    deseleccionarPaciente();
-});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') deseleccionarPaciente(); });
+window.addEventListener('popstate', () => { deseleccionarPaciente(); });
