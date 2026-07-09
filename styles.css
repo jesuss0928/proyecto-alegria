@@ -467,7 +467,7 @@ body.sidebar-expanded #mascota-virtual { left: calc(var(--sidebar-expanded-width
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 70px; /* Separación para poner la hora */
+    left: 75px; /* Separación para poner la hora */
     border-left: 2px solid #ef4444; /* Línea roja */
     z-index: 1;
 }
@@ -481,7 +481,7 @@ body.sidebar-expanded #mascota-virtual { left: calc(var(--sidebar-expanded-width
 }
 
 .notebook-time {
-    width: 70px;
+    width: 75px;
     padding-left: 10px;
     padding-right: 5px;
     font-size: 0.75rem;
