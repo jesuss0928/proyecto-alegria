@@ -2,7 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, collection, getDocs, collectionGroup, orderBy, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Tu configuración real de Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
     authDomain: "alegria-web-977ea.firebaseapp.com",
@@ -12,92 +11,174 @@ const firebaseConfig = {
     appId: "1:561418892075:web:133a1ff3948b86a4e88b6e"
 };
 
-// 👈 LA LLAVE MAESTRA
 const CORREO_ADMIN_AUTORIZADO = "jess.vite0609@gmail.com"; 
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 1. VERIFICAR SEGURIDAD AL CARGAR LA PÁGINA
+// 1. SEGURIDAD
 onAuthStateChanged(auth, (user) => {
-    const pantallaBloqueo = document.getElementById('pantalla-bloqueo');
-    const panelContenido = document.getElementById('panel-contenido');
-
     if (user && user.email === CORREO_ADMIN_AUTORIZADO) {
-        // ES EL ADMIN: Desbloquear pantalla y cargar datos
-        pantallaBloqueo.style.display = 'none';
-        panelContenido.style.display = 'block';
+        document.getElementById('pantalla-bloqueo').style.display = 'none';
+        document.getElementById('panel-contenido').style.display = 'block';
         cargarDatosReales();
     } else {
-        // ES UN INTRUSO O NO INICIÓ SESIÓN
-        pantallaBloqueo.innerHTML = "<div style='font-size: 40px; margin-bottom: 15px;'>🚫</div>Acceso Denegado. No tienes permisos para ver esta página.";
-        // Opcional: cierra la pestaña automáticamente después de 3 segundos
-        setTimeout(() => window.close(), 3000); 
+        document.getElementById('pantalla-bloqueo').innerHTML = "<div style='font-size: 40px; margin-bottom: 15px;'>🚫</div>Acceso Denegado.";
     }
 });
 
-// 2. EXTRAER DATOS REALES DE FIREBASE
+// 2. FUNCIÓN PRINCIPAL PARA EXTRAER TODO
 async function cargarDatosReales() {
-    const tablaDiarios = document.getElementById('tabla-diarios');
-    const tablaEmociones = document.getElementById('tabla-emociones');
+    await cargarDiarios();
+    await cargarEmociones();
+    await cargarMascotas();
+    configurarBuscador();
+}
+
+// ==========================================
+// A. CARGAR DIARIOS Y ESTADÍSTICA
+// ==========================================
+async function cargarDiarios() {
+    const tabla = document.getElementById('tabla-diarios');
+    try {
+        const q = query(collection(db, "diarios"), orderBy("fecha", "desc"));
+        const snapshot = await getDocs(q);
+        
+        document.getElementById('stat-diarios').innerText = snapshot.size; // Tarjeta 1
+        tabla.innerHTML = ""; 
+
+        if (snapshot.empty) {
+            tabla.innerHTML = "<tr><td colspan='3' style='text-align: center;'>No hay diarios registrados.</td></tr>";
+            return;
+        }
+
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            const fecha = new Date(data.fecha).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
+            
+            tabla.innerHTML += `<tr>
+                <td><strong>${data.correo || 'Anónimo'}</strong></td>
+                <td><span class="badge neutro">${fecha}</span></td>
+                <td style="white-space: pre-wrap; color: #475569;">${data.contenido}</td>
+            </tr>`;
+        });
+    } catch (e) { tabla.innerHTML = "<tr><td colspan='3' style='color: red;'>Error al cargar diarios.</td></tr>"; }
+}
+
+// ==========================================
+// B. CARGAR EMOCIONES, COLORES Y TENDENCIA
+// ==========================================
+function obtenerColorEmocion(emocion) {
+    const e = emocion.toLowerCase();
+    if (e.includes('feliz')) return 'badge feliz';
+    if (e.includes('ansied') || e.includes('ansios')) return 'badge ansiedad';
+    if (e.includes('trist')) return 'badge tristeza';
+    if (e.includes('enoj')) return 'badge enojo';
+    if (e.includes('desmotiv') || e.includes('cansad')) return 'badge desmotivado';
+    return 'badge neutro';
+}
+
+async function cargarEmociones() {
+    const tabla = document.getElementById('tabla-emociones');
+    let conteoEmociones = {};
 
     try {
-        // --- A. CARGAR DIARIOS ---
-        // Ordenamos los diarios por fecha (los más nuevos primero)
-        const qDiarios = query(collection(db, "diarios"), orderBy("fecha", "desc"));
-        const diariosSnapshot = await getDocs(qDiarios);
+        const q = query(collectionGroup(db, "emociones")); // Sin orderBy para no chocar con índices
+        const snapshot = await getDocs(q);
         
-        tablaDiarios.innerHTML = ""; // Limpiar tabla
-        
-        if (diariosSnapshot.empty) {
-            tablaDiarios.innerHTML = "<tr><td colspan='3' style='text-align: center; color: #888;'>No hay diarios registrados aún.</td></tr>";
-        } else {
-            diariosSnapshot.forEach((doc) => {
-                const data = doc.data();
-                const fechaLegible = new Date(data.fecha).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
-                
-                const fila = `<tr>
-                    <td><strong>${data.correo || 'Usuario anónimo'}</strong></td>
-                    <td><span class="badge">${fechaLegible}</span></td>
-                    <td style="white-space: pre-wrap;">${data.contenido}</td>
-                </tr>`;
-                tablaDiarios.innerHTML += fila;
-            });
+        document.getElementById('stat-emociones').innerText = snapshot.size; // Tarjeta 2
+        tabla.innerHTML = ""; 
+
+        if (snapshot.empty) {
+            tabla.innerHTML = "<tr><td colspan='3' style='text-align: center;'>No hay emociones registradas.</td></tr>";
+            return;
         }
 
-        // --- B. CARGAR EMOCIONES DE TODOS LOS USUARIOS ---
-        // Usamos collectionGroup para buscar en todas las subcolecciones "emociones" de todos los usuarios
-       const qEmociones = query(collectionGroup(db, "emociones"));
-        const emocionesSnapshot = await getDocs(qEmociones);
-        
-        tablaEmociones.innerHTML = ""; 
+        let filasHtml = [];
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            const userId = doc.ref.parent.parent ? doc.ref.parent.parent.id : 'Desconocido';
+            
+            // Estadística para la tarjeta 3
+            const emo = data.emocion.toLowerCase();
+            conteoEmociones[emo] = (conteoEmociones[emo] || 0) + 1;
 
-        if (emocionesSnapshot.empty) {
-            tablaEmociones.innerHTML = "<tr><td colspan='3' style='text-align: center; color: #888;'>No hay emociones registradas aún.</td></tr>";
-        } else {
-            emocionesSnapshot.forEach((doc) => {
-                const data = doc.data();
-                // Subir a la referencia del padre para intentar sacar el ID del usuario (opcional)
-                const userId = doc.ref.parent.parent ? doc.ref.parent.parent.id : 'Desconocido';
-                
-                let fechaRegistro = data.fechaFiltro || 'Sin fecha';
-                if (data.timestamp) {
-                    fechaRegistro = data.timestamp.toDate().toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
-                }
+            let fecha = data.fechaFiltro || 'Reciente';
+            if (data.timestamp) fecha = data.timestamp.toDate().toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
 
-                const fila = `<tr>
-                    <td style="color: #64748b; font-size: 14px;">ID: ${userId}</td>
-                    <td style="text-transform: capitalize; font-weight: bold;">${data.emocion}</td>
-                    <td><span class="badge">${fechaRegistro}</span></td>
-                </tr>`;
-                tablaEmociones.innerHTML += fila;
-            });
+            const claseColor = obtenerColorEmocion(data.emocion);
+
+            filasHtml.push(`<tr>
+                <td style="color: #64748b; font-size: 14px;">${userId}</td>
+                <td><span class="${claseColor}" style="text-transform: capitalize;">${data.emocion}</span></td>
+                <td><span class="badge neutro">${fecha}</span></td>
+            </tr>`);
+        });
+
+        tabla.innerHTML = filasHtml.reverse().join(''); // Invertimos para simular el "Más reciente arriba"
+
+        // Calcular la emoción dominante
+        if (Object.keys(conteoEmociones).length > 0) {
+            let dominante = Object.keys(conteoEmociones).reduce((a, b) => conteoEmociones[a] > conteoEmociones[b] ? a : b);
+            document.getElementById('stat-tendencia').innerText = dominante.toUpperCase();
         }
 
-    } catch (error) {
-        console.error("Error obteniendo datos:", error);
-        tablaDiarios.innerHTML = "<tr><td colspan='3' style='text-align: center; color: red;'>Error al cargar los datos. Revisa que las reglas de Firebase Firestore permitan la lectura.</td></tr>";
-        tablaEmociones.innerHTML = "<tr><td colspan='3' style='text-align: center; color: red;'>Error al cargar los datos.</td></tr>";
-    }
+    } catch (e) { tabla.innerHTML = "<tr><td colspan='3' style='color: red;'>Error al cargar emociones.</td></tr>"; }
+}
+
+// ==========================================
+// C. CARGAR USUARIOS Y MASCOTAS
+// ==========================================
+async function cargarMascotas() {
+    const tabla = document.getElementById('tabla-mascotas');
+    try {
+        const q = query(collection(db, "usuarios"));
+        const snapshot = await getDocs(q);
+        tabla.innerHTML = "";
+
+        if (snapshot.empty) {
+            tabla.innerHTML = "<tr><td colspan='3' style='text-align: center;'>No hay registros de mascotas aún.</td></tr>";
+            return;
+        }
+
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            const id = doc.id;
+            // Verificamos si en el documento del usuario está guardada la mascota
+            const tipo = data.tipoActivo || data.mascota?.tipoActivo || 'Desconocido';
+            const nivel = data.nivel || data.mascota?.nivel || 0;
+
+            tabla.innerHTML += `<tr>
+                <td><strong>${id}</strong></td>
+                <td style="text-transform: capitalize;">${tipo}</td>
+                <td><span class="badge nivel">Nivel ${nivel}%</span></td>
+            </tr>`;
+        });
+    } catch (e) { tabla.innerHTML = "<tr><td colspan='3' style='color: red;'>Aún no hay datos de mascotas en la base.</td></tr>"; }
+}
+
+// ==========================================
+// D. LÓGICA DEL BUSCADOR INTELIGENTE
+// ==========================================
+function configurarBuscador() {
+    document.getElementById('buscador').addEventListener('input', function(e) {
+        const termino = e.target.value.toLowerCase();
+        
+        // Tablas a filtrar
+        const cuerposTablas = [
+            document.getElementById('tabla-diarios'),
+            document.getElementById('tabla-emociones'),
+            document.getElementById('tabla-mascotas')
+        ];
+
+        cuerposTablas.forEach(tbody => {
+            const filas = tbody.getElementsByTagName('tr');
+            Array.from(filas).forEach(fila => {
+                // Si el texto de toda la fila incluye el texto que el jefe escribe, lo mostramos, si no, lo ocultamos.
+                const textoFila = fila.textContent.toLowerCase();
+                fila.style.display = textoFila.includes(termino) ? '' : 'none';
+            });
+        });
+    });
 }
