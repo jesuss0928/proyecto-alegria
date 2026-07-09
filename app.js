@@ -61,7 +61,15 @@ window.sincronizarMascotaUI = function(datosRemotos) {
 
 function guardarProgresoMascota() {
     localStorage.setItem('alegria_mascota_data', JSON.stringify(datosProgreso)); 
-    if (typeof window.guardarMascotaBD === "function") { window.guardarMascotaBD(datosProgreso); } 
+    
+    // MODIFICADO: Intentamos extraer el correo desde Firebase Auth si está disponible de forma global
+    if (typeof window.guardarMascotaBD === "function") { 
+        const authGlobal = window.auth || (window.firebase && window.firebase.auth ? window.firebase.auth() : null);
+        if (authGlobal && authGlobal.currentUser) {
+            datosProgreso.correo = authGlobal.currentUser.email;
+        }
+        window.guardarMascotaBD(datosProgreso); 
+    } 
 }
 
 function actualizarUIMascota() {
@@ -172,7 +180,16 @@ function showAdvice(emotion) {
     data.tips.forEach(tip => { const li = document.createElement('li'); li.textContent = tip; list.appendChild(li); }); 
     container.style.display = 'block'; 
 
-    if (typeof window.guardarEmocionBD === "function") { window.guardarEmocionBD(emotion); } 
+    // MODIFICADO: Intentamos enviar un objeto con la emoción y el correo del Auth global
+    if (typeof window.guardarEmocionBD === "function") { 
+        let payloadEmocion = { emocion: emotion };
+        const authGlobal = window.auth || (window.firebase && window.firebase.auth ? window.firebase.auth() : null);
+        if (authGlobal && authGlobal.currentUser) {
+            payloadEmocion.correo = authGlobal.currentUser.email;
+        }
+        window.guardarEmocionBD(payloadEmocion); 
+    } 
+    
     if (intervaloRespiracion) clearInterval(intervaloRespiracion); 
     
     activarJuegoPorEmocion(emotion, false); 
