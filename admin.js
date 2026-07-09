@@ -96,7 +96,7 @@ function renderizarListaUsuarios(usuarios) {
         
         let avatarHTML = "";
         if (user.foto) {
-            avatarHTML = `<img src="${user.foto}" class="user-avatar">`;
+            avatarHTML = `<img src="${user.foto}" class="user-avatar" referrerpolicy="no-referrer">`;
         } else {
             const inicial = user.nombre !== 'Sin correo registrado' ? user.nombre.charAt(0).toUpperCase() : '?';
             avatarHTML = `<div class="user-avatar">${inicial}</div>`;
