@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, orderBy, query } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCXRaqSetEKHEn3-AIhK3XalDEPJ8vhUfE",
@@ -17,88 +17,237 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Variables Globales
+let todosLosUsuarios = [];
+
 // ==========================================
-// 1. SEGURIDAD
+// 1. SEGURIDAD DE ACCESO
 // ==========================================
 onAuthStateChanged(auth, (user) => {
     if (user && user.email === CORREO_ADMIN_AUTORIZADO) {
         document.getElementById('pantalla-bloqueo').style.display = 'none';
-        document.getElementById('panel-contenido').style.display = 'block';
-        cargarDatosReales();
+        document.getElementById('panel-contenido').style.display = 'flex';
+        cargarListaUsuarios();
     } else {
-        document.getElementById('pantalla-bloqueo').innerHTML = "<div style='font-size: 40px; margin-bottom: 15px;'>🚫</div>Acceso Denegado.";
+        document.getElementById('pantalla-bloqueo').innerHTML = "<div style='font-size: 50px; margin-bottom: 20px;'>🚫</div><h2>Acceso Denegado</h2><p>Solo el administrador puede ver esta página.</p>";
     }
 });
 
-async function cargarDatosReales() {
-    const mapaUsuarios = await obtenerMapaCorreos();
-
-    await cargarDiarios();
-    await cargarEmociones(mapaUsuarios);
-    await cargarMascotas(mapaUsuarios);
-    configurarBuscador();
-}
-
 // ==========================================
-// TRUCO MAESTRO: TRADUCTOR DE IDs A CORREOS
+// 2. CARGAR LISTA DE PACIENTES (MENÚ IZQUIERDO)
 // ==========================================
-async function obtenerMapaCorreos() {
-    let mapa = {};
+async function cargarListaUsuarios() {
+    const contenedorLista = document.getElementById('lista-usuarios');
     try {
-        // Intento 1: Buscar en perfiles
-        const q1 = query(collection(db, "usuarios"));
-        const snap1 = await getDocs(q1);
-        snap1.forEach(doc => {
-            const data = doc.data();
-            if (data.correo || data.email) mapa[doc.id] = data.correo || data.email;
-        });
-
-        // Intento 2: Extraer los correos desde los Diarios
-        const q2 = query(collection(db, "diarios"));
-        const snap2 = await getDocs(q2);
-        snap2.forEach(doc => {
-            const data = doc.data();
-            if (data.userId && data.correo) {
-                mapa[data.userId] = data.correo;
-            }
-        });
-    } catch (e) { console.error("Error mapeando correos", e); }
-    return mapa;
-}
-
-// ==========================================
-// A. CARGAR DIARIOS Y ESTADÍSTICA
-// ==========================================
-async function cargarDiarios() {
-    const tabla = document.getElementById('tabla-diarios');
-    try {
-        const q = query(collection(db, "diarios"), orderBy("fecha", "desc"));
-        const snapshot = await getDocs(q);
+        const qUsuarios = query(collection(db, "usuarios"));
+        const snapshot = await getDocs(qUsuarios);
         
-        document.getElementById('stat-diarios').innerText = snapshot.size; 
-        tabla.innerHTML = ""; 
+        todosLosUsuarios = [];
+        
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            todosLosUsuarios.push({
+                id: doc.id,
+                correo: data.correo || data.email || 'Anónimo',
+                nombre: data.nombre || data.correo || doc.id,
+                foto: data.foto || null,
+                datosBase: data // Aquí viene la mascota
+            });
+        });
 
-        if (snapshot.empty) {
-            tabla.innerHTML = "<tr><td colspan='3' style='text-align: center;'>No hay diarios registrados.</td></tr>";
+        renderizarListaUsuarios(todosLosUsuarios);
+        configurarBuscador();
+
+    } catch (error) {
+        console.error("Error al cargar usuarios:", error);
+        contenedorLista.innerHTML = `<div style="padding:20px; color:red;">Error al cargar la lista de pacientes.</div>`;
+    }
+}
+
+function renderizarListaUsuarios(usuarios) {
+    const contenedorLista = document.getElementById('lista-usuarios');
+    contenedorLista.innerHTML = "";
+
+    if(usuarios.length === 0) {
+        contenedorLista.innerHTML = `<div style="padding:20px; color:#64748b; text-align:center;">No se encontraron pacientes.</div>`;
+        return;
+    }
+
+    usuarios.forEach(user => {
+        const divCard = document.createElement('div');
+        divCard.className = "usuario-card";
+        divCard.dataset.id = user.id;
+
+        // Si tiene foto la usamos, si no, ponemos la inicial de su correo
+        let avatarHTML = "";
+        if (user.foto) {
+            avatarHTML = `<img src="${user.foto}" class="user-avatar" alt="foto">`;
+        } else {
+            const inicial = user.correo !== 'Anónimo' ? user.correo.charAt(0).toUpperCase() : '?';
+            avatarHTML = `<div class="user-avatar" style="background:#3b82f6;">${inicial}</div>`;
+        }
+
+        divCard.innerHTML = `
+            ${avatarHTML}
+            <div class="user-info">
+                <h4>${user.nombre.split('@')[0]}</h4>
+                <p>${user.correo}</p>
+            </div>
+        `;
+
+        divCard.onclick = () => seleccionarPaciente(user, divCard);
+        contenedorLista.appendChild(divCard);
+    });
+}
+
+function configurarBuscador() {
+    document.getElementById('buscador-usuarios').addEventListener('input', (e) => {
+        const termino = e.target.value.toLowerCase();
+        const filtrados = todosLosUsuarios.filter(u => 
+            u.correo.toLowerCase().includes(termino) || u.nombre.toLowerCase().includes(termino)
+        );
+        renderizarListaUsuarios(filtrados);
+    });
+}
+
+// ==========================================
+// 3. CARGAR DETALLES DEL PACIENTE (PANEL DERECHO)
+// ==========================================
+async function seleccionarPaciente(user, cardElement) {
+    // 1. Efecto visual de selección en la lista
+    document.querySelectorAll('.usuario-card').forEach(c => c.classList.remove('activo'));
+    if(cardElement) cardElement.classList.add('activo');
+
+    // 2. Mostrar panel derecho y ocultar el vacío
+    document.getElementById('estado-vacio').style.display = 'none';
+    const panelDetalle = document.getElementById('detalle-paciente');
+    panelDetalle.style.display = 'block';
+
+    // 3. Cargar cabecera
+    document.getElementById('det-nombre').innerText = user.nombre.split('@')[0];
+    document.getElementById('det-correo').innerText = user.correo;
+    
+    const imgFoto = document.getElementById('det-foto');
+    if(user.foto) {
+        imgFoto.src = user.foto;
+        imgFoto.style.display = "block";
+    } else {
+        imgFoto.style.display = "none"; // Si no hay foto de Google, se oculta (se ve limpio)
+    }
+
+    // 4. Cargar Mascota
+    const mascotaTipo = user.datosBase.tipoActivo || user.datosBase.mascota?.tipoActivo || 'Ninguna';
+    const mascotaNivel = user.datosBase.nivel || user.datosBase.mascota?.nivel || 0;
+    document.getElementById('det-mascota').innerText = mascotaTipo.charAt(0).toUpperCase() + mascotaTipo.slice(1);
+    document.getElementById('det-nivel').innerText = mascotaNivel + "%";
+
+    // 5. Cargar Línea de tiempo cronológica (Emociones y Diarios)
+    await cargarLineaDeTiempo(user.id, user.correo);
+}
+
+// ==========================================
+// 4. GENERAR LÍNEA DE TIEMPO (Cronología exacta)
+// ==========================================
+async function cargarLineaDeTiempo(userId, correoUser) {
+    const contenedorEventos = document.getElementById('timeline-eventos');
+    contenedorEventos.innerHTML = "<p style='color:#64748b;'>Cargando historial...</p>";
+    
+    let eventos = [];
+    let conteoEmociones = {};
+
+    try {
+        // A. Buscar Diarios del usuario (busca por ID o por correo por seguridad)
+        const qDiarios = query(collection(db, "diarios"), where("userId", "==", userId));
+        const snapDiarios = await getDocs(qDiarios);
+        
+        snapDiarios.forEach(doc => {
+            const data = doc.data();
+            const fechaMs = new Date(data.fecha).getTime(); // Convertir a milisegundos para ordenar
+            eventos.push({
+                tipo: 'diario',
+                fechaMs: fechaMs,
+                fechaTexto: new Date(data.fecha).toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' }),
+                contenido: data.contenido
+            });
+        });
+
+        // B. Buscar Emociones del usuario
+        const qEmociones = collection(db, "usuarios", userId, "emociones");
+        const snapEmociones = await getDocs(qEmociones);
+
+        snapEmociones.forEach(doc => {
+            const data = doc.data();
+            if(!data.emocion || typeof data.emocion !== 'string') return;
+            
+            // Contar para la estadística
+            const emo = data.emocion.toLowerCase();
+            conteoEmociones[emo] = (conteoEmociones[emo] || 0) + 1;
+
+            // Intentar sacar la fecha exacta
+            let fechaMs = 0;
+            let fechaTexto = data.fechaFiltro || "Fecha desconocida";
+
+            if (data.timestamp) {
+                const dateObj = data.timestamp.toDate();
+                fechaMs = dateObj.getTime();
+                fechaTexto = dateObj.toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' });
+            } else {
+                fechaMs = Date.now(); // Si no hay timestamp, lo ponemos al final
+            }
+
+            eventos.push({
+                tipo: 'emocion',
+                fechaMs: fechaMs,
+                fechaTexto: fechaTexto,
+                emocion: data.emocion
+            });
+        });
+
+        // C. Calcular Emoción Dominante
+        if (Object.keys(conteoEmociones).length > 0) {
+            let dominante = Object.keys(conteoEmociones).reduce((a, b) => conteoEmociones[a] > conteoEmociones[b] ? a : b);
+            document.getElementById('det-emocion').innerHTML = `<span class="badge ${obtenerColorEmocion(dominante)}">${dominante}</span>`;
+        } else {
+            document.getElementById('det-emocion').innerText = "Sin registros";
+        }
+
+        // D. ORDENAR CRONOLÓGICAMENTE (Del más reciente al más antiguo)
+        eventos.sort((a, b) => b.fechaMs - a.fechaMs);
+
+        // E. Dibujar los eventos en el HTML
+        if (eventos.length === 0) {
+            contenedorEventos.innerHTML = "<p style='color:#64748b;'>Este paciente aún no tiene entradas en el diario ni emociones registradas.</p>";
             return;
         }
 
-        snapshot.forEach((doc) => {
-            const data = doc.data();
-            const fecha = new Date(data.fecha).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
-            
-            tabla.innerHTML += `<tr>
-                <td><strong>${data.correo || 'Anónimo'}</strong></td>
-                <td><span class="badge neutro">${fecha}</span></td>
-                <td style="white-space: pre-wrap; color: #475569;">${data.contenido}</td>
-            </tr>`;
+        contenedorEventos.innerHTML = "";
+        eventos.forEach(ev => {
+            const item = document.createElement('div');
+            item.className = "timeline-item";
+
+            if (ev.tipo === 'diario') {
+                item.innerHTML = `
+                    <div class="timeline-fecha">📓 Entrada de Diario - ${ev.fechaTexto}</div>
+                    <div class="timeline-contenido">"${ev.contenido}"</div>
+                `;
+            } else {
+                const claseBadge = obtenerColorEmocion(ev.emocion);
+                item.innerHTML = `
+                    <div class="timeline-fecha">🎭 Registro de Emoción - ${ev.fechaTexto}</div>
+                    <div class="timeline-contenido" style="border:none; background:transparent; padding:0;">
+                        Se sintió: <span class="${claseBadge}">${ev.emocion}</span>
+                    </div>
+                `;
+            }
+            contenedorEventos.appendChild(item);
         });
-    } catch (e) { tabla.innerHTML = "<tr><td colspan='3' style='color: red;'>Error al cargar diarios.</td></tr>"; }
+
+    } catch (e) {
+        console.error("Error al cargar línea de tiempo:", e);
+        contenedorEventos.innerHTML = "<p style='color:red;'>Hubo un error cargando el historial.</p>";
+    }
 }
 
-// ==========================================
-// B. CARGAR EMOCIONES (VERSIÓN SEGURA SIN COLLECTIONGROUP)
-// ==========================================
 function obtenerColorEmocion(emocion) {
     const e = emocion.toLowerCase();
     if (e.includes('feliz')) return 'badge feliz';
@@ -107,126 +256,4 @@ function obtenerColorEmocion(emocion) {
     if (e.includes('enoj')) return 'badge enojo';
     if (e.includes('desmotiv') || e.includes('cansad')) return 'badge desmotivado';
     return 'badge neutro';
-}
-
-async function cargarEmociones(mapaUsuarios) {
-    const tabla = document.getElementById('tabla-emociones');
-    let conteoEmociones = {};
-    let totalEmocionesContadas = 0;
-
-    try {
-        tabla.innerHTML = ""; 
-        let filasHtml = [];
-
-        // 1. Traemos a todos los usuarios de la base de datos de manera normal
-        const qUsuarios = query(collection(db, "usuarios"));
-        const snapUsuarios = await getDocs(qUsuarios);
-
-        for (const usuarioDoc of snapUsuarios.docs) {
-            const userId = usuarioDoc.id;
-            const identificador = mapaUsuarios[userId] || userId;
-
-            // 2. Por cada usuario, entramos a ver si tiene emociones registradas
-            const qEmociones = collection(db, "usuarios", userId, "emociones");
-            const snapEmociones = await getDocs(qEmociones);
-
-            snapEmociones.forEach((doc) => {
-                const data = doc.data();
-                if (!data.emocion || typeof data.emocion !== 'string') return;
-
-                totalEmocionesContadas++;
-                const emo = data.emocion.toLowerCase();
-                conteoEmociones[emo] = (conteoEmociones[emo] || 0) + 1;
-
-                let fecha = data.fechaFiltro || 'Reciente';
-                if (data.timestamp) {
-                    fecha = data.timestamp.toDate().toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
-                }
-
-                const claseColor = obtenerColorEmocion(data.emocion);
-
-                filasHtml.push(`<tr>
-                    <td style="color: #64748b; font-size: 14px; font-weight: bold;">${identificador}</td>
-                    <td><span class="${claseColor}" style="text-transform: capitalize;">${data.emocion}</span></td>
-                    <td><span class="badge neutro">${fecha}</span></td>
-                </tr>`);
-            });
-        }
-
-        // Actualizamos la tarjeta superior con el total de emociones
-        document.getElementById('stat-emociones').innerText = totalEmocionesContadas; 
-
-        if (filasHtml.length === 0) {
-            tabla.innerHTML = "<tr><td colspan='3' style='text-align: center;'>No hay emociones registradas.</td></tr>";
-            return;
-        }
-
-        // Mostramos las emociones
-        tabla.innerHTML = filasHtml.reverse().join(''); 
-
-        if (Object.keys(conteoEmociones).length > 0) {
-            let dominante = Object.keys(conteoEmociones).reduce((a, b) => conteoEmociones[a] > conteoEmociones[b] ? a : b);
-            document.getElementById('stat-tendencia').innerText = dominante.toUpperCase();
-        }
-
-    } catch (e) { 
-        console.error("Error al cargar emociones:", e);
-        tabla.innerHTML = "<tr><td colspan='3' style='color: red;'>Error al cargar emociones.</td></tr>"; 
-    }
-}
-
-// ==========================================
-// C. CARGAR MASCOTAS
-// ==========================================
-async function cargarMascotas(mapaUsuarios) {
-    const tabla = document.getElementById('tabla-mascotas');
-    try {
-        const q = query(collection(db, "usuarios"));
-        const snapshot = await getDocs(q);
-        tabla.innerHTML = "";
-
-        if (snapshot.empty) {
-            tabla.innerHTML = "<tr><td colspan='3' style='text-align: center;'>No hay registros de mascotas aún.</td></tr>";
-            return;
-        }
-
-        snapshot.forEach((doc) => {
-            const data = doc.data();
-            const id = doc.id;
-            
-            const identificador = mapaUsuarios[id] || id;
-
-            const tipo = data.tipoActivo || data.mascota?.tipoActivo || 'Desconocido';
-            const nivel = data.nivel || data.mascota?.nivel || 0;
-
-            tabla.innerHTML += `<tr>
-                <td><strong>${identificador}</strong></td>
-                <td style="text-transform: capitalize;">${tipo}</td>
-                <td><span class="badge nivel">Nivel ${nivel}%</span></td>
-            </tr>`;
-        });
-    } catch (e) { tabla.innerHTML = "<tr><td colspan='3' style='color: red;'>Aún no hay datos de mascotas.</td></tr>"; }
-}
-
-// ==========================================
-// D. LÓGICA DEL BUSCADOR INTELIGENTE
-// ==========================================
-function configurarBuscador() {
-    document.getElementById('buscador').addEventListener('input', function(e) {
-        const termino = e.target.value.toLowerCase();
-        const cuerposTablas = [
-            document.getElementById('tabla-diarios'),
-            document.getElementById('tabla-emociones'),
-            document.getElementById('tabla-mascotas')
-        ];
-
-        cuerposTablas.forEach(tbody => {
-            if(!tbody) return;
-            const filas = tbody.getElementsByTagName('tr');
-            Array.from(filas).forEach(fila => {
-                const textoFila = fila.textContent.toLowerCase();
-                fila.style.display = textoFila.includes(termino) ? '' : 'none';
-            });
-        });
-    });
 }
