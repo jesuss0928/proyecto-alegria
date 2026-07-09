@@ -602,6 +602,7 @@ function cambiarDiaDiario(dias) {
     cargarHistorialDiario();
 }
 
+// Estilo cuaderno y fechas
 async function cargarHistorialDiario() {
     const historialContenedor = document.getElementById('historial-diario');
     const textoFecha = document.getElementById('diario-fecha-texto');
@@ -609,50 +610,60 @@ async function cargarHistorialDiario() {
     const zonaEscritura = document.getElementById('zona-escritura-diario');
     if (!historialContenedor) return;
 
-    // Verificamos si estamos en la página de "Hoy"
+    // 1. Efecto de reiniciar la animación de pasar página
+    historialContenedor.classList.remove('page-turn-animation');
+    void historialContenedor.offsetWidth; // Truco visual para que la animación se repita
+    historialContenedor.classList.add('page-turn-animation');
+    historialContenedor.className = "notebook-page page-turn-animation"; // Le ponemos clase de cuaderno
+
+    // 2. Darle formato a la fecha: "24 De Junio"
     const hoy = new Date();
     const esHoy = fechaVisionDiario.toLocaleDateString() === hoy.toLocaleDateString();
+    
+    const opcionesMes = { month: 'long' };
+    const diaNum = fechaVisionDiario.getDate();
+    let mesTexto = fechaVisionDiario.toLocaleDateString('es-ES', opcionesMes);
+    mesTexto = mesTexto.charAt(0).toUpperCase() + mesTexto.slice(1); // Mayúscula al mes
+    
+    // Asignamos el texto arriba
+    textoFecha.textContent = `${diaNum} De ${mesTexto}`;
 
     if (esHoy) {
-        textoFecha.textContent = "Hoy";
-        btnSiguiente.style.visibility = "hidden"; // No podemos viajar al futuro
-        zonaEscritura.style.display = "block"; // Permitimos escribir
+        textoFecha.textContent += " (Hoy)";
+        btnSiguiente.style.visibility = "hidden";
+        zonaEscritura.style.display = "block";
     } else {
-        // Mostramos la fecha pasada bonita (ej: jueves, 6 de julio)
-        const opciones = { weekday: 'long', month: 'long', day: 'numeric' };
-        textoFecha.textContent = fechaVisionDiario.toLocaleDateString('es-ES', opciones);
-        btnSiguiente.style.visibility = "visible"; // Permitimos regresar hacia hoy
-        zonaEscritura.style.display = "none"; // Ocultamos el cuadro de texto
+        btnSiguiente.style.visibility = "visible";
+        zonaEscritura.style.display = "none"; 
     }
 
-    historialContenedor.innerHTML = "<p style='text-align: center; color: #888;'>Pasando página... 📖</p>";
+    historialContenedor.innerHTML = "<p style='text-align: center; color: #888; line-height: 32px;'>Pasando página... 📖</p>";
 
     try {
         const entradas = await window.obtenerEntradasDiarioPorFecha(fechaVisionDiario);
         historialContenedor.innerHTML = ""; 
 
         if (entradas.length === 0) {
-            historialContenedor.innerHTML = "<p style='text-align: center; color: #888; font-style: italic;'>Esta página está en blanco.</p>";
+            historialContenedor.innerHTML = "<p style='text-align: center; color: #888; font-style: italic; line-height: 32px;'>Esta página está en blanco.</p>";
             return;
         }
 
         entradas.forEach(entrada => {
+            // Sacamos la hora (ej: 06:57)
             const hora = entrada.fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
             const div = document.createElement('div');
-            div.style.backgroundColor = "#f3f4f6";
-            div.style.padding = "10px 15px";
-            div.style.borderRadius = "8px";
-            div.style.marginBottom = "10px";
-            div.style.borderLeft = "4px solid #a855f7";
+            div.className = "notebook-entry"; // Usamos la clase de CSS para la fila
 
+            // A la izquierda la hora, a la derecha el contenido (separados por la línea roja)
             div.innerHTML = `
-                <div style="font-size: 0.8rem; color: #6b7280; margin-bottom: 5px;">⌚ ${hora}</div>
-                <div style="color: #374151; font-size: 0.95rem; white-space: pre-wrap;">${entrada.contenido}</div>
+                <div class="notebook-time">${hora}</div>
+                <div class="notebook-content">${entrada.contenido}</div>
             `;
             historialContenedor.appendChild(div);
         });
     } catch (error) {
         console.error(error);
-        historialContenedor.innerHTML = "<p style='text-align: center; color: #dc2626;'>Error al leer la página.</p>";
+        historialContenedor.innerHTML = "<p style='text-align: center; color: #dc2626; line-height: 32px;'>Error al leer la página.</p>";
     }
 }
