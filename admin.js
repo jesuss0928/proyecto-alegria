@@ -30,10 +30,30 @@ onAuthStateChanged(auth, (user) => {
 
 // 2. FUNCIÓN PRINCIPAL PARA EXTRAER TODO
 async function cargarDatosReales() {
+    // Primero, creamos un "diccionario" para traducir los IDs raros a Correos
+    const mapaUsuarios = await obtenerMapaCorreos();
+
     await cargarDiarios();
-    await cargarEmociones();
-    await cargarMascotas();
+    await cargarEmociones(mapaUsuarios);
+    await cargarMascotas(mapaUsuarios);
     configurarBuscador();
+}
+
+// ==========================================
+// NUEVO: TRADUCTOR DE IDs A CORREOS
+// ==========================================
+async function obtenerMapaCorreos() {
+    let mapa = {};
+    try {
+        const q = query(collection(db, "usuarios"));
+        const snapshot = await getDocs(q);
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            // Si el usuario guardó su correo en su perfil, lo usamos; si no, dejamos el ID
+            mapa[doc.id] = data.correo || data.email || doc.id; 
+        });
+    } catch (e) { console.error("Error mapeando correos", e); }
+    return mapa;
 }
 
 // ==========================================
@@ -45,7 +65,7 @@ async function cargarDiarios() {
         const q = query(collection(db, "diarios"), orderBy("fecha", "desc"));
         const snapshot = await getDocs(q);
         
-        document.getElementById('stat-diarios').innerText = snapshot.size; // Tarjeta 1
+        document.getElementById('stat-diarios').innerText = snapshot.size; 
         tabla.innerHTML = ""; 
 
         if (snapshot.empty) {
@@ -67,7 +87,7 @@ async function cargarDiarios() {
 }
 
 // ==========================================
-// B. CARGAR EMOCIONES, COLORES Y TENDENCIA
+// B. CARGAR EMOCIONES (AHORA CON CORREO)
 // ==========================================
 function obtenerColorEmocion(emocion) {
     const e = emocion.toLowerCase();
@@ -79,15 +99,15 @@ function obtenerColorEmocion(emocion) {
     return 'badge neutro';
 }
 
-async function cargarEmociones() {
+async function cargarEmociones(mapaUsuarios) {
     const tabla = document.getElementById('tabla-emociones');
     let conteoEmociones = {};
 
     try {
-        const q = query(collectionGroup(db, "emociones")); // Sin orderBy para no chocar con índices
+        const q = query(collectionGroup(db, "emociones")); 
         const snapshot = await getDocs(q);
         
-        document.getElementById('stat-emociones').innerText = snapshot.size; // Tarjeta 2
+        document.getElementById('stat-emociones').innerText = snapshot.size; 
         tabla.innerHTML = ""; 
 
         if (snapshot.empty) {
@@ -100,7 +120,9 @@ async function cargarEmociones() {
             const data = doc.data();
             const userId = doc.ref.parent.parent ? doc.ref.parent.parent.id : 'Desconocido';
             
-            // Estadística para la tarjeta 3
+            // Aquí usamos el traductor para poner el correo real
+            const identificador = mapaUsuarios[userId] || userId;
+
             const emo = data.emocion.toLowerCase();
             conteoEmociones[emo] = (conteoEmociones[emo] || 0) + 1;
 
@@ -110,15 +132,14 @@ async function cargarEmociones() {
             const claseColor = obtenerColorEmocion(data.emocion);
 
             filasHtml.push(`<tr>
-                <td style="color: #64748b; font-size: 14px;">${userId}</td>
+                <td style="color: #64748b; font-size: 14px; font-weight: bold;">${identificador}</td>
                 <td><span class="${claseColor}" style="text-transform: capitalize;">${data.emocion}</span></td>
                 <td><span class="badge neutro">${fecha}</span></td>
             </tr>`);
         });
 
-        tabla.innerHTML = filasHtml.reverse().join(''); // Invertimos para simular el "Más reciente arriba"
+        tabla.innerHTML = filasHtml.reverse().join(''); 
 
-        // Calcular la emoción dominante
         if (Object.keys(conteoEmociones).length > 0) {
             let dominante = Object.keys(conteoEmociones).reduce((a, b) => conteoEmociones[a] > conteoEmociones[b] ? a : b);
             document.getElementById('stat-tendencia').innerText = dominante.toUpperCase();
@@ -128,9 +149,9 @@ async function cargarEmociones() {
 }
 
 // ==========================================
-// C. CARGAR USUARIOS Y MASCOTAS
+// C. CARGAR MASCOTAS (AHORA CON CORREO)
 // ==========================================
-async function cargarMascotas() {
+async function cargarMascotas(mapaUsuarios) {
     const tabla = document.getElementById('tabla-mascotas');
     try {
         const q = query(collection(db, "usuarios"));
@@ -145,12 +166,15 @@ async function cargarMascotas() {
         snapshot.forEach((doc) => {
             const data = doc.data();
             const id = doc.id;
-            // Verificamos si en el documento del usuario está guardada la mascota
+            
+            // Usamos el traductor de IDs a correos
+            const identificador = mapaUsuarios[id] || id;
+
             const tipo = data.tipoActivo || data.mascota?.tipoActivo || 'Desconocido';
             const nivel = data.nivel || data.mascota?.nivel || 0;
 
             tabla.innerHTML += `<tr>
-                <td><strong>${id}</strong></td>
+                <td><strong>${identificador}</strong></td>
                 <td style="text-transform: capitalize;">${tipo}</td>
                 <td><span class="badge nivel">Nivel ${nivel}%</span></td>
             </tr>`;
@@ -165,7 +189,6 @@ function configurarBuscador() {
     document.getElementById('buscador').addEventListener('input', function(e) {
         const termino = e.target.value.toLowerCase();
         
-        // Tablas a filtrar
         const cuerposTablas = [
             document.getElementById('tabla-diarios'),
             document.getElementById('tabla-emociones'),
@@ -175,7 +198,6 @@ function configurarBuscador() {
         cuerposTablas.forEach(tbody => {
             const filas = tbody.getElementsByTagName('tr');
             Array.from(filas).forEach(fila => {
-                // Si el texto de toda la fila incluye el texto que el jefe escribe, lo mostramos, si no, lo ocultamos.
                 const textoFila = fila.textContent.toLowerCase();
                 fila.style.display = textoFila.includes(termino) ? '' : 'none';
             });
