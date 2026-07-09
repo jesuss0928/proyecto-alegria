@@ -148,6 +148,7 @@ function configurarPestanas() {
 // 4. SELECCIONAR PACIENTE Y CARGAR SUS TABS
 // ==========================================
 async function seleccionarPaciente(user, cardElement) {
+    history.pushState({ panelAbierto: true }, "");
     document.querySelectorAll('.usuario-card').forEach(c => c.classList.remove('activo'));
     if(cardElement) cardElement.classList.add('activo');
 
