@@ -207,7 +207,9 @@ onAuthStateChanged(auth, (user) => {
         if (btnDiario) {
             btnDiario.style.display = 'flex';
         }
-        
+        if (typeof window.verificarRolUsuario === "function") {
+            window.verificarRolUsuario(user); 
+        }
         if (typeof window.cargarMascotaBD === "function") {
             window.cargarMascotaBD().then(() => {
                 if (typeof window.cargarHistorialYCalendario === "function") {
@@ -235,7 +237,10 @@ onAuthStateChanged(auth, (user) => {
         if (btnDiario) {
             btnDiario.style.display = 'none';
         }
-        
+        const btnAdmin = document.getElementById('btn-secreto-admin');
+        if (btnAdmin) {
+            btnAdmin.style.display = 'none';
+        }
         if (typeof window.sincronizarMascotaUI === "function") {
             window.sincronizarMascotaUI(null);
         }
