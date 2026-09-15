@@ -516,3 +516,11 @@ body.sidebar-expanded #mascota-virtual { left: calc(var(--sidebar-expanded-width
 .page-turn-animation {
     animation: pageTurn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
+
+/*logo al costado del titulo de la pag*/
+.logo-titulo {
+    height: 40px; /* Define el alto de la imagen para que coincida con el texto */
+    width: auto; /* Mantiene la proporción para que no se deforme */
+    vertical-align: middle; /* Centra la imagen con la mitad de las letras */
+    margin-left: 10px; /* Crea un pequeño espacio de separación entre la 's' y la imagen */
+}
