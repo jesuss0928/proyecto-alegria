@@ -2,8 +2,7 @@
 // 🔐 SISTEMA DE ROLES Y PERMISOS 
 // ==========================================
 const CORREOS_ADMIN_AUTORIZADOS = [
-    "jess.vite0609@gmail.com",
-    "lolacristinavillaloboscolorado@gmail.com",   
+    "jess.vite0609@gmail.com", 
     "ayudante@gmail.com"
 ];
 
