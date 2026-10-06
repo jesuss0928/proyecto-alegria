@@ -11,7 +11,7 @@ const firebaseConfig = {
     appId: "1:561418892075:web:133a1ff3948b86a4e88b6e"
 };
 
-const CORREO_ADMIN_AUTORIZADO = "jess.vite0609@gmail.com"; "lolacristinavillaloboscolorado@gmail.com";
+const CORREO_ADMIN_AUTORIZADO = "jess.vite0609@gmail.com", "lolacristinavillaloboscolorado@gmail.com";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
