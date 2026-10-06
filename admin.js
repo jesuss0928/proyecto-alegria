@@ -12,7 +12,6 @@ const firebaseConfig = {
 };
 
 const CORREO_ADMIN_AUTORIZADO = "jess.vite0609@gmail.com"; 
-const CORREO_ADMIN_AUTORIZADO = "lolacristinavillaloboscolorado@gmail.com";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
