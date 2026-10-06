@@ -3,7 +3,7 @@
 // ==========================================
 const CORREOS_ADMIN_AUTORIZADOS = [
     "jess.vite0609@gmail.com",
-    "socio@gmail.com",   
+    "lolacristinavillaloboscolorado@gmail.com",   
     "ayudante@gmail.com"
 ];
 
