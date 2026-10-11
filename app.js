@@ -93,7 +93,7 @@ function guardarProgresoMascota() {
 function actualizarUIMascota() {
     const config = tiposMascotas[datosProgreso.tipoActivo]; 
     const indiceEtapa = Math.min(4, Math.floor(datosProgreso.nivel / 25)); 
-    document.getElementById('mascota-emoji').innerText = config.etapas[indiceEtapa]; 
+document.getElementById('mascota-emoji').innerHTML = config.etapas[indiceEtapa];
     document.getElementById('mascota-progreso').style.width = datosProgreso.nivel + '%'; 
     document.getElementById('mascota-limite-texto').innerText = `${datosProgreso.upgradesHoy}/${MAX_UPGRADES_DIA} Hoy`; 
 
