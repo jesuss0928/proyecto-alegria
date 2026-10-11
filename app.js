@@ -29,7 +29,7 @@ window.onclick = function(event) { if (event.target.classList.contains('modal-ov
 // ==========================================
 // CEREBRO DE LA MASCOTA
 // ==========================================
-const MAX_UPGRADES_DIA = 7; 
+const MAX_UPGRADES_DIA = 1000; 
 
 //aqui conecte el archivo MASCOTAS.JS
 const tiposMascotas = window.tiposMascotas;
