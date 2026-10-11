@@ -1,5 +1,5 @@
 // ==========================================
-// 🔐 SISTEMA DE ROLES Y PERMISOS 
+//  SISTEMA DE ROLES Y PERMISOS 
 // ==========================================
 const CORREOS_ADMIN_AUTORIZADOS = [
     "jess.vite0609@gmail.com", 
