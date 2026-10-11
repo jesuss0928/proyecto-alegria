@@ -30,13 +30,32 @@ window.onclick = function(event) { if (event.target.classList.contains('modal-ov
 // CEREBRO DE LA MASCOTA
 // ==========================================
 const MAX_UPGRADES_DIA = 3; 
-const tiposMascotas = {
-    planta: { nombre: "Planta de Paz", tipoIcon: "🌿 Naturaleza", etapas: ["🌱", "🌿", "🪴", "🌳", "✨🌳✨"] }, 
-    perro: { nombre: "Perrito Fiel", tipoIcon: "🐾 Lealtad", etapas: ["🦴", "🐕‍🦺", "🐕", "🐩", "✨🐶✨"] }, 
-    gato: { nombre: "Gatito Zen", tipoIcon: "🌙 Misterio", etapas: ["🥛", "🐈‍⬛", "🐈", "🐅", "✨🐱✨"] }, 
-    loro: { nombre: "Loro Sabio", tipoIcon: "🦜 Inteligencia", etapas: ["🥚", "🐣", "🐥", "🦜", "✨🐦✨"] } 
-};
 
+//aqui conecte el archivo MASCOTAS.JS
+const tiposMascotas = window.tiposMascotas;
+//===================================
+function generarBotonesMascotas() {
+    const contenedor = document.getElementById('contenedor-botones-mascotas');
+    if (!contenedor) return;
+    contenedor.innerHTML = ''; 
+
+    // Recorre automáticamente todo lo que pongas en datos/mascotas.js
+    for (const [id, datos] of Object.entries(tiposMascotas)) {
+        // Extrae solo el primer emoji (etapa 0) para el botón
+        const iconoInicial = datos.etapas[0]; 
+
+        contenedor.innerHTML += `
+            <div class="opcion-mascota" onclick="seleccionarNuevaMascota('${id}')">
+                <div style="font-size:2.5rem;">${iconoInicial}</div>
+                ${datos.nombre}
+            </div>
+        `;
+    }
+}
+
+// Ejecuta esto al cargar la página para que los botones ya existan
+document.addEventListener('DOMContentLoaded', generarBotonesMascotas);
+//=======================================================================
 let datosProgreso = {
     tipoActivo: 'planta', 
     nivel: 0, 
