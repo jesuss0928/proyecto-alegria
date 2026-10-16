@@ -102,52 +102,7 @@
             </div>
         </div>
     </div>
-<!-- VENTANA MODAL DE CONFIGURACIÓN -->
-    <div id="modal-configuracion" class="modal-overlay">
-        <div class="modal-container" style="max-width: 500px;">
-            <div class="modal-header" style="background: #34495E;">
-                <h2>⚙️ Configuración</h2>
-                <button class="btn-close-modal" onclick="cerrarModal('modal-configuracion')">&times;</button>
-            </div>
-            <div class="modal-body">
-                
-                <!-- Sección 1: Tema -->
-                <div class="config-section">
-                    <h3>🎨 Apariencia</h3>
-                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">Elige cómo quieres ver la página.</p>
-                    <div class="theme-buttons">
-                        <button onclick="cambiarTema('claro')" id="btn-tema-claro" class="btn-tema">☀️ Claro</button>
-                        <button onclick="cambiarTema('oscuro')" id="btn-tema-oscuro" class="btn-tema">🌙 Oscuro</button>
-                        <button onclick="cambiarTema('sistema')" id="btn-tema-sistema" class="btn-tema">💻 Dispositivo</button>
-                    </div>
-                </div>
 
-                <!-- Sección 2: Perfil Anónimo -->
-                <div class="config-section">
-                    <h3>👤 Mi Perfil</h3>
-                    <div class="perfil-flex">
-                        <div class="foto-perfil-edit">
-                            <img id="preview-foto" src="icono-app.png" alt="Mi Foto">
-                            <button onclick="alert('¡Pronto podrás subir tu propia foto!')" class="btn-cambiar-foto">Cambiar foto</button>
-                        </div>
-                        <div class="datos-perfil-edit">
-                            <label>Alias / Apodo:</label>
-                            <input type="text" id="input-alias" placeholder="Ej. Viajero Estelar" maxlength="15">
-                            
-                            <label>Edad:</label>
-                            <input type="number" id="input-edad" placeholder="Años" min="10" max="99">
-                            
-                            <label>Fecha de Nacimiento:</label>
-                            <input type="date" id="input-fecha-nac">
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn-guardar-config" onclick="guardarConfiguracion()">Guardar Cambios</button>
-                <p id="mensaje-config-exito" style="display:none; color: #27AE60; font-weight: bold; text-align: center; margin-top: 10px;">¡Cambios guardados con éxito! ✨</p>
-            </div>
-        </div>
-    </div>
     <div id="modal-selector-mascota" class="modal-overlay">
     <div class="selector-content">
         <h2 style="color: var(--happy-color); margin-top:0;">¡Felicidades! 🎉</h2>
