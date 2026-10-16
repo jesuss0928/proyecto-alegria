@@ -624,3 +624,42 @@ body.tema-oscuro input { background: #333; color: white; border-color: #555; }
     font-size: 1.1rem; font-weight: bold; border: none; cursor: pointer; transition: 0.3s; margin-top: 10px;
 }
 .btn-guardar-config:hover { background: #2464B8; transform: translateY(-2px); box-shadow: 0 0 15px var(--primary-color); }
+/* ==========================================
+   DOBLE BARRA LATERAL (AJUSTES)
+   ========================================== */
+.settings-sidebar {
+    width: 250px;
+    background-color: var(--white);
+    border-right: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+body.tema-oscuro .settings-sidebar { background-color: #1a1a1a; border-right: 1px solid #333; }
+
+.settings-menu { list-style: none; padding: 0; margin: 0; }
+.settings-menu li {
+    padding: 15px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--text-dark);
+    border-bottom: 1px solid #eee;
+    transition: 0.2s;
+}
+body.tema-oscuro .settings-menu li { border-bottom: 1px solid #333; color: #ddd; }
+
+.settings-menu li:hover { background-color: rgba(47, 128, 237, 0.1); }
+.settings-menu li.active { background-color: rgba(47, 128, 237, 0.2); color: var(--primary-color); border-left: 5px solid var(--primary-color); }
+
+.settings-content {
+    flex-grow: 1;
+    padding: 40px;
+    background-color: var(--background-color);
+    overflow-y: auto;
+}
+
+.config-panel { display: none; background: var(--white); padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.config-panel.active-panel { display: block; animation: fadeIn 0.3s ease; }
+body.tema-oscuro .config-panel { background: #1E1E1E; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
