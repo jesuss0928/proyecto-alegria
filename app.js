@@ -719,54 +719,74 @@ async function cargarHistorialDiario() {
     }
 }
 // ==========================================
-// ⚙️ SISTEMA DE AJUSTES Y FOTOS DE PERFIL
+// ⚙️ SISTEMA DE AJUSTES, TEMAS Y FOTO
 // ==========================================
 
+// --- 1. Pestañas de la barra lateral ---
 function cambiarSeccionAjustes(elementoLista, idPanel) {
-    // 1. Quitar activo del menú
     document.querySelectorAll('.settings-menu li').forEach(li => li.classList.remove('active'));
     elementoLista.classList.add('active');
 
-    // 2. Ocultar todos los paneles y mostrar el seleccionado
     document.querySelectorAll('.config-panel').forEach(panel => panel.classList.remove('active-panel'));
     document.getElementById(idPanel).classList.add('active-panel');
 }
 
-// Procesar imagen subida desde la computadora/celular
+// --- 2. Lógica del Tema (Apariencia) ---
+function aplicarTemaVisual(tipo) {
+    let esOscuro = false;
+    if (tipo === 'oscuro') {
+        esOscuro = true;
+    } else if (tipo === 'sistema') {
+        esOscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
+    if (esOscuro) {
+        document.body.classList.add('tema-oscuro');
+    } else {
+        document.body.classList.remove('tema-oscuro');
+    }
+}
+
+function cambiarTema(tipo) {
+    // Cambiar color del botón seleccionado
+    document.querySelectorAll('.btn-tema').forEach(btn => btn.classList.remove('activo'));
+    const btnActivo = document.getElementById('btn-tema-' + tipo);
+    if (btnActivo) btnActivo.classList.add('activo');
+    
+    // Guardar y aplicar el tema
+    localStorage.setItem('alegria_tema', tipo);
+    aplicarTemaVisual(tipo);
+}
+
+// --- 3. Lógica de la Foto de Perfil ---
 function procesarNuevaFoto(event) {
     const archivo = event.target.files[0];
     if (archivo) {
         const lector = new FileReader();
         lector.onload = function(e) {
             const base64Img = e.target.result;
-            // Mostramos la imagen en pantalla
             document.getElementById('preview-foto').src = base64Img;
-            // La guardamos en la memoria del navegador
             localStorage.setItem('alegria_foto_custom', base64Img);
         };
         lector.readAsDataURL(archivo);
     }
 }
 
-// Si quieren borrar su foto subida y volver a la de Google
 function quitarFotoPersonalizada() {
     localStorage.removeItem('alegria_foto_custom');
-    cargarFotoPerfil(); // Vuelve a cargar la original
+    cargarFotoPerfil(); 
 }
 
-// Cargar la foto al entrar a ajustes
 function cargarFotoPerfil() {
     const imgElement = document.getElementById('preview-foto');
     if (!imgElement) return;
 
-    // 1. Primero revisar si subió una foto manual
     const fotoCustom = localStorage.getItem('alegria_foto_custom');
     if (fotoCustom) {
         imgElement.src = fotoCustom;
         return;
     }
 
-    // 2. Si no, revisar si hay cuenta de Google/Firebase guardada
     const infoUsuarioStr = localStorage.getItem('usuario_info');
     if (infoUsuarioStr) {
         const infoUsuario = JSON.parse(infoUsuarioStr);
@@ -776,22 +796,10 @@ function cargarFotoPerfil() {
         }
     }
 
-    // 3. Si no hay nada, foto por defecto
     imgElement.src = 'icono-app.png';
 }
 
-// Modificamos la función que carga al inicio para que incluya la foto
-document.addEventListener('DOMContentLoaded', () => {
-    const temaGuardado = localStorage.getItem('alegria_tema') || 'sistema';
-    aplicarTemaVisual(temaGuardado);
-
-    if (document.getElementById('input-alias')) {
-        cargarDatosAjustes(temaGuardado);
-        cargarFotoPerfil(); // <--- Llamamos a la foto
-    }
-});
-
-// Guardar los demás datos (igual que antes)
+// --- 4. Guardar y Cargar Datos del Formulario ---
 function guardarConfiguracion() {
     const alias = document.getElementById('input-alias').value;
     const edad = document.getElementById('input-edad').value;
@@ -800,6 +808,33 @@ function guardarConfiguracion() {
     localStorage.setItem('alegria_perfil', JSON.stringify({ alias, edad, fechaNac }));
 
     const msg = document.getElementById('mensaje-config-exito');
-    msg.style.display = 'block';
-    setTimeout(() => msg.style.display = 'none', 3000);
+    if(msg) {
+        msg.style.display = 'block';
+        setTimeout(() => msg.style.display = 'none', 3000);
+    }
 }
+
+function cargarDatosAjustes(temaGuardado) {
+    const btnActivo = document.getElementById('btn-tema-' + temaGuardado);
+    if(btnActivo) btnActivo.classList.add('activo');
+
+    const perfilGuardado = JSON.parse(localStorage.getItem('alegria_perfil'));
+    if (perfilGuardado) {
+        if(document.getElementById('input-alias')) document.getElementById('input-alias').value = perfilGuardado.alias || "";
+        if(document.getElementById('input-edad')) document.getElementById('input-edad').value = perfilGuardado.edad || "";
+        if(document.getElementById('input-fecha-nac')) document.getElementById('input-fecha-nac').value = perfilGuardado.fechaNac || "";
+    }
+}
+
+// --- 5. Inicialización al cargar la página ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Aplica el tema en todas tus páginas (index y ajustes)
+    const temaGuardado = localStorage.getItem('alegria_tema') || 'sistema';
+    aplicarTemaVisual(temaGuardado);
+
+    // Solo ejecuta esto si estamos dentro de la página de ajustes
+    if (document.getElementById('sec-perfil')) {
+        cargarDatosAjustes(temaGuardado);
+        cargarFotoPerfil();
+    }
+});
