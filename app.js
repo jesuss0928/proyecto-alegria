@@ -718,3 +718,68 @@ async function cargarHistorialDiario() {
         historialContenedor.innerHTML = "<p style='text-align: center; color: #dc2626; line-height: 32px;'>Error al leer la página.</p>"; 
     }
 }
+// ==========================================
+// ⚙️ LÓGICA DE AJUSTES Y TEMAS
+// ==========================================
+
+// Se ejecuta en TODAS las páginas apenas cargan
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Aplicar el tema guardado
+    const temaGuardado = localStorage.getItem('alegria_tema') || 'sistema';
+    aplicarTemaVisual(temaGuardado);
+
+    // 2. Si estamos específicamente en la página de ajustes, cargar los datos en el formulario
+    if (document.getElementById('input-alias')) {
+        cargarDatosAjustes(temaGuardado);
+    }
+});
+
+function aplicarTemaVisual(tipo) {
+    let esOscuro = false;
+    if (tipo === 'oscuro') {
+        esOscuro = true;
+    } else if (tipo === 'sistema') {
+        esOscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
+    if (esOscuro) {
+        document.body.classList.add('tema-oscuro');
+    } else {
+        document.body.classList.remove('tema-oscuro');
+    }
+}
+
+// Funciones exclusivas para la página de ajustes.html
+function cambiarTema(tipo) {
+    document.querySelectorAll('.btn-tema').forEach(btn => btn.classList.remove('activo'));
+    document.getElementById('btn-tema-' + tipo).classList.add('activo');
+    localStorage.setItem('alegria_tema', tipo);
+    aplicarTemaVisual(tipo);
+}
+
+function guardarConfiguracion() {
+    const alias = document.getElementById('input-alias').value;
+    const edad = document.getElementById('input-edad').value;
+    const fechaNac = document.getElementById('input-fecha-nac').value;
+
+    const misDatos = { alias, edad, fechaNac };
+    localStorage.setItem('alegria_perfil', JSON.stringify(misDatos));
+
+    const msg = document.getElementById('mensaje-config-exito');
+    msg.style.display = 'block';
+    setTimeout(() => { msg.style.display = 'none'; }, 3000);
+}
+
+function cargarDatosAjustes(temaGuardado) {
+    // Marcar el botón de tema correcto
+    const btnActivo = document.getElementById('btn-tema-' + temaGuardado);
+    if(btnActivo) btnActivo.classList.add('activo');
+
+    // Llenar los inputs con la información guardada
+    const perfilGuardado = JSON.parse(localStorage.getItem('alegria_perfil'));
+    if (perfilGuardado) {
+        document.getElementById('input-alias').value = perfilGuardado.alias || "";
+        document.getElementById('input-edad').value = perfilGuardado.edad || "";
+        document.getElementById('input-fecha-nac').value = perfilGuardado.fechaNac || "";
+    }
+}
