@@ -231,13 +231,54 @@ h1, h2, h3 { color: var(--primary-color); }
 }
 
 .emotion-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
-.btn-emotion { border: none; padding: 1rem 2rem; font-size: 1.1rem; border-radius: 50px; cursor: pointer; color: var(--white); font-weight: bold; transition: transform 0.2s; }
-.btn-emotion:hover { transform: scale(1.05); }
-.btn-ansiedad { background-color: var(--anxiety-color); }
-.btn-tristeza { background-color: var(--sadness-color); }
-.btn-enojo { background-color: var(--anger-color); }
-.btn-desmotivado { background-color: var(--tired-color); }
-.btn-feliz { background-color: var(--happy-color); }
+/* Estilo base del botón */
+.btn-emotion { 
+    background-color: transparent; /* Fondo transparente para que resalte el neón */
+    padding: 1rem 2rem; 
+    font-size: 1.1rem; 
+    border-radius: 50px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    transition: all 0.3s ease; 
+}
+
+/* Efecto Neón para cada emoción (Borde + Resplandor exterior e interior) */
+.btn-feliz { 
+    color: var(--happy-color); 
+    border: 2px solid var(--happy-color); 
+    box-shadow: 0 0 10px var(--happy-color), inset 0 0 5px var(--happy-color); 
+}
+.btn-ansiedad { 
+    color: var(--anxiety-color); 
+    border: 2px solid var(--anxiety-color); 
+    box-shadow: 0 0 10px var(--anxiety-color), inset 0 0 5px var(--anxiety-color); 
+}
+.btn-tristeza { 
+    color: var(--sadness-color); 
+    border: 2px solid var(--sadness-color); 
+    box-shadow: 0 0 10px var(--sadness-color), inset 0 0 5px var(--sadness-color); 
+}
+.btn-enojo { 
+    color: var(--anger-color); 
+    border: 2px solid var(--anger-color); 
+    box-shadow: 0 0 10px var(--anger-color), inset 0 0 5px var(--anger-color); 
+}
+.btn-desmotivado { 
+    color: var(--tired-color); 
+    border: 2px solid var(--tired-color); 
+    box-shadow: 0 0 10px var(--tired-color), inset 0 0 5px var(--tired-color); 
+}
+
+/* Efecto al pasar el mouse (se iluminan más) */
+.btn-emotion:hover {
+    transform: scale(1.05);
+    color: var(--white);
+}
+.btn-feliz:hover { background-color: var(--happy-color); box-shadow: 0 0 20px var(--happy-color); }
+.btn-ansiedad:hover { background-color: var(--anxiety-color); box-shadow: 0 0 20px var(--anxiety-color); }
+.btn-tristeza:hover { background-color: var(--sadness-color); box-shadow: 0 0 20px var(--sadness-color); }
+.btn-enojo:hover { background-color: var(--anger-color); box-shadow: 0 0 20px var(--anger-color); }
+.btn-desmotivado:hover { background-color: var(--tired-color); box-shadow: 0 0 20px var(--tired-color); }
 
 #advice-container { display: none; margin-top: 2rem; padding: 1.5rem; border-radius: 8px; background-color: #F8F9FA; border-left: 5px solid var(--primary-color); text-align: left; }
 
