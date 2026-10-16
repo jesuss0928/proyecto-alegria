@@ -719,67 +719,87 @@ async function cargarHistorialDiario() {
     }
 }
 // ==========================================
-// ⚙️ LÓGICA DE AJUSTES Y TEMAS
+// ⚙️ SISTEMA DE AJUSTES Y FOTOS DE PERFIL
 // ==========================================
 
-// Se ejecuta en TODAS las páginas apenas cargan
+function cambiarSeccionAjustes(elementoLista, idPanel) {
+    // 1. Quitar activo del menú
+    document.querySelectorAll('.settings-menu li').forEach(li => li.classList.remove('active'));
+    elementoLista.classList.add('active');
+
+    // 2. Ocultar todos los paneles y mostrar el seleccionado
+    document.querySelectorAll('.config-panel').forEach(panel => panel.classList.remove('active-panel'));
+    document.getElementById(idPanel).classList.add('active-panel');
+}
+
+// Procesar imagen subida desde la computadora/celular
+function procesarNuevaFoto(event) {
+    const archivo = event.target.files[0];
+    if (archivo) {
+        const lector = new FileReader();
+        lector.onload = function(e) {
+            const base64Img = e.target.result;
+            // Mostramos la imagen en pantalla
+            document.getElementById('preview-foto').src = base64Img;
+            // La guardamos en la memoria del navegador
+            localStorage.setItem('alegria_foto_custom', base64Img);
+        };
+        lector.readAsDataURL(archivo);
+    }
+}
+
+// Si quieren borrar su foto subida y volver a la de Google
+function quitarFotoPersonalizada() {
+    localStorage.removeItem('alegria_foto_custom');
+    cargarFotoPerfil(); // Vuelve a cargar la original
+}
+
+// Cargar la foto al entrar a ajustes
+function cargarFotoPerfil() {
+    const imgElement = document.getElementById('preview-foto');
+    if (!imgElement) return;
+
+    // 1. Primero revisar si subió una foto manual
+    const fotoCustom = localStorage.getItem('alegria_foto_custom');
+    if (fotoCustom) {
+        imgElement.src = fotoCustom;
+        return;
+    }
+
+    // 2. Si no, revisar si hay cuenta de Google/Firebase guardada
+    const infoUsuarioStr = localStorage.getItem('usuario_info');
+    if (infoUsuarioStr) {
+        const infoUsuario = JSON.parse(infoUsuarioStr);
+        if (infoUsuario && infoUsuario.foto) {
+            imgElement.src = infoUsuario.foto;
+            return;
+        }
+    }
+
+    // 3. Si no hay nada, foto por defecto
+    imgElement.src = 'icono-app.png';
+}
+
+// Modificamos la función que carga al inicio para que incluya la foto
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Aplicar el tema guardado
     const temaGuardado = localStorage.getItem('alegria_tema') || 'sistema';
     aplicarTemaVisual(temaGuardado);
 
-    // 2. Si estamos específicamente en la página de ajustes, cargar los datos en el formulario
     if (document.getElementById('input-alias')) {
         cargarDatosAjustes(temaGuardado);
+        cargarFotoPerfil(); // <--- Llamamos a la foto
     }
 });
 
-function aplicarTemaVisual(tipo) {
-    let esOscuro = false;
-    if (tipo === 'oscuro') {
-        esOscuro = true;
-    } else if (tipo === 'sistema') {
-        esOscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-
-    if (esOscuro) {
-        document.body.classList.add('tema-oscuro');
-    } else {
-        document.body.classList.remove('tema-oscuro');
-    }
-}
-
-// Funciones exclusivas para la página de ajustes.html
-function cambiarTema(tipo) {
-    document.querySelectorAll('.btn-tema').forEach(btn => btn.classList.remove('activo'));
-    document.getElementById('btn-tema-' + tipo).classList.add('activo');
-    localStorage.setItem('alegria_tema', tipo);
-    aplicarTemaVisual(tipo);
-}
-
+// Guardar los demás datos (igual que antes)
 function guardarConfiguracion() {
     const alias = document.getElementById('input-alias').value;
     const edad = document.getElementById('input-edad').value;
     const fechaNac = document.getElementById('input-fecha-nac').value;
 
-    const misDatos = { alias, edad, fechaNac };
-    localStorage.setItem('alegria_perfil', JSON.stringify(misDatos));
+    localStorage.setItem('alegria_perfil', JSON.stringify({ alias, edad, fechaNac }));
 
     const msg = document.getElementById('mensaje-config-exito');
     msg.style.display = 'block';
-    setTimeout(() => { msg.style.display = 'none'; }, 3000);
-}
-
-function cargarDatosAjustes(temaGuardado) {
-    // Marcar el botón de tema correcto
-    const btnActivo = document.getElementById('btn-tema-' + temaGuardado);
-    if(btnActivo) btnActivo.classList.add('activo');
-
-    // Llenar los inputs con la información guardada
-    const perfilGuardado = JSON.parse(localStorage.getItem('alegria_perfil'));
-    if (perfilGuardado) {
-        document.getElementById('input-alias').value = perfilGuardado.alias || "";
-        document.getElementById('input-edad').value = perfilGuardado.edad || "";
-        document.getElementById('input-fecha-nac').value = perfilGuardado.fechaNac || "";
-    }
+    setTimeout(() => msg.style.display = 'none', 3000);
 }
