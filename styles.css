@@ -351,9 +351,14 @@ body.sidebar-expanded .modal-overlay { padding-left: var(--sidebar-expanded-widt
 /* MASCOTA VIRTUAL FLOTANTE */
 #mascota-virtual {
     position: fixed; bottom: 20px; left: calc(var(--sidebar-collapsed-width) + 20px);
-    background: white; padding: 10px 15px; border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15); text-align: center; z-index: 1000;
-    border: 2px solid var(--happy-color); width: 120px; transition: transform 0.3s ease, left 0.3s ease;
+    background: #111827; /* Fondo oscuro opcional */
+    color: white;
+    padding: 10px 15px; border-radius: 15px;
+    text-align: center; z-index: 1000;
+    border: 2px solid var(--happy-color); width: 120px; 
+    transition: transform 0.3s ease, left 0.3s ease;
+    /* El truco del neón: */
+    box-shadow: 0 0 15px var(--happy-color), inset 0 0 8px var(--happy-color);
 }
 body.sidebar-expanded #mascota-virtual { left: calc(var(--sidebar-expanded-width) + 20px); }
 #mascota-virtual:hover { transform: scale(1.05); }
