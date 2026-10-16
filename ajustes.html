@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajustes - Alegría</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="icono-app.png">
+</head>
+<body>
+
+    <!-- Menú Lateral (Sidebar) -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2 class="app-title">Alegría</h2>
+        </div>
+        <div class="sidebar-menu">
+            <!-- Botón para regresar al inicio -->
+            <a href="index.html" class="sidebar-item" style="text-decoration: none; color: inherit;">
+                <div class="sidebar-icon">🏠</div>
+                <div class="sidebar-text">Inicio</div>
+            </a>
+            
+            <a href="ajustes.html" class="sidebar-item" style="text-decoration: none; color: inherit; background: rgba(255,255,255,0.1);">
+                <div class="sidebar-icon">⚙️</div>
+                <div class="sidebar-text">Ajustes</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Contenido Principal de Ajustes -->
+    <div class="main-content" style="padding: 2rem; max-width: 800px; margin: 0 auto;">
+        <h1 style="color: var(--primary-color); margin-bottom: 20px;">⚙️ Configuración</h1>
+
+        <!-- Sección 1: Tema -->
+        <div class="config-section">
+            <h3>🎨 Apariencia</h3>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">Elige cómo quieres ver la página en todos tus dispositivos.</p>
+            <div class="theme-buttons">
+                <button onclick="cambiarTema('claro')" id="btn-tema-claro" class="btn-tema">☀️ Claro</button>
+                <button onclick="cambiarTema('oscuro')" id="btn-tema-oscuro" class="btn-tema">🌙 Oscuro</button>
+                <button onclick="cambiarTema('sistema')" id="btn-tema-sistema" class="btn-tema">💻 Dispositivo</button>
+            </div>
+        </div>
+
+        <!-- Sección 2: Perfil Anónimo -->
+        <div class="config-section">
+            <h3>👤 Mi Perfil</h3>
+            <div class="perfil-flex">
+                <div class="foto-perfil-edit">
+                    <img id="preview-foto" src="icono-app.png" alt="Mi Foto">
+                    <button onclick="alert('¡Pronto podrás subir tu propia foto!')" class="btn-cambiar-foto">Cambiar foto</button>
+                </div>
+                <div class="datos-perfil-edit">
+                    <label>Alias / Apodo:</label>
+                    <input type="text" id="input-alias" placeholder="Ej. Viajero Estelar" maxlength="15">
+                    
+                    <label>Edad:</label>
+                    <input type="number" id="input-edad" placeholder="Años" min="10" max="99">
+                    
+                    <label>Fecha de Nacimiento:</label>
+                    <input type="date" id="input-fecha-nac">
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón Guardar -->
+        <button class="btn-guardar-config" onclick="guardarConfiguracion()">Guardar Cambios</button>
+        <p id="mensaje-config-exito" style="display:none; color: #27AE60; font-weight: bold; text-align: center; margin-top: 10px;">¡Cambios guardados con éxito! ✨</p>
+    </div>
+
+    <!-- Conectamos la lógica -->
+    <script src="app.js"></script>
+</body>
+</html>
