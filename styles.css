@@ -663,3 +663,60 @@ body.tema-oscuro .settings-menu li { border-bottom: 1px solid #333; color: #ddd;
 body.tema-oscuro .config-panel { background: #1E1E1E; }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* ==========================================
+   OPTIMIZACIÓN MODO OSCURO - SECCIONES PRINCIPALES
+   ========================================== */
+
+/* 1. Cápsulas de Bienestar */
+body.tema-oscuro .tips-section {
+    background-color: #1e1a26 !important; /* Morado muy oscuro */
+    color: #e0e0e0 !important;
+}
+body.tema-oscuro .tips-section p {
+    color: #cccccc !important;
+}
+body.tema-oscuro .tip-card {
+    background-color: #2a2435 !important;
+    border: 1px solid #b27fe6 !important; /* Borde morado claro */
+}
+body.tema-oscuro .tip-card h3 {
+    color: #d8b4fe !important;
+}
+body.tema-oscuro .tip-card p {
+    color: #e5e7eb !important;
+}
+
+/* 2. Zona de Ayuda Inmediata (SOS) */
+body.tema-oscuro .sos-section {
+    background-color: #2c1a1a !important; /* Fondo rojizo oscuro */
+    border: 1px solid #452222 !important;
+}
+body.tema-oscuro .sos-section p,
+body.tema-oscuro .sos-section strong {
+    color: #dcdcdc !important; 
+}
+body.tema-oscuro .sos-card {
+    background-color: #3d2323 !important;
+    border: 1px solid #ff4d4d !important;
+}
+body.tema-oscuro .sos-card h3 {
+    color: #ff6b6b !important;
+}
+body.tema-oscuro .sos-phone {
+    color: #ffb3b3 !important;
+}
+
+/* 3. Información Importante (Tarjetas Estadísticas) */
+body.tema-oscuro .problem-section {
+    color: #e0e0e0 !important;
+}
+body.tema-oscuro .stat-card {
+    background-color: #161e2b !important; /* Azul oscuro profundo */
+    border: 1px solid #3b82f6 !important;
+}
+body.tema-oscuro .stat-card .stat-number {
+    color: #60a5fa !important; /* Azul brillante para el porcentaje */
+}
+body.tema-oscuro .stat-card p {
+    color: #9ca3af !important; /* Gris claro legible para el texto */
+}
