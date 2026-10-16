@@ -7,35 +7,70 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="icono-app.png">
 </head>
-<body>
+<body style="margin: 0; display: flex; height: 100vh; overflow: hidden; background-color: var(--background-color);">
 
-    <!-- Menú Lateral (Sidebar) -->
-    <div class="sidebar">
+    <!-- 1. Sidebar Principal (El que ya tienes) -->
+    <nav class="sidebar" id="sidebar" style="position: relative; height: 100%;">
         <div class="sidebar-header">
-            <h2 class="app-title">Alegría</h2>
+            <div class="sidebar-logo-text">Alegría</div>
         </div>
-        <div class="sidebar-menu">
-            <!-- Botón para regresar al inicio -->
+        <div class="sidebar-menu" style="display: flex; flex-direction: column; height: 100%;">
             <a href="index.html" class="sidebar-item" style="text-decoration: none; color: inherit;">
                 <div class="sidebar-icon">🏠</div>
                 <div class="sidebar-text">Inicio</div>
             </a>
-            
             <a href="ajustes.html" class="sidebar-item" style="text-decoration: none; color: inherit; background: rgba(255,255,255,0.1);">
                 <div class="sidebar-icon">⚙️</div>
                 <div class="sidebar-text">Ajustes</div>
             </a>
         </div>
+    </nav>
+
+    <!-- 2. Sidebar Secundario (Menú de Ajustes) -->
+    <div class="settings-sidebar">
+        <h2 style="padding: 20px; margin: 0; color: var(--primary-color);">Ajustes</h2>
+        <ul class="settings-menu">
+            <li class="active" onclick="cambiarSeccionAjustes(this, 'sec-perfil')">👤 Editar Información</li>
+            <li onclick="cambiarSeccionAjustes(this, 'sec-tema')">🎨 Tema y Apariencia</li>
+            <li onclick="cambiarSeccionAjustes(this, 'sec-notificaciones')">🔔 Notificaciones</li>
+            <li onclick="cambiarSeccionAjustes(this, 'sec-idioma')">🌐 Idioma</li>
+            <li onclick="cambiarSeccionAjustes(this, 'sec-volumen')">🔊 Volumen</li>
+            <li onclick="cambiarSeccionAjustes(this, 'sec-permisos')">🔒 Permisos</li>
+            <li onclick="cambiarSeccionAjustes(this, 'sec-privacidad')">📄 Privacidad</li>
+        </ul>
     </div>
 
-    <!-- Contenido Principal de Ajustes -->
-    <div class="main-content" style="padding: 2rem; max-width: 800px; margin: 0 auto;">
-        <h1 style="color: var(--primary-color); margin-bottom: 20px;">⚙️ Configuración</h1>
+    <!-- 3. Contenido de los Ajustes (Paneles) -->
+    <div class="settings-content">
+        
+        <!-- SECCIÓN: EDITAR INFORMACIÓN (Perfil) -->
+        <div id="sec-perfil" class="config-panel active-panel">
+            <h2>Mi Perfil</h2>
+            <div class="perfil-flex">
+                <div class="foto-perfil-edit">
+                    <img id="preview-foto" src="icono-app.png" alt="Mi Foto">
+                    <!-- Este es el input real para subir archivos, oculto visualmente -->
+                    <input type="file" id="input-foto-archivo" accept="image/png, image/jpeg" style="display: none;" onchange="procesarNuevaFoto(event)">
+                    <button class="btn-cambiar-foto" onclick="document.getElementById('input-foto-archivo').click()">Cambiar foto</button>
+                    <button class="btn-cambiar-foto" style="background: transparent; color: red; margin-top: 5px;" onclick="quitarFotoPersonalizada()">Restablecer</button>
+                </div>
+                <div class="datos-perfil-edit">
+                    <label>Alias / Apodo:</label>
+                    <input type="text" id="input-alias" placeholder="Ej. Viajero Estelar">
+                    <label>Edad:</label>
+                    <input type="number" id="input-edad" placeholder="Años">
+                    <label>Fecha de Nacimiento:</label>
+                    <input type="date" id="input-fecha-nac">
+                    <button class="btn-guardar-config" onclick="guardarConfiguracion()">Guardar Datos</button>
+                    <p id="mensaje-config-exito" style="display:none; color: #27AE60; font-weight: bold; margin-top: 10px;">¡Cambios guardados! ✨</p>
+                </div>
+            </div>
+        </div>
 
-        <!-- Sección 1: Tema -->
-        <div class="config-section">
-            <h3>🎨 Apariencia</h3>
-            <p style="font-size: 0.9rem; color: #666; margin-bottom: 10px;">Elige cómo quieres ver la página en todos tus dispositivos.</p>
+        <!-- SECCIÓN: TEMA -->
+        <div id="sec-tema" class="config-panel">
+            <h2>Apariencia</h2>
+            <p>Elige cómo quieres ver la página.</p>
             <div class="theme-buttons">
                 <button onclick="cambiarTema('claro')" id="btn-tema-claro" class="btn-tema">☀️ Claro</button>
                 <button onclick="cambiarTema('oscuro')" id="btn-tema-oscuro" class="btn-tema">🌙 Oscuro</button>
@@ -43,33 +78,17 @@
             </div>
         </div>
 
-        <!-- Sección 2: Perfil Anónimo -->
-        <div class="config-section">
-            <h3>👤 Mi Perfil</h3>
-            <div class="perfil-flex">
-                <div class="foto-perfil-edit">
-                    <img id="preview-foto" src="icono-app.png" alt="Mi Foto">
-                    <button onclick="alert('¡Pronto podrás subir tu propia foto!')" class="btn-cambiar-foto">Cambiar foto</button>
-                </div>
-                <div class="datos-perfil-edit">
-                    <label>Alias / Apodo:</label>
-                    <input type="text" id="input-alias" placeholder="Ej. Viajero Estelar" maxlength="15">
-                    
-                    <label>Edad:</label>
-                    <input type="number" id="input-edad" placeholder="Años" min="10" max="99">
-                    
-                    <label>Fecha de Nacimiento:</label>
-                    <input type="date" id="input-fecha-nac">
-                </div>
-            </div>
-        </div>
+        <!-- SECCIONES EN CONSTRUCCIÓN (Para añadir luego) -->
+        <div id="sec-notificaciones" class="config-panel"><h2>Notificaciones</h2><p>Próximamente...</p></div>
+        <div id="sec-idioma" class="config-panel"><h2>Idioma</h2><p>Próximamente...</p></div>
+        <div id="sec-volumen" class="config-panel"><h2>Volumen</h2><p>Próximamente agregaremos sonidos...</p></div>
+        <div id="sec-permisos" class="config-panel"><h2>Permisos</h2><p>Próximamente...</p></div>
+        <div id="sec-privacidad" class="config-panel"><h2>Políticas de Privacidad</h2><p>Próximamente...</p></div>
 
-        <!-- Botón Guardar -->
-        <button class="btn-guardar-config" onclick="guardarConfiguracion()">Guardar Cambios</button>
-        <p id="mensaje-config-exito" style="display:none; color: #27AE60; font-weight: bold; text-align: center; margin-top: 10px;">¡Cambios guardados con éxito! ✨</p>
     </div>
 
-    <!-- Conectamos la lógica -->
+    <!-- Scripts -->
     <script src="app.js"></script>
+    <script type="module" src="firebase.js"></script>
 </body>
 </html>
