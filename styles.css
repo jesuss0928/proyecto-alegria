@@ -581,3 +581,46 @@ body.sidebar-expanded #mascota-virtual { left: calc(var(--sidebar-expanded-width
     transform: scale(1.05);
     box-shadow: 0 0 30px rgba(255, 255, 255, 1), 0 0 70px rgba(255, 255, 255, 0.6);
 }
+/* ==========================================
+   AJUSTES Y MODO OSCURO
+   ========================================== */
+body.tema-oscuro {
+    --background-color: #121212;
+    --text-dark: #E0E0E0;
+    --white: #1E1E1E;
+    background-color: var(--background-color);
+    color: var(--text-dark);
+}
+
+.config-section {
+    background-color: var(--white);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+body.tema-oscuro .config-section { border-color: #333; }
+body.tema-oscuro input { background: #333; color: white; border-color: #555; }
+
+.theme-buttons { display: flex; gap: 10px; margin-top: 15px;}
+.btn-tema {
+    flex: 1; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;
+    border: 2px solid #ccc; background: transparent; color: var(--text-dark); transition: 0.3s;
+}
+.btn-tema:hover, .btn-tema.activo { border-color: var(--primary-color); background: rgba(47, 128, 237, 0.1); }
+
+.perfil-flex { display: flex; gap: 20px; align-items: flex-start; margin-top: 15px; }
+.foto-perfil-edit { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.foto-perfil-edit img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); }
+.btn-cambiar-foto { background: #f0f0f0; border: none; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; color: #333;}
+
+.datos-perfil-edit { flex-grow: 1; width: 100%; display: flex; flex-direction: column; gap: 8px; }
+.datos-perfil-edit label { font-size: 0.9rem; font-weight: bold; color: var(--primary-color); margin-top: 5px;}
+.datos-perfil-edit input { padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 100%; box-sizing: border-box; }
+
+.btn-guardar-config {
+    width: 100%; padding: 15px; border-radius: 10px; background: var(--primary-color); color: white;
+    font-size: 1.1rem; font-weight: bold; border: none; cursor: pointer; transition: 0.3s; margin-top: 10px;
+}
+.btn-guardar-config:hover { background: #2464B8; transform: translateY(-2px); box-shadow: 0 0 15px var(--primary-color); }
