@@ -931,17 +931,23 @@ function exportarDiarioTXT() {
     enlace.click();
 }
 
-// 5. Cargar estados visuales de los switches al entrar a ajustes
+// 5. Cargar estados al entrar a las páginas
 document.addEventListener('DOMContentLoaded', () => {
+    // ESTO SE EJECUTA EN TODAS LAS PÁGINAS (index y ajustes)
     aplicarAccesibilidad();
-    aplicarSonidoAnimaciones();
+    if(typeof aplicarSonidoAnimaciones === 'function') aplicarSonidoAnimaciones();
 
-    // Llenar checks si estamos en ajustes.html
+    // ESTO SOLO SE EJECUTA EN LA PÁGINA DE AJUSTES
     if (document.getElementById('check-dislexia')) {
         document.getElementById('check-dislexia').checked = localStorage.getItem('alegria_dislexia') === 'true';
-        document.getElementById('check-letra-grande').checked = localStorage.getItem('alegria_letra_grande') === 'true';
-        document.getElementById('check-silenciar').checked = localStorage.getItem('alegria_silenciar') === 'true';
-        document.getElementById('check-sin-animacion').checked = localStorage.getItem('alegria_sin_anim') === 'true';
+        
+        // Cargar el valor del slider
+        const tamano = localStorage.getItem('alegria_tamano_letra') || '100';
+        document.getElementById('slider-letra').value = tamano;
+        document.getElementById('valor-letra').innerText = tamano + '%';
+
+        if(document.getElementById('check-silenciar')) document.getElementById('check-silenciar').checked = localStorage.getItem('alegria_silenciar') === 'true';
+        if(document.getElementById('check-sin-animacion')) document.getElementById('check-sin-animacion').checked = localStorage.getItem('alegria_sin_anim') === 'true';
         
         const metas = JSON.parse(localStorage.getItem('alegria_metas') || "[]");
         document.querySelectorAll('.check-meta').forEach(check => {
