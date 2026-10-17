@@ -39,11 +39,8 @@ function generarBotonesMascotas() {
     if (!contenedor) return;
     contenedor.innerHTML = ''; 
 
-    // Recorre automáticamente todo lo que pongas en datos/mascotas.js
     for (const [id, datos] of Object.entries(tiposMascotas)) {
-        // Extrae solo el primer emoji (etapa 0) para el botón
         const iconoInicial = datos.etapas[0]; 
-
         contenedor.innerHTML += `
             <div class="opcion-mascota" onclick="seleccionarNuevaMascota('${id}')">
                 <div style="font-size:2.5rem;">${iconoInicial}</div>
@@ -53,9 +50,6 @@ function generarBotonesMascotas() {
     }
 }
 
-// Ejecuta esto al cargar la página para que los botones ya existan
-document.addEventListener('DOMContentLoaded', generarBotonesMascotas);
-//=======================================================================
 let datosProgreso = {
     tipoActivo: 'planta', 
     nivel: 0, 
@@ -80,7 +74,6 @@ window.sincronizarMascotaUI = function(datosRemotos) {
 function guardarProgresoMascota() {
     localStorage.setItem('alegria_mascota_data', JSON.stringify(datosProgreso)); 
     
-    // MODIFICADO: Intentamos extraer el correo desde Firebase Auth si está disponible de forma global
     if (typeof window.guardarMascotaBD === "function") { 
         const authGlobal = window.auth || (window.firebase && window.firebase.auth ? window.firebase.auth() : null);
         if (authGlobal && authGlobal.currentUser) {
@@ -93,15 +86,22 @@ function guardarProgresoMascota() {
 function actualizarUIMascota() {
     const config = tiposMascotas[datosProgreso.tipoActivo]; 
     const indiceEtapa = Math.min(4, Math.floor(datosProgreso.nivel / 25)); 
-document.getElementById('mascota-emoji').innerHTML = config.etapas[indiceEtapa];
-    document.getElementById('mascota-progreso').style.width = datosProgreso.nivel + '%'; 
-    document.getElementById('mascota-limite-texto').innerText = `${datosProgreso.upgradesHoy}/${MAX_UPGRADES_DIA} Hoy`; 
+    const emojiEl = document.getElementById('mascota-emoji');
+    if(emojiEl) emojiEl.innerHTML = config.etapas[indiceEtapa];
+    
+    const progresoEl = document.getElementById('mascota-progreso');
+    if(progresoEl) progresoEl.style.width = datosProgreso.nivel + '%'; 
+    
+    const limiteEl = document.getElementById('mascota-limite-texto');
+    if(limiteEl) limiteEl.innerText = `${datosProgreso.upgradesHoy}/${MAX_UPGRADES_DIA} Hoy`; 
 
     const textoEl = document.getElementById('mascota-texto'); 
-    if (datosProgreso.nivel < 40) textoEl.innerText = "Fase 1: Inicio"; 
-    else if (datosProgreso.nivel < 80) textoEl.innerText = "Fase 2: Creciendo"; 
-    else if (datosProgreso.nivel < 100) textoEl.innerText = "Fase 3: Casi listo"; 
-    else textoEl.innerText = "¡Completado!"; 
+    if(textoEl) {
+        if (datosProgreso.nivel < 40) textoEl.innerText = "Fase 1: Inicio"; 
+        else if (datosProgreso.nivel < 80) textoEl.innerText = "Fase 2: Creciendo"; 
+        else if (datosProgreso.nivel < 100) textoEl.innerText = "Fase 3: Casi listo"; 
+        else textoEl.innerText = "¡Completado!"; 
+    }
 }
 
 function mejorarMascota() {
@@ -116,14 +116,18 @@ function mejorarMascota() {
     datosProgreso.nivel += 20; datosProgreso.upgradesHoy++; 
     
     const emojiEl = document.getElementById('mascota-emoji'); 
-    emojiEl.style.transform = 'scale(1.4)'; setTimeout(() => emojiEl.style.transform = 'scale(1)', 400); 
+    if(emojiEl) {
+        emojiEl.style.transform = 'scale(1.4)'; 
+        setTimeout(() => emojiEl.style.transform = 'scale(1)', 400); 
+    }
 
     guardarProgresoMascota(); actualizarUIMascota(); 
 
     if (datosProgreso.nivel >= 100) { 
         datosProgreso.logros.push({ tipo: datosProgreso.tipoActivo, fecha: hoy, id: Date.now() }); 
         guardarProgresoMascota(); renderizarLogros(); 
-        document.getElementById('modal-selector-mascota').style.display = 'flex'; 
+        const modal = document.getElementById('modal-selector-mascota');
+        if(modal) modal.style.display = 'flex'; 
     }
 }
 
@@ -161,7 +165,6 @@ function renderizarLogros() {
 let intervaloRespiracion = null; 
 let emocionActual = ''; let juegoActivoTipo = ''; 
 
-// BANCO DE ROMPECABEZAS
 const bancoImagenesIA = [
     { tipo: "🌄 Paisaje Inteligente", url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop&q=80" }, 
     { tipo: "🏙️ Ciudad del Futuro", url: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&auto=format&fit=crop&q=80" }, 
@@ -170,7 +173,6 @@ const bancoImagenesIA = [
     { tipo: "🧸 Animación e Ilustración", url: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80" } 
 ];
 
-// BANCO DE PREGUNTAS
 const bancoPreguntas = [
     { p: "¿Qué es lo primero que debes hacer si te sientes muy abrumado?", o: ["Respirar hondo y tomar una pausa", "Seguir trabajando sin parar", "Enojarte con todos"], r: 0 }, 
     { p: "Si un amigo te cuenta que está triste, ¿cómo puedes ayudarlo?", o: ["Decirle que no es para tanto", "Escucharlo sin juzgar", "Ignorarlo para que se le pase"], r: 1 }, 
@@ -198,7 +200,6 @@ function showAdvice(emotion) {
     data.tips.forEach(tip => { const li = document.createElement('li'); li.textContent = tip; list.appendChild(li); }); 
     container.style.display = 'block'; 
 
-    // MODIFICADO: Intentamos enviar un objeto con la emoción y el correo del Auth global
     if (typeof window.guardarEmocionBD === "function") { 
         let payloadEmocion = { emocion: emotion };
         const authGlobal = window.auth || (window.firebase && window.firebase.auth ? window.firebase.auth() : null);
@@ -218,6 +219,7 @@ function showAdvice(emotion) {
 
 function mostrarMensajeEnPagina(mensaje, exito = true) {
     const div = document.getElementById('resultado-juego'); 
+    if(!div) return;
     div.innerText = mensaje; div.style.display = 'block'; 
     div.style.backgroundColor = exito ? "#E8F5E9" : "#FFF3E0"; 
     div.style.color = exito ? "#2E7D32" : "#E65100"; 
@@ -284,14 +286,18 @@ function pararEjercicioRespiracion() {
 }
 
 function restaurarBotonesJuego() {
-    document.getElementById('btn-juego-parar').style.display = 'none'; 
-    document.querySelector('.btn-reset').style.display = 'inline-block'; 
-    document.querySelector('.btn-change').style.display = 'inline-block'; 
+    const btnParar = document.getElementById('btn-juego-parar');
+    if(btnParar) btnParar.style.display = 'none'; 
+    
+    const btnReset = document.querySelector('.btn-reset');
+    if(btnReset) btnReset.style.display = 'inline-block'; 
+    
+    const btnChange = document.querySelector('.btn-change');
+    if(btnChange) btnChange.style.display = 'inline-block'; 
 }
 
 function iniciarExplosionBurbujas(emocion) {
     juegoActivoTipo = 'burbujas'; 
-    
     const contenedor = document.getElementById('juego-interactivo'); 
     contenedor.innerHTML = '<div class="bubble-grid" id="contenedor-burbujas"></div>'; 
     const areaBurbujas = document.getElementById('contenedor-burbujas'); 
@@ -315,9 +321,7 @@ function iniciarExplosionBurbujas(emocion) {
             if (btn.classList.contains('popped')) return; 
             
             btn.classList.add('popped'); 
-            
             setTimeout(() => { btn.style.display = 'none'; }, 250); 
-
             burbujasReventadas++; 
             if(burbujasReventadas >= totalBurbujas) { 
                 mostrarMensajeEnPagina("¡Toda esa energía negativa se ha esfumado!");  
@@ -327,7 +331,6 @@ function iniciarExplosionBurbujas(emocion) {
 
         btn.onmousedown = reventar; 
         btn.ontouchstart = reventar; 
-        
         areaBurbujas.appendChild(btn); 
     }
 }
@@ -369,7 +372,6 @@ function iniciarRompecabezasIA() {
     
     posiciones.sort(() => Math.random() - 0.5); 
     const pool = document.getElementById('puzzle-piezas'); 
-    
     pool.ondragover = (e) => e.preventDefault(); 
     pool.ondrop = manejarDrop; 
     
@@ -395,7 +397,6 @@ function manejarDrop(e) {
     if (!piezaArrastrada) return; 
     
     const dropTarget = e.target; 
-    
     if (dropTarget.id === 'puzzle-piezas' || dropTarget.classList.contains('puzzle-pieces-pool')) { 
         document.getElementById('puzzle-piezas').appendChild(piezaArrastrada); 
         verificarRompecabezas(); 
@@ -433,7 +434,6 @@ function verificarRompecabezas() {
 
 function iniciarPreguntasReflexivas() {
     juegoActivoTipo = 'preguntas'; 
-    
     const contenedor = document.getElementById('juego-interactivo'); 
     const preguntaRnd = bancoPreguntas[Math.floor(Math.random() * bancoPreguntas.length)]; 
     
@@ -468,7 +468,6 @@ function iniciarPreguntasReflexivas() {
 function activarJuegoPorEmocion(emocion, esAleatorio) {
     const seccion = document.getElementById('seccion-juego'); seccion.style.display = 'block'; 
     if(intervaloRespiracion) clearInterval(intervaloRespiracion); 
-    
     restaurarBotonesJuego(); 
 
     if (esAleatorio) { 
@@ -521,17 +520,11 @@ function activarJuegoPorEmocion(emocion, esAleatorio) {
 }
 
 function reiniciarJuegoActual() {
-    if (juegoActivoTipo === 'respiracion') { 
-        iniciarRespiracionGuiada(); 
-    } else if (juegoActivoTipo === 'burbujas') { 
-        iniciarExplosionBurbujas(emocionActual); 
-    } else if (juegoActivoTipo === 'puzzle') { 
-        iniciarRompecabezasIA(); 
-    } else if (juegoActivoTipo === 'preguntas') { 
-        iniciarPreguntasReflexivas(); 
-    } else { 
-        activarJuegoPorEmocion(emocionActual, false); 
-    }
+    if (juegoActivoTipo === 'respiracion') { iniciarRespiracionGuiada(); } 
+    else if (juegoActivoTipo === 'burbujas') { iniciarExplosionBurbujas(emocionActual); } 
+    else if (juegoActivoTipo === 'puzzle') { iniciarRompecabezasIA(); } 
+    else if (juegoActivoTipo === 'preguntas') { iniciarPreguntasReflexivas(); } 
+    else { activarJuegoPorEmocion(emocionActual, false); }
 }
 
 function cambiarDeJuegoAleatorio() { activarJuegoPorEmocion('', true); } 
@@ -553,7 +546,6 @@ function sendMessage() {
     if (messageText !== "") { 
         addChatBubble(messageText, 'user-message'); 
         input.value = ''; 
-        
         document.getElementById('typing').style.display = 'block'; 
         document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight; 
 
@@ -581,10 +573,8 @@ async function procesarRespuestaIA(textoUsuario) {
             headers: { 'Content-Type': 'application/json' }, 
             body: JSON.stringify({ mensaje: textoUsuario }) 
         }); 
-
         const datos = await respuesta.json(); 
         addChatBubble(datos.respuesta, 'bot-message'); 
-
     } catch (error) { 
         addChatBubble("Uy, parece que perdí la conexión con mi servidor. Por favor revisa si la ventana negra está encendida.", 'bot-message'); 
     }
@@ -595,22 +585,13 @@ function sendQuickReply(texto) { document.getElementById('chat-input').value = t
 // ==========================================
 // SEGURIDAD ANTIFISGONES
 // ==========================================
-document.addEventListener('contextmenu', function(e) {
-    e.preventDefault(); 
-});
-
+document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
 document.addEventListener('keydown', function(e) {
-    if ( 
-        e.key === 'F12' || 
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || 
-        (e.ctrlKey && e.key === 'u') 
-    ) {
-        e.preventDefault(); 
-    }
+    if ( e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'u') ) { e.preventDefault(); }
 });
 
 // =========================================
-// COMPORTAMIENTO DEL DIARIO (Guardar)
+// COMPORTAMIENTO DEL DIARIO (Guardar y Leer)
 // =========================================
 async function guardarDiario() {
     const textarea = document.getElementById('diary-text'); 
@@ -630,14 +611,11 @@ async function guardarDiario() {
 
     try { 
         await window.guardarEntradaEnFirebase(texto); 
-        
         textarea.value = ""; 
         mensajeDiv.style.color = "#16a34a"; 
         mensajeDiv.textContent = "¡Tu entrada ha sido guardada con éxito! ✨"; 
         mensajeDiv.style.display = "block"; 
-        
         cargarHistorialDiario(); 
-        
         setTimeout(() => { mensajeDiv.style.display = "none"; }, 4000); 
     } catch (error) { 
         mensajeDiv.style.color = "#dc2626"; 
@@ -649,15 +627,8 @@ async function guardarDiario() {
     }
 }
 
-// =========================================
-// SISTEMA DE PÁGINAS DEL DIARIO (Leer y Hojear)
-// =========================================
 let fechaVisionDiario = new Date(); 
-
-function cambiarDiaDiario(dias) {
-    fechaVisionDiario.setDate(fechaVisionDiario.getDate() + dias); 
-    cargarHistorialDiario(); 
-}
+function cambiarDiaDiario(dias) { fechaVisionDiario.setDate(fechaVisionDiario.getDate() + dias); cargarHistorialDiario(); }
 
 async function cargarHistorialDiario() {
     const historialContenedor = document.getElementById('historial-diario'); 
@@ -703,14 +674,9 @@ async function cargarHistorialDiario() {
 
         entradas.forEach(entrada => { 
             const hora = entrada.fechaObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); 
-            
             const div = document.createElement('div'); 
             div.className = "notebook-entry"; 
-
-            div.innerHTML = `
-                <div class="notebook-time">${hora}</div>
-                <div class="notebook-content">${entrada.contenido}</div>
-            `; 
+            div.innerHTML = `<div class="notebook-time">${hora}</div><div class="notebook-content">${entrada.contenido}</div>`; 
             historialContenedor.appendChild(div); 
         });
     } catch (error) { 
@@ -718,47 +684,33 @@ async function cargarHistorialDiario() {
         historialContenedor.innerHTML = "<p style='text-align: center; color: #dc2626; line-height: 32px;'>Error al leer la página.</p>"; 
     }
 }
-// ==========================================
-// ⚙️ SISTEMA DE AJUSTES, TEMAS Y FOTO
-// ==========================================
 
-// --- 1. Pestañas de la barra lateral ---
+// ==========================================
+// ⚙️ SISTEMA DE AJUSTES, TEMAS, FOTO Y EXPORTAR
+// ==========================================
 function cambiarSeccionAjustes(elementoLista, idPanel) {
     document.querySelectorAll('.settings-menu li').forEach(li => li.classList.remove('active'));
     elementoLista.classList.add('active');
-
     document.querySelectorAll('.config-panel').forEach(panel => panel.classList.remove('active-panel'));
     document.getElementById(idPanel).classList.add('active-panel');
 }
 
-// --- 2. Lógica del Tema (Apariencia) ---
 function aplicarTemaVisual(tipo) {
     let esOscuro = false;
-    if (tipo === 'oscuro') {
-        esOscuro = true;
-    } else if (tipo === 'sistema') {
-        esOscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-
-    if (esOscuro) {
-        document.body.classList.add('tema-oscuro');
-    } else {
-        document.body.classList.remove('tema-oscuro');
-    }
+    if (tipo === 'oscuro') esOscuro = true;
+    else if (tipo === 'sistema') esOscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (esOscuro) document.body.classList.add('tema-oscuro');
+    else document.body.classList.remove('tema-oscuro');
 }
 
 function cambiarTema(tipo) {
-    // Cambiar color del botón seleccionado
     document.querySelectorAll('.btn-tema').forEach(btn => btn.classList.remove('activo'));
     const btnActivo = document.getElementById('btn-tema-' + tipo);
     if (btnActivo) btnActivo.classList.add('activo');
-    
-    // Guardar y aplicar el tema
     localStorage.setItem('alegria_tema', tipo);
     aplicarTemaVisual(tipo);
 }
 
-// --- 3. Lógica de la Foto de Perfil ---
 function procesarNuevaFoto(event) {
     const archivo = event.target.files[0];
     if (archivo) {
@@ -772,52 +724,32 @@ function procesarNuevaFoto(event) {
     }
 }
 
-function quitarFotoPersonalizada() {
-    localStorage.removeItem('alegria_foto_custom');
-    cargarFotoPerfil(); 
-}
-
+function quitarFotoPersonalizada() { localStorage.removeItem('alegria_foto_custom'); cargarFotoPerfil(); }
 function cargarFotoPerfil() {
     const imgElement = document.getElementById('preview-foto');
     if (!imgElement) return;
-
     const fotoCustom = localStorage.getItem('alegria_foto_custom');
-    if (fotoCustom) {
-        imgElement.src = fotoCustom;
-        return;
-    }
-
+    if (fotoCustom) { imgElement.src = fotoCustom; return; }
     const infoUsuarioStr = localStorage.getItem('usuario_info');
     if (infoUsuarioStr) {
         const infoUsuario = JSON.parse(infoUsuarioStr);
-        if (infoUsuario && infoUsuario.foto) {
-            imgElement.src = infoUsuario.foto;
-            return;
-        }
+        if (infoUsuario && infoUsuario.foto) { imgElement.src = infoUsuario.foto; return; }
     }
-
     imgElement.src = 'icono-app.png';
 }
 
-// --- 4. Guardar y Cargar Datos del Formulario ---
 function guardarConfiguracion() {
     const alias = document.getElementById('input-alias').value;
     const edad = document.getElementById('input-edad').value;
     const fechaNac = document.getElementById('input-fecha-nac').value;
-
     localStorage.setItem('alegria_perfil', JSON.stringify({ alias, edad, fechaNac }));
-
     const msg = document.getElementById('mensaje-config-exito');
-    if(msg) {
-        msg.style.display = 'block';
-        setTimeout(() => msg.style.display = 'none', 3000);
-    }
+    if(msg) { msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 3000); }
 }
 
 function cargarDatosAjustes(temaGuardado) {
     const btnActivo = document.getElementById('btn-tema-' + temaGuardado);
     if(btnActivo) btnActivo.classList.add('activo');
-
     const perfilGuardado = JSON.parse(localStorage.getItem('alegria_perfil'));
     if (perfilGuardado) {
         if(document.getElementById('input-alias')) document.getElementById('input-alias').value = perfilGuardado.alias || "";
@@ -826,80 +758,24 @@ function cargarDatosAjustes(temaGuardado) {
     }
 }
 
-// ==========================================
-// --- 5. INICIALIZACIÓN AL CARGAR LA PÁGINA ---
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. ESTO SE EJECUTA EN TODAS LAS PÁGINAS (index y ajustes)
-    const temaGuardado = localStorage.getItem('alegria_tema') || 'sistema';
-    aplicarTemaVisual(temaGuardado);
-    
-    if(typeof aplicarAccesibilidad === 'function') aplicarAccesibilidad();
-    if(typeof aplicarAnimaciones === 'function') aplicarAnimaciones();
-
-    // 2. ESTO SOLO SE EJECUTA EN LA PÁGINA DE AJUSTES
-    if (document.getElementById('sec-perfil')) {
-        // Cargar datos de perfil (alias, edad, foto)
-        cargarDatosAjustes(temaGuardado);
-        cargarFotoPerfil();
-        
-        // Cargar estado de Accesibilidad (Dislexia)
-        if(document.getElementById('check-dislexia')) {
-            document.getElementById('check-dislexia').checked = localStorage.getItem('alegria_dislexia') === 'true';
-        }
-        
-        // Cargar el valor del slider de Letra
-        const tamano = localStorage.getItem('alegria_tamano_letra') || '100';
-        if(document.getElementById('slider-letra')) {
-            document.getElementById('slider-letra').value = tamano;
-            document.getElementById('valor-letra').innerText = tamano + '%';
-        }
-
-        // Cargar el valor del slider de Volumen
-        const volumenGuardado = localStorage.getItem('alegria_volumen') || '50';
-        if(document.getElementById('slider-volumen')) {
-            document.getElementById('slider-volumen').value = volumenGuardado;
-            document.getElementById('valor-volumen').innerText = volumenGuardado + '%';
-        }
-
-        // Cargar estado de reducir animaciones
-        if(document.getElementById('check-sin-animacion')) {
-            document.getElementById('check-sin-animacion').checked = localStorage.getItem('alegria_sin_anim') === 'true';
-        }
-        
-        // Cargar Metas guardadas
-        const metas = JSON.parse(localStorage.getItem('alegria_metas') || "[]");
-        document.querySelectorAll('.check-meta').forEach(check => {
-            if(metas.includes(check.value)) check.checked = true;
-        });
-    }
-});
+function exportarDiarioTXT() {
+    const historial = JSON.parse(localStorage.getItem('alegria_historial_diario')) || {};
+    let contenido = "=== MI DIARIO EN ALEGRÍA ===\n\n";
+    const fechas = Object.keys(historial).sort((a,b) => new Date(b) - new Date(a));
+    if (fechas.length === 0) { alert("Tu diario está vacío. ¡Escribe algo primero antes de exportar!"); return; }
+    fechas.forEach(fecha => {
+        contenido += `Fecha: ${fecha}\nEntrada: ${historial[fecha].texto}\n-----------------------------------\n`;
+    });
+    const blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
+    const enlace = document.createElement("a");
+    enlace.href = URL.createObjectURL(blob);
+    enlace.download = "Mi_Diario_Alegria.txt";
+    enlace.click();
+}
 
 // ==========================================
-// --- 6. DETECTOR GLOBAL DE SONIDO ---
+// ⚙️ ACCESIBILIDAD, SONIDO Y ANIMACIONES
 // ==========================================
-document.addEventListener('click', (event) => {
-    // Detectamos si lo que clickeaste es un botón, un enlace, o una opción de menú
-    const esBoton = event.target.closest('button');
-    const esEnlaceSidebar = event.target.closest('.sidebar-item');
-    const esItemAjustes = event.target.closest('.settings-menu li');
-    const esBotonEmocion = event.target.closest('.btn-emotion');
-
-    // Evitamos que suene doble cuando usamos sliders (barras)
-    if (event.target.tagName === 'INPUT' && event.target.type === 'range') return;
-
-    // Si tocaste algún botón interactivo, suena el click
-    if (esBoton || esEnlaceSidebar || esItemAjustes || esBotonEmocion) {
-        if(typeof reproducirSonido === 'function') {
-            reproducirSonido('click');
-        }
-    }
-});
-// ==========================================
-// ⚙️ ACCESIBILIDAD, SONIDO, METAS Y EXPORTACIÓN
-// ==========================================
-
-// 1. Accesibilidad (Dislexia y Tamaño de letra con slider)
 function toggleDislexia() {
     const isDislexia = document.getElementById('check-dislexia').checked;
     localStorage.setItem('alegria_dislexia', isDislexia);
@@ -909,68 +785,44 @@ function toggleDislexia() {
 function cambiarTamanoLetra() {
     const slider = document.getElementById('slider-letra');
     const valor = slider.value;
-    
-    // Muestra el número en tiempo real (ej. 115%)
     document.getElementById('valor-letra').innerText = valor + '%';
-    
-    // Lo guarda en la memoria
     localStorage.setItem('alegria_tamano_letra', valor);
-    
-    // Aplica el cambio inmediatamente
     aplicarAccesibilidad();
 }
 
 function aplicarAccesibilidad() {
-    // A) Aplicar fuente para dislexia
     const isDislexia = localStorage.getItem('alegria_dislexia') === 'true';
     if(isDislexia) document.body.classList.add('fuente-dislexia');
     else document.body.classList.remove('fuente-dislexia');
 
-    // B) Aplicar tamaño de letra dinámico a la RAÍZ de la página (afecta todo)
     const tamanoGuardado = localStorage.getItem('alegria_tamano_letra') || '100';
     document.documentElement.style.fontSize = tamanoGuardado + '%';
 }
-// ==========================================
-// 🔊 SISTEMA DE SONIDO Y ANIMACIONES
-// ==========================================
 
-// Crear los audios directamente en JavaScript para que funcionen en TODAS las páginas
 const audioClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
 const audioExito = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
 
 function cambiarVolumen() {
     const slider = document.getElementById('slider-volumen');
     const valor = slider.value;
-    
-    // Mostrar el porcentaje en pantalla
     document.getElementById('valor-volumen').innerText = valor + '%';
-    
-    // Guardar el volumen en la memoria del navegador
     localStorage.setItem('alegria_volumen', valor);
-    
-    // Reproducir un sonido de prueba al soltar el slider para confirmar el volumen
     reproducirSonido('click');
 }
 
-// Función global mejorada que puedes llamar desde cualquier botón de tu app
 function reproducirSonido(tipo) {
     const volumenGuardado = localStorage.getItem('alegria_volumen');
-    // Si no hay volumen guardado, usar 50 por defecto
     const volumenActual = volumenGuardado !== null ? parseInt(volumenGuardado) : 50; 
     const volumenDecimal = volumenActual / 100;
 
-    // Si el volumen está en 0%, no reproducir nada
     if (volumenDecimal === 0) return;
-
     let audio;
     if (tipo === 'click') audio = audioClick;
     if (tipo === 'exito') audio = audioExito;
 
     if (audio) {
-        audio.pause(); // Detener si ya estaba sonando
-        audio.currentTime = 0; // Regresar al inicio
-        audio.volume = volumenDecimal; // Aplicar el volumen del slider
-        audio.play().catch(e => console.log("Esperando interacción del usuario para reproducir audio"));
+        audio.pause(); audio.currentTime = 0; audio.volume = volumenDecimal; 
+        audio.play().catch(e => console.log("Esperando interacción para audio"));
     }
 }
 
@@ -986,15 +838,12 @@ function aplicarAnimaciones() {
     else document.body.classList.remove('reducir-animaciones');
 }
 
-// 3. Metas de Bienestar
 // ==========================================
 // 🔔 METAS Y NOTIFICACIONES
 // ==========================================
-
 function agregarMetaPersonalizada() {
     const input = document.getElementById('input-nueva-meta');
     const valor = input.value.trim();
-    
     if(valor !== "") {
         const lista = document.getElementById('lista-metas');
         const nuevoLabel = document.createElement('label');
@@ -1002,10 +851,8 @@ function agregarMetaPersonalizada() {
         nuevoLabel.style.alignItems = 'center';
         nuevoLabel.style.gap = '8px';
         nuevoLabel.innerHTML = `<input type="checkbox" class="check-meta" value="${valor}" checked> 📌 ${valor}`;
-        
         lista.appendChild(nuevoLabel);
-        input.value = ""; // Limpiar el campo de texto
-        
+        input.value = ""; 
         if(typeof reproducirSonido === 'function') reproducirSonido('click');
     }
 }
@@ -1018,7 +865,6 @@ function guardarMetas() {
     checks.forEach(check => {
         if(check.checked) {
             metasSeleccionadas.push(check.value);
-            // Si es una meta creada por el usuario, la guardamos aparte para no perderla al recargar
             if(check.value !== 'agua' && check.value !== 'pantallas' && check.value !== 'respirar') {
                 metasPersonalesHTML.push(check.value);
             }
@@ -1030,77 +876,86 @@ function guardarMetas() {
     
     if(typeof reproducirSonido === 'function') reproducirSonido('exito');
 
-    // Lanzar notificación real del sistema
     if ("Notification" in window && Notification.permission === "granted") {
-        new Notification("Alegría", {
-            body: "¡Tus metas se han guardado! Te avisaremos cuando sea el momento.",
-            icon: "icono-app.png"
-        });
-    } else {
-        alert('¡Tus metas y avisos han sido guardados!');
-    }
-}
-// 4. Exportar Diario a TXT
-function exportarDiarioTXT() {
-    const historial = JSON.parse(localStorage.getItem('alegria_historial_diario')) || {};
-    let contenido = "=== MI DIARIO EN ALEGRÍA ===\n\n";
-    
-    const fechas = Object.keys(historial).sort((a,b) => new Date(b) - new Date(a));
-    
-    if (fechas.length === 0) {
-        alert("Tu diario está vacío. ¡Escribe algo primero antes de exportar!");
-        return;
-    }
-
-    fechas.forEach(fecha => {
-        contenido += `Fecha: ${fecha}\n`;
-        contenido += `Entrada: ${historial[fecha].texto}\n`;
-        contenido += `-----------------------------------\n`;
-    });
-
-    // Crear archivo descargable
-    const blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
-    const enlace = document.createElement("a");
-    enlace.href = URL.createObjectURL(blob);
-    enlace.download = "Mi_Diario_Alegria.txt";
-    enlace.click();
+        new Notification("Alegría", { body: "¡Tus metas se han guardado!", icon: "icono-app.png" });
+    } else { alert('¡Tus metas y avisos han sido guardados!'); }
 }
 
-// 5. Cargar estados al entrar a las páginas
+window.pedirPermisoNotificaciones = function() {
+    if ("Notification" in window) {
+        if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+            Notification.requestPermission().then(permission => {
+                if(permission === "granted") console.log("Notificaciones aceptadas.");
+            });
+        }
+    }
+};
+
+// ==========================================
+// --- DETECTOR GLOBAL DE SONIDO ---
+// ==========================================
+document.addEventListener('click', (event) => {
+    const esBoton = event.target.closest('button');
+    const esEnlaceSidebar = event.target.closest('.sidebar-item');
+    const esItemAjustes = event.target.closest('.settings-menu li');
+    const esBotonEmocion = event.target.closest('.btn-emotion');
+
+    if (event.target.tagName === 'INPUT' && event.target.type === 'range') return;
+    if (esBoton || esEnlaceSidebar || esItemAjustes || esBotonEmocion) {
+        if(typeof reproducirSonido === 'function') reproducirSonido('click');
+    }
+});
+
+// ==========================================
+// --- INICIALIZACIÓN FINAL AL CARGAR LA PÁGINA ---
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // ESTO SE EJECUTA EN TODAS LAS PÁGINAS (index y ajustes)
-    aplicarAccesibilidad();
+    // 1. GLOBAL
+    const temaGuardado = localStorage.getItem('alegria_tema') || 'sistema';
+    aplicarTemaVisual(temaGuardado);
+    if(typeof aplicarAccesibilidad === 'function') aplicarAccesibilidad();
     if(typeof aplicarAnimaciones === 'function') aplicarAnimaciones();
+    generarBotonesMascotas();
 
-    // ESTO SOLO SE EJECUTA EN LA PÁGINA DE AJUSTES
-    if (document.getElementById('check-dislexia')) {
+    // 2. SOLO AJUSTES
+    if (document.getElementById('sec-perfil')) {
+        cargarDatosAjustes(temaGuardado);
+        cargarFotoPerfil();
         
-        // Cargar estado de Accesibilidad (Dislexia)
-        document.getElementById('check-dislexia').checked = localStorage.getItem('alegria_dislexia') === 'true';
+        if(document.getElementById('check-dislexia')) document.getElementById('check-dislexia').checked = localStorage.getItem('alegria_dislexia') === 'true';
         
-        // Cargar el valor del slider de Letra
         const tamano = localStorage.getItem('alegria_tamano_letra') || '100';
         if(document.getElementById('slider-letra')) {
             document.getElementById('slider-letra').value = tamano;
             document.getElementById('valor-letra').innerText = tamano + '%';
         }
 
-        // Cargar el valor del slider de Volumen (NUEVO)
         const volumenGuardado = localStorage.getItem('alegria_volumen') || '50';
         if(document.getElementById('slider-volumen')) {
             document.getElementById('slider-volumen').value = volumenGuardado;
             document.getElementById('valor-volumen').innerText = volumenGuardado + '%';
         }
 
-        // Cargar estado de reducir animaciones
-        if(document.getElementById('check-sin-animacion')) {
-            document.getElementById('check-sin-animacion').checked = localStorage.getItem('alegria_sin_anim') === 'true';
-        }
+        if(document.getElementById('check-sin-animacion')) document.getElementById('check-sin-animacion').checked = localStorage.getItem('alegria_sin_anim') === 'true';
         
-        // Cargar Metas guardadas
+        // Renderizar las metas
         const metas = JSON.parse(localStorage.getItem('alegria_metas') || "[]");
-        document.querySelectorAll('.check-meta').forEach(check => {
-            if(metas.includes(check.value)) check.checked = true;
-        });
+        const metasPersonales = JSON.parse(localStorage.getItem('alegria_metas_personales') || "[]");
+        const listaMetas = document.getElementById('lista-metas');
+        
+        if(listaMetas) {
+            metasPersonales.forEach(valor => {
+                const nuevoLabel = document.createElement('label');
+                nuevoLabel.style.display = 'flex';
+                nuevoLabel.style.alignItems = 'center';
+                nuevoLabel.style.gap = '8px';
+                nuevoLabel.innerHTML = `<input type="checkbox" class="check-meta" value="${valor}"> 📌 ${valor}`;
+                listaMetas.appendChild(nuevoLabel);
+            });
+
+            document.querySelectorAll('.check-meta').forEach(check => {
+                if(metas.includes(check.value)) check.checked = true;
+            });
+        }
     }
 });
