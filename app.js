@@ -987,16 +987,59 @@ function aplicarAnimaciones() {
 }
 
 // 3. Metas de Bienestar
+// ==========================================
+// 🔔 METAS Y NOTIFICACIONES
+// ==========================================
+
+function agregarMetaPersonalizada() {
+    const input = document.getElementById('input-nueva-meta');
+    const valor = input.value.trim();
+    
+    if(valor !== "") {
+        const lista = document.getElementById('lista-metas');
+        const nuevoLabel = document.createElement('label');
+        nuevoLabel.style.display = 'flex';
+        nuevoLabel.style.alignItems = 'center';
+        nuevoLabel.style.gap = '8px';
+        nuevoLabel.innerHTML = `<input type="checkbox" class="check-meta" value="${valor}" checked> 📌 ${valor}`;
+        
+        lista.appendChild(nuevoLabel);
+        input.value = ""; // Limpiar el campo de texto
+        
+        if(typeof reproducirSonido === 'function') reproducirSonido('click');
+    }
+}
+
 function guardarMetas() {
     const checks = document.querySelectorAll('.check-meta');
     let metasSeleccionadas = [];
+    let metasPersonalesHTML = []; 
+    
     checks.forEach(check => {
-        if(check.checked) metasSeleccionadas.push(check.value);
+        if(check.checked) {
+            metasSeleccionadas.push(check.value);
+            // Si es una meta creada por el usuario, la guardamos aparte para no perderla al recargar
+            if(check.value !== 'agua' && check.value !== 'pantallas' && check.value !== 'respirar') {
+                metasPersonalesHTML.push(check.value);
+            }
+        }
     });
+    
     localStorage.setItem('alegria_metas', JSON.stringify(metasSeleccionadas));
-    alert('¡Tus metas de bienestar han sido guardadas!');
-}
+    localStorage.setItem('alegria_metas_personales', JSON.stringify(metasPersonalesHTML));
+    
+    if(typeof reproducirSonido === 'function') reproducirSonido('exito');
 
+    // Lanzar notificación real del sistema
+    if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("Alegría", {
+            body: "¡Tus metas se han guardado! Te avisaremos cuando sea el momento.",
+            icon: "icono-app.png"
+        });
+    } else {
+        alert('¡Tus metas y avisos han sido guardados!');
+    }
+}
 // 4. Exportar Diario a TXT
 function exportarDiarioTXT() {
     const historial = JSON.parse(localStorage.getItem('alegria_historial_diario')) || {};
