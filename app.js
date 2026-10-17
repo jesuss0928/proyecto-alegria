@@ -826,19 +826,75 @@ function cargarDatosAjustes(temaGuardado) {
     }
 }
 
-// --- 5. Inicialización al cargar la página ---
+// ==========================================
+// --- 5. INICIALIZACIÓN AL CARGAR LA PÁGINA ---
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Aplica el tema en todas tus páginas (index y ajustes)
+    // 1. ESTO SE EJECUTA EN TODAS LAS PÁGINAS (index y ajustes)
     const temaGuardado = localStorage.getItem('alegria_tema') || 'sistema';
     aplicarTemaVisual(temaGuardado);
+    
+    if(typeof aplicarAccesibilidad === 'function') aplicarAccesibilidad();
+    if(typeof aplicarAnimaciones === 'function') aplicarAnimaciones();
 
-    // Solo ejecuta esto si estamos dentro de la página de ajustes
+    // 2. ESTO SOLO SE EJECUTA EN LA PÁGINA DE AJUSTES
     if (document.getElementById('sec-perfil')) {
+        // Cargar datos de perfil (alias, edad, foto)
         cargarDatosAjustes(temaGuardado);
         cargarFotoPerfil();
+        
+        // Cargar estado de Accesibilidad (Dislexia)
+        if(document.getElementById('check-dislexia')) {
+            document.getElementById('check-dislexia').checked = localStorage.getItem('alegria_dislexia') === 'true';
+        }
+        
+        // Cargar el valor del slider de Letra
+        const tamano = localStorage.getItem('alegria_tamano_letra') || '100';
+        if(document.getElementById('slider-letra')) {
+            document.getElementById('slider-letra').value = tamano;
+            document.getElementById('valor-letra').innerText = tamano + '%';
+        }
+
+        // Cargar el valor del slider de Volumen
+        const volumenGuardado = localStorage.getItem('alegria_volumen') || '50';
+        if(document.getElementById('slider-volumen')) {
+            document.getElementById('slider-volumen').value = volumenGuardado;
+            document.getElementById('valor-volumen').innerText = volumenGuardado + '%';
+        }
+
+        // Cargar estado de reducir animaciones
+        if(document.getElementById('check-sin-animacion')) {
+            document.getElementById('check-sin-animacion').checked = localStorage.getItem('alegria_sin_anim') === 'true';
+        }
+        
+        // Cargar Metas guardadas
+        const metas = JSON.parse(localStorage.getItem('alegria_metas') || "[]");
+        document.querySelectorAll('.check-meta').forEach(check => {
+            if(metas.includes(check.value)) check.checked = true;
+        });
     }
 });
 
+// ==========================================
+// --- 6. DETECTOR GLOBAL DE SONIDO ---
+// ==========================================
+document.addEventListener('click', (event) => {
+    // Detectamos si lo que clickeaste es un botón, un enlace, o una opción de menú
+    const esBoton = event.target.closest('button');
+    const esEnlaceSidebar = event.target.closest('.sidebar-item');
+    const esItemAjustes = event.target.closest('.settings-menu li');
+    const esBotonEmocion = event.target.closest('.btn-emotion');
+
+    // Evitamos que suene doble cuando usamos sliders (barras)
+    if (event.target.tagName === 'INPUT' && event.target.type === 'range') return;
+
+    // Si tocaste algún botón interactivo, suena el click
+    if (esBoton || esEnlaceSidebar || esItemAjustes || esBotonEmocion) {
+        if(typeof reproducirSonido === 'function') {
+            reproducirSonido('click');
+        }
+    }
+});
 // ==========================================
 // ⚙️ ACCESIBILIDAD, SONIDO, METAS Y EXPORTACIÓN
 // ==========================================
