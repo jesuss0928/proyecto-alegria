@@ -720,3 +720,26 @@ body.tema-oscuro .stat-card .stat-number {
 body.tema-oscuro .stat-card p {
     color: #9ca3af !important; /* Gris claro legible para el texto */
 }
+/* ==========================================
+   ACCESIBILIDAD Y ANIMACIONES
+   ========================================== */
+
+/* Fuente para dislexia */
+body.fuente-dislexia * {
+    font-family: 'Comic Sans MS', 'Arial', sans-serif !important;
+    letter-spacing: 0.5px !important;
+    line-height: 1.6 !important;
+}
+
+/* Letra grande */
+body.letra-grande {
+    font-size: 115% !important;
+}
+body.letra-grande h2 { font-size: 1.8rem !important; }
+body.letra-grande p, body.letra-grande button, body.letra-grande input { font-size: 1.1rem !important; }
+
+/* Reducir animaciones */
+body.reducir-animaciones * {
+    animation: none !important;
+    transition: none !important;
+}
