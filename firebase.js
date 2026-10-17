@@ -180,6 +180,12 @@ onAuthStateChanged(auth, (user) => {
     if (user) {
         window.usuarioLogueado = user;
         
+        // --- AQUÍ LLAMAMOS A LA FUNCIÓN DE NOTIFICACIONES (PASO 3) ---
+        if (typeof window.pedirPermisoNotificaciones === 'function') {
+            window.pedirPermisoNotificaciones();
+        }
+        // -------------------------------------------------------------
+        
         const authContainer = document.getElementById('auth-container');
         if (authContainer) {
             const nombreUsuario = user.displayName || (user.email ? user.email.split('@')[0] : 'Usuario');
@@ -202,7 +208,8 @@ onAuthStateChanged(auth, (user) => {
                 </div>
             `;
         }
-        
+    }
+});
         const btnDiario = document.getElementById('btn-sidebar-diario');
         if (btnDiario) {
             btnDiario.style.display = 'flex';
