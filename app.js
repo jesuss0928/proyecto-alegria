@@ -967,20 +967,34 @@ function exportarDiarioTXT() {
 document.addEventListener('DOMContentLoaded', () => {
     // ESTO SE EJECUTA EN TODAS LAS PÁGINAS (index y ajustes)
     aplicarAccesibilidad();
-    if(typeof aplicarSonidoAnimaciones === 'function') aplicarSonidoAnimaciones();
+    if(typeof aplicarAnimaciones === 'function') aplicarAnimaciones();
 
     // ESTO SOLO SE EJECUTA EN LA PÁGINA DE AJUSTES
     if (document.getElementById('check-dislexia')) {
+        
+        // Cargar estado de Accesibilidad (Dislexia)
         document.getElementById('check-dislexia').checked = localStorage.getItem('alegria_dislexia') === 'true';
         
-        // Cargar el valor del slider
+        // Cargar el valor del slider de Letra
         const tamano = localStorage.getItem('alegria_tamano_letra') || '100';
-        document.getElementById('slider-letra').value = tamano;
-        document.getElementById('valor-letra').innerText = tamano + '%';
+        if(document.getElementById('slider-letra')) {
+            document.getElementById('slider-letra').value = tamano;
+            document.getElementById('valor-letra').innerText = tamano + '%';
+        }
 
-        if(document.getElementById('check-silenciar')) document.getElementById('check-silenciar').checked = localStorage.getItem('alegria_silenciar') === 'true';
-        if(document.getElementById('check-sin-animacion')) document.getElementById('check-sin-animacion').checked = localStorage.getItem('alegria_sin_anim') === 'true';
+        // Cargar el valor del slider de Volumen (NUEVO)
+        const volumenGuardado = localStorage.getItem('alegria_volumen') || '50';
+        if(document.getElementById('slider-volumen')) {
+            document.getElementById('slider-volumen').value = volumenGuardado;
+            document.getElementById('valor-volumen').innerText = volumenGuardado + '%';
+        }
+
+        // Cargar estado de reducir animaciones
+        if(document.getElementById('check-sin-animacion')) {
+            document.getElementById('check-sin-animacion').checked = localStorage.getItem('alegria_sin_anim') === 'true';
+        }
         
+        // Cargar Metas guardadas
         const metas = JSON.parse(localStorage.getItem('alegria_metas') || "[]");
         document.querySelectorAll('.check-meta').forEach(check => {
             if(metas.includes(check.value)) check.checked = true;
