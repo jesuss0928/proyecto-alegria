@@ -9,8 +9,8 @@
 </head>
 <body style="margin: 0; padding: 0 !important; display: flex; height: 100vh; overflow: hidden; background-color: var(--background-color);">
     <!-- 1. Sidebar Principal (El que ya tienes) -->
-<nav class="sidebar" id="sidebar" style="position: relative; height: 100%; margin: 0; left: 0; border-radius: 0;">     
-    <div class="sidebar-header">
+    <nav class="sidebar" id="sidebar" style="position: relative; height: 100%; margin: 0; left: 0; border-radius: 0;">     
+        <div class="sidebar-header">
             <div class="sidebar-logo-text">Alegría</div>
         </div>
         <div class="sidebar-menu" style="display: flex; flex-direction: column; height: 100%;">
@@ -25,15 +25,17 @@
         </div>
     </nav>
 
-    <!-- 2. Sidebar Secundario (Menú de Ajustes) -->
+    <!-- 2. Sidebar Secundario (Menú de Ajustes Actualizado) -->
     <div class="settings-sidebar">
         <h2 style="padding: 20px; margin: 0; color: var(--primary-color);">Ajustes</h2>
         <ul class="settings-menu">
             <li class="active" onclick="cambiarSeccionAjustes(this, 'sec-perfil')">👤 Editar Información</li>
             <li onclick="cambiarSeccionAjustes(this, 'sec-tema')">🎨 Tema y Apariencia</li>
-            <li onclick="cambiarSeccionAjustes(this, 'sec-notificaciones')">🔔 Notificaciones</li>
+            <li onclick="cambiarSeccionAjustes(this, 'sec-accesibilidad')">👁️ Accesibilidad</li>
+            <li onclick="cambiarSeccionAjustes(this, 'sec-volumen')">🔊 Sonido y Animaciones</li>
+            <li onclick="cambiarSeccionAjustes(this, 'sec-notificaciones')">🔔 Metas y Avisos</li>
+            <li onclick="cambiarSeccionAjustes(this, 'sec-exportar')">💾 Exportar Datos</li>
             <li onclick="cambiarSeccionAjustes(this, 'sec-idioma')">🌐 Idioma</li>
-            <li onclick="cambiarSeccionAjustes(this, 'sec-volumen')">🔊 Volumen</li>
             <li onclick="cambiarSeccionAjustes(this, 'sec-permisos')">🔒 Permisos</li>
             <li onclick="cambiarSeccionAjustes(this, 'sec-privacidad')">📄 Privacidad</li>
         </ul>
@@ -77,10 +79,59 @@
             </div>
         </div>
 
-        <!-- SECCIONES EN CONSTRUCCIÓN (Para añadir luego) -->
-        <div id="sec-notificaciones" class="config-panel"><h2>Notificaciones</h2><p>Próximamente...</p></div>
+        <!-- NUEVO: ACCESIBILIDAD -->
+        <div id="sec-accesibilidad" class="config-panel">
+            <h2>Accesibilidad</h2>
+            <p>Adapta la lectura a tus necesidades.</p>
+            <div style="margin-top: 15px;">
+                <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; cursor: pointer;">
+                    <input type="checkbox" id="check-dislexia" onchange="toggleAccesibilidad()" style="width: 20px; height: 20px;">
+                    <strong>Fuente amigable para Dislexia</strong>
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" id="check-letra-grande" onchange="toggleAccesibilidad()" style="width: 20px; height: 20px;">
+                    <strong>Aumentar tamaño de letra</strong>
+                </label>
+            </div>
+        </div>
+
+        <!-- NUEVO: SONIDO Y ANIMACIONES -->
+        <div id="sec-volumen" class="config-panel">
+            <h2>Sonidos y Animaciones</h2>
+            <p>Personaliza tu experiencia interactiva.</p>
+            <div style="margin-top: 15px;">
+                <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; cursor: pointer;">
+                    <input type="checkbox" id="check-silenciar" onchange="toggleSonido()" style="width: 20px; height: 20px;">
+                    <strong>Silenciar todos los sonidos (App Minimalista)</strong>
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" id="check-sin-animacion" onchange="toggleSonido()" style="width: 20px; height: 20px;">
+                    <strong>Reducir animaciones en pantalla</strong>
+                </label>
+            </div>
+        </div>
+
+        <!-- NUEVO: NOTIFICACIONES / METAS -->
+        <div id="sec-notificaciones" class="config-panel">
+            <h2>Metas de Bienestar</h2>
+            <p>¿Qué quieres que te recordemos cada día?</p>
+            <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
+                <label><input type="checkbox" class="check-meta" value="agua"> 💧 Beber agua</label>
+                <label><input type="checkbox" class="check-meta" value="pantallas"> 📵 Desconectarse de pantallas a las 10 PM</label>
+                <label><input type="checkbox" class="check-meta" value="respirar"> 🧘‍♀️ Tomar 5 minutos para respirar profundo</label>
+                <button class="btn-guardar-config" onclick="guardarMetas()" style="margin-top: 10px;">Guardar Metas</button>
+            </div>
+        </div>
+
+        <!-- NUEVO: EXPORTAR DATOS -->
+        <div id="sec-exportar" class="config-panel">
+            <h2>Exportar mi Diario</h2>
+            <p>Descarga un archivo de texto con todas tus entradas del diario para leerlas luego o compartirlas con un profesional.</p>
+            <button class="btn-guardar-config" onclick="exportarDiarioTXT()" style="background-color: #27AE60;">📥 Descargar mi Diario (.txt)</button>
+        </div>
+
+        <!-- SECCIONES EN CONSTRUCCIÓN (Preservadas) -->
         <div id="sec-idioma" class="config-panel"><h2>Idioma</h2><p>Próximamente...</p></div>
-        <div id="sec-volumen" class="config-panel"><h2>Volumen</h2><p>Próximamente agregaremos sonidos...</p></div>
         <div id="sec-permisos" class="config-panel"><h2>Permisos</h2><p>Próximamente...</p></div>
         <div id="sec-privacidad" class="config-panel"><h2>Políticas de Privacidad</h2><p>Próximamente...</p></div>
 
