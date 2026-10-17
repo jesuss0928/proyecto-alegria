@@ -79,19 +79,21 @@
             </div>
         </div>
 
-        <!-- NUEVO: ACCESIBILIDAD -->
+       <!-- NUEVO: ACCESIBILIDAD -->
         <div id="sec-accesibilidad" class="config-panel">
             <h2>Accesibilidad</h2>
-            <p>Adapta la lectura a tus necesidades.</p>
+            <p>Adapta la lectura a tus necesidades[cite: 12].</p>
             <div style="margin-top: 15px;">
-                <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; cursor: pointer;">
-                    <input type="checkbox" id="check-dislexia" onchange="toggleAccesibilidad()" style="width: 20px; height: 20px;">
+                <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px; cursor: pointer;">
+                    <input type="checkbox" id="check-dislexia" onchange="toggleDislexia()" style="width: 20px; height: 20px;">
                     <strong>Fuente amigable para Dislexia</strong>
                 </label>
-                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <input type="checkbox" id="check-letra-grande" onchange="toggleAccesibilidad()" style="width: 20px; height: 20px;">
-                    <strong>Aumentar tamaño de letra</strong>
+                
+                <!-- Barra deslizante para el tamaño de letra -->
+                <label style="display: block; margin-bottom: 10px;">
+                    <strong>Tamaño de letra: <span id="valor-letra" style="color: var(--primary-color);">100%</span></strong>
                 </label>
+                <input type="range" id="slider-letra" min="90" max="150" step="5" value="100" oninput="cambiarTamanoLetra()" style="width: 100%; cursor: pointer; height: 6px; accent-color: var(--primary-color);">
             </div>
         </div>
 
