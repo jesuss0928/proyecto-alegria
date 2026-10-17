@@ -124,12 +124,23 @@
         <div id="sec-notificaciones" class="config-panel">
             <h2>Metas de Bienestar</h2>
             <p>¿Qué quieres que te recordemos cada día?</p>
-            <div style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
+            
+            <div id="lista-metas" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px;">
                 <label><input type="checkbox" class="check-meta" value="agua"> 💧 Beber agua</label>
                 <label><input type="checkbox" class="check-meta" value="pantallas"> 📵 Desconectarse de pantallas a las 10 PM</label>
                 <label><input type="checkbox" class="check-meta" value="respirar"> 🧘‍♀️ Tomar 5 minutos para respirar profundo</label>
-                <button class="btn-guardar-config" onclick="guardarMetas()" style="margin-top: 10px;">Guardar Metas</button>
             </div>
+
+            <!-- Tenda para añadir meta personalizada -->
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #ccc;">
+                <strong>Añadir una meta propia:</strong>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <input type="text" id="input-nueva-meta" placeholder="Ej. Leer 10 páginas..." style="flex-grow: 1; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                    <button onclick="agregarMetaPersonalizada()" style="background: var(--primary-color); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Agregar</button>
+                </div>
+            </div>
+
+            <button class="btn-guardar-config" onclick="guardarMetas()" style="margin-top: 20px;">Guardar Metas y Avisos</button>
         </div>
 
         <!-- NUEVO: EXPORTAR DATOS -->
