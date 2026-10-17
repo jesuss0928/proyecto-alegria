@@ -838,3 +838,104 @@ document.addEventListener('DOMContentLoaded', () => {
         cargarFotoPerfil();
     }
 });
+// ==========================================
+// ⚙️ ACCESIBILIDAD, SONIDO, METAS Y EXPORTACIÓN
+// ==========================================
+
+// 1. Accesibilidad (Dislexia y Tamaño)
+function toggleAccesibilidad() {
+    const isDislexia = document.getElementById('check-dislexia').checked;
+    const isGrande = document.getElementById('check-letra-grande').checked;
+    
+    localStorage.setItem('alegria_dislexia', isDislexia);
+    localStorage.setItem('alegria_letra_grande', isGrande);
+    
+    aplicarAccesibilidad();
+}
+
+function aplicarAccesibilidad() {
+    const isDislexia = localStorage.getItem('alegria_dislexia') === 'true';
+    const isGrande = localStorage.getItem('alegria_letra_grande') === 'true';
+    
+    if(isDislexia) document.body.classList.add('fuente-dislexia');
+    else document.body.classList.remove('fuente-dislexia');
+
+    if(isGrande) document.body.classList.add('letra-grande');
+    else document.body.classList.remove('letra-grande');
+}
+
+// 2. Sonido y Animaciones
+function toggleSonido() {
+    const isSilenciado = document.getElementById('check-silenciar').checked;
+    const isSinAnim = document.getElementById('check-sin-animacion').checked;
+    
+    localStorage.setItem('alegria_silenciar', isSilenciado);
+    localStorage.setItem('alegria_sin_anim', isSinAnim);
+    
+    aplicarSonidoAnimaciones();
+}
+
+function aplicarSonidoAnimaciones() {
+    const isSinAnim = localStorage.getItem('alegria_sin_anim') === 'true';
+    if(isSinAnim) document.body.classList.add('reducir-animaciones');
+    else document.body.classList.remove('reducir-animaciones');
+    
+    // Aquí (en el futuro) leeremos localStorage.getItem('alegria_silenciar') 
+    // antes de reproducir audios de mascotas o notificaciones.
+}
+
+// 3. Metas de Bienestar
+function guardarMetas() {
+    const checks = document.querySelectorAll('.check-meta');
+    let metasSeleccionadas = [];
+    checks.forEach(check => {
+        if(check.checked) metasSeleccionadas.push(check.value);
+    });
+    localStorage.setItem('alegria_metas', JSON.stringify(metasSeleccionadas));
+    alert('¡Tus metas de bienestar han sido guardadas!');
+}
+
+// 4. Exportar Diario a TXT
+function exportarDiarioTXT() {
+    const historial = JSON.parse(localStorage.getItem('alegria_historial_diario')) || {};
+    let contenido = "=== MI DIARIO EN ALEGRÍA ===\n\n";
+    
+    const fechas = Object.keys(historial).sort((a,b) => new Date(b) - new Date(a));
+    
+    if (fechas.length === 0) {
+        alert("Tu diario está vacío. ¡Escribe algo primero antes de exportar!");
+        return;
+    }
+
+    fechas.forEach(fecha => {
+        contenido += `Fecha: ${fecha}\n`;
+        contenido += `Entrada: ${historial[fecha].texto}\n`;
+        contenido += `-----------------------------------\n`;
+    });
+
+    // Crear archivo descargable
+    const blob = new Blob([contenido], { type: "text/plain;charset=utf-8" });
+    const enlace = document.createElement("a");
+    enlace.href = URL.createObjectURL(blob);
+    enlace.download = "Mi_Diario_Alegria.txt";
+    enlace.click();
+}
+
+// 5. Cargar estados visuales de los switches al entrar a ajustes
+document.addEventListener('DOMContentLoaded', () => {
+    aplicarAccesibilidad();
+    aplicarSonidoAnimaciones();
+
+    // Llenar checks si estamos en ajustes.html
+    if (document.getElementById('check-dislexia')) {
+        document.getElementById('check-dislexia').checked = localStorage.getItem('alegria_dislexia') === 'true';
+        document.getElementById('check-letra-grande').checked = localStorage.getItem('alegria_letra_grande') === 'true';
+        document.getElementById('check-silenciar').checked = localStorage.getItem('alegria_silenciar') === 'true';
+        document.getElementById('check-sin-animacion').checked = localStorage.getItem('alegria_sin_anim') === 'true';
+        
+        const metas = JSON.parse(localStorage.getItem('alegria_metas') || "[]");
+        document.querySelectorAll('.check-meta').forEach(check => {
+            if(metas.includes(check.value)) check.checked = true;
+        });
+    }
+});
