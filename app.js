@@ -874,24 +874,56 @@ function aplicarAccesibilidad() {
     const tamanoGuardado = localStorage.getItem('alegria_tamano_letra') || '100';
     document.documentElement.style.fontSize = tamanoGuardado + '%';
 }
-// 2. Sonido y Animaciones
-function toggleSonido() {
-    const isSilenciado = document.getElementById('check-silenciar').checked;
-    const isSinAnim = document.getElementById('check-sin-animacion').checked;
+// ==========================================
+// 🔊 SISTEMA DE SONIDO Y ANIMACIONES
+// ==========================================
+
+function cambiarVolumen() {
+    const slider = document.getElementById('slider-volumen');
+    const valor = slider.value;
     
-    localStorage.setItem('alegria_silenciar', isSilenciado);
-    localStorage.setItem('alegria_sin_anim', isSinAnim);
+    // Mostrar el porcentaje en pantalla
+    document.getElementById('valor-volumen').innerText = valor + '%';
     
-    aplicarSonidoAnimaciones();
+    // Guardar el volumen en la memoria del navegador
+    localStorage.setItem('alegria_volumen', valor);
+    
+    // Reproducir un sonido de prueba al soltar el slider para confirmar el volumen
+    reproducirSonido('click');
 }
 
-function aplicarSonidoAnimaciones() {
-    const isSinAnim = localStorage.getItem('alegria_sin_anim') === 'true';
-    if(isSinAnim) document.body.classList.add('reducir-animaciones');
+// Función global que puedes llamar desde cualquier botón de tu app
+function reproducirSonido(tipo) {
+    const volumenGuardado = localStorage.getItem('alegria_volumen');
+    // Si no hay volumen guardado, usar 50 por defecto
+    const volumenActual = volumenGuardado !== null ? parseInt(volumenGuardado) : 50; 
+    const volumenDecimal = volumenActual / 100;
+
+    // Si el volumen está en 0%, no reproducir nada
+    if (volumenDecimal === 0) return;
+
+    let audio;
+    if (tipo === 'click') audio = document.getElementById('audio-click');
+    if (tipo === 'exito') audio = document.getElementById('audio-exito');
+
+    if (audio) {
+        audio.pause(); // Detener si ya estaba sonando
+        audio.currentTime = 0; // Regresar al inicio
+        audio.volume = volumenDecimal; // Aplicar el volumen del slider
+        audio.play().catch(e => console.log("Esperando interacción del usuario para reproducir audio"));
+    }
+}
+
+function toggleAnimaciones() {
+    const sinAnimacion = document.getElementById('check-sin-animacion').checked;
+    localStorage.setItem('alegria_sin_anim', sinAnimacion);
+    aplicarAnimaciones();
+}
+
+function aplicarAnimaciones() {
+    const sinAnimacion = localStorage.getItem('alegria_sin_anim') === 'true';
+    if(sinAnimacion) document.body.classList.add('reducir-animaciones');
     else document.body.classList.remove('reducir-animaciones');
-    
-    // Aquí (en el futuro) leeremos localStorage.getItem('alegria_silenciar') 
-    // antes de reproducir audios de mascotas o notificaciones.
 }
 
 // 3. Metas de Bienestar
