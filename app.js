@@ -838,32 +838,42 @@ document.addEventListener('DOMContentLoaded', () => {
         cargarFotoPerfil();
     }
 });
+
 // ==========================================
 // ⚙️ ACCESIBILIDAD, SONIDO, METAS Y EXPORTACIÓN
 // ==========================================
 
-// 1. Accesibilidad (Dislexia y Tamaño)
-function toggleAccesibilidad() {
+// 1. Accesibilidad (Dislexia y Tamaño de letra con slider)
+function toggleDislexia() {
     const isDislexia = document.getElementById('check-dislexia').checked;
-    const isGrande = document.getElementById('check-letra-grande').checked;
-    
     localStorage.setItem('alegria_dislexia', isDislexia);
-    localStorage.setItem('alegria_letra_grande', isGrande);
+    aplicarAccesibilidad();
+}
+
+function cambiarTamanoLetra() {
+    const slider = document.getElementById('slider-letra');
+    const valor = slider.value;
     
+    // Muestra el número en tiempo real (ej. 115%)
+    document.getElementById('valor-letra').innerText = valor + '%';
+    
+    // Lo guarda en la memoria
+    localStorage.setItem('alegria_tamano_letra', valor);
+    
+    // Aplica el cambio inmediatamente
     aplicarAccesibilidad();
 }
 
 function aplicarAccesibilidad() {
+    // A) Aplicar fuente para dislexia
     const isDislexia = localStorage.getItem('alegria_dislexia') === 'true';
-    const isGrande = localStorage.getItem('alegria_letra_grande') === 'true';
-    
     if(isDislexia) document.body.classList.add('fuente-dislexia');
     else document.body.classList.remove('fuente-dislexia');
 
-    if(isGrande) document.body.classList.add('letra-grande');
-    else document.body.classList.remove('letra-grande');
+    // B) Aplicar tamaño de letra dinámico a la RAÍZ de la página (afecta todo)
+    const tamanoGuardado = localStorage.getItem('alegria_tamano_letra') || '100';
+    document.documentElement.style.fontSize = tamanoGuardado + '%';
 }
-
 // 2. Sonido y Animaciones
 function toggleSonido() {
     const isSilenciado = document.getElementById('check-silenciar').checked;
