@@ -878,6 +878,10 @@ function aplicarAccesibilidad() {
 // 🔊 SISTEMA DE SONIDO Y ANIMACIONES
 // ==========================================
 
+// Crear los audios directamente en JavaScript para que funcionen en TODAS las páginas
+const audioClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+const audioExito = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
+
 function cambiarVolumen() {
     const slider = document.getElementById('slider-volumen');
     const valor = slider.value;
@@ -892,7 +896,7 @@ function cambiarVolumen() {
     reproducirSonido('click');
 }
 
-// Función global que puedes llamar desde cualquier botón de tu app
+// Función global mejorada que puedes llamar desde cualquier botón de tu app
 function reproducirSonido(tipo) {
     const volumenGuardado = localStorage.getItem('alegria_volumen');
     // Si no hay volumen guardado, usar 50 por defecto
@@ -903,8 +907,8 @@ function reproducirSonido(tipo) {
     if (volumenDecimal === 0) return;
 
     let audio;
-    if (tipo === 'click') audio = document.getElementById('audio-click');
-    if (tipo === 'exito') audio = document.getElementById('audio-exito');
+    if (tipo === 'click') audio = audioClick;
+    if (tipo === 'exito') audio = audioExito;
 
     if (audio) {
         audio.pause(); // Detener si ya estaba sonando
