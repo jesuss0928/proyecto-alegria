@@ -97,22 +97,29 @@
             </div>
         </div>
 
-        <!-- NUEVO: SONIDO Y ANIMACIONES -->
+  <!-- NUEVO: SONIDO Y ANIMACIONES -->
         <div id="sec-volumen" class="config-panel">
             <h2>Sonidos y Animaciones</h2>
             <p>Personaliza tu experiencia interactiva.</p>
             <div style="margin-top: 15px;">
-                <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; cursor: pointer;">
-                    <input type="checkbox" id="check-silenciar" onchange="toggleSonido()" style="width: 20px; height: 20px;">
-                    <strong>Silenciar todos los sonidos (App Minimalista)</strong>
+                
+                <!-- Barra deslizante para el Volumen -->
+                <label style="display: block; margin-bottom: 10px;">
+                    <strong>Volumen de la app: <span id="valor-volumen" style="color: var(--primary-color);">50%</span></strong>
                 </label>
+                <input type="range" id="slider-volumen" min="0" max="100" step="5" value="50" onchange="cambiarVolumen()" style="width: 100%; cursor: pointer; height: 6px; accent-color: var(--primary-color); margin-bottom: 25px;">
+
+                <!-- Animaciones -->
                 <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                    <input type="checkbox" id="check-sin-animacion" onchange="toggleSonido()" style="width: 20px; height: 20px;">
+                    <input type="checkbox" id="check-sin-animacion" onchange="toggleAnimaciones()" style="width: 20px; height: 20px;">
                     <strong>Reducir animaciones en pantalla</strong>
                 </label>
             </div>
-        </div>
 
+            <!-- Reproductores de audio ocultos con sonidos de prueba -->
+            <audio id="audio-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio>
+            <audio id="audio-exito" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" preload="auto"></audio>
+        </div>
         <!-- NUEVO: NOTIFICACIONES / METAS -->
         <div id="sec-notificaciones" class="config-panel">
             <h2>Metas de Bienestar</h2>
