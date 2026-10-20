@@ -1093,6 +1093,7 @@ window.intervaloNotificaciones = setInterval(() => {
             if (!yaNotificado) {
                 // Marcamos que ya sonó hoy para que no suene 6 veces en el mismo minuto
                 localStorage.setItem(notifKey, "true");
+                alert("¡ALARMA PRUEBA: " + meta + "!");
 
                 // 1. Intentamos lanzar notificación del sistema
                 if ("Notification" in window && Notification.permission === "granted") {
