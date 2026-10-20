@@ -352,3 +352,32 @@ onAuthStateChanged(auth, async (user) => {
         }
     }
 });
+window.descargarMetasForzado = async function() {
+    if (auth && auth.currentUser && window.db) {
+        try {
+            const docSnap = await getDoc(doc(window.db, "usuarios", auth.currentUser.uid));
+            if (docSnap.exists() && docSnap.data().misMetas) {
+                const metasNube = docSnap.data().misMetas;
+
+                if (JSON.stringify(metasNube.metas) !== localStorage.getItem('alegria_metas')) {
+                    localStorage.setItem('alegria_metas', JSON.stringify(metasNube.metas || []));
+                    localStorage.setItem('alegria_metas_personales', JSON.stringify(metasNube.metasPersonales || []));
+                    window.location.reload(); 
+                }
+            }
+        } catch (error) {
+            console.error("Error forzando descarga: ", error);
+        }
+    }
+};
+// FORZAR DESCARGA AUTOMÁTICA AL INICIAR LA APP
+setTimeout(() => {
+    const authGlobal = window.auth || (window.firebase && window.firebase.auth ? window.firebase.auth() : null);
+    if (authGlobal) {
+        authGlobal.onAuthStateChanged((user) => {
+            if (user && typeof window.descargarMetasForzado === 'function') {
+                setTimeout(() => window.descargarMetasForzado(), 2000);
+            }
+        });
+    }
+}, 1000);
