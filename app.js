@@ -1064,6 +1064,10 @@ nuevoLabel.innerHTML = `
         if(document.getElementById('select-formato-hora')) document.getElementById('select-formato-hora').value = localStorage.getItem('alegria_formato_hora') || '12';
         if(document.getElementById('select-zona-horaria')) document.getElementById('select-zona-horaria').value = localStorage.getItem('alegria_zona_horaria') || 'local';
         if(document.getElementById('input-hora-manual')) document.getElementById('input-hora-manual').value = localStorage.getItem('alegria_hora_manual') || '';
+        // Descargar las metas de la nube si existen
+    if(typeof window.descargarMetasNube === 'function') {
+        window.descargarMetasNube();
+    }
     }
 });
 // ==========================================
