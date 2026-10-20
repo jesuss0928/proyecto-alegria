@@ -585,10 +585,10 @@ function sendQuickReply(texto) { document.getElementById('chat-input').value = t
 // ==========================================
 // SEGURIDAD ANTIFISGONES
 // ==========================================
-document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
-document.addEventListener('keydown', function(e) {
-    if ( e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'u') ) { e.preventDefault(); }
-});
+//document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+//document.addEventListener('keydown', function(e) {
+  //  if ( e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'u') ) { e.preventDefault(); }
+//});
 
 // =========================================
 // COMPORTAMIENTO DEL DIARIO (Guardar y Leer)
