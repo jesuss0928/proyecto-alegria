@@ -14,6 +14,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 window.db = getFirestore(app);
+window.doc = doc;
+window.getDoc = getDoc; 
 window.usuarioLogueado = null;
 
 // ==========================================
