@@ -310,73 +310,45 @@ async function obtenerEntradasDiarioPorFecha(fechaTarget) {
     return entradas;
 }
 window.obtenerEntradasDiarioPorFecha = obtenerEntradasDiarioPorFecha;
-async function guardarMetasBD(datosMetas) {
-    if (window.usuarioLogueado && window.db) {
+// ==========================================
+// ☁️ GUARDAR Y DESCARGAR METAS (SISTEMA UNIFICADO)
+// ==========================================
+
+// 1. Función para Guardar (Llamada cuando presionas el botón azul)
+window.guardarMetasBD = async function(datosMetas) {
+    if (auth && auth.currentUser) {
         try {
-            const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
-            // Esto guarda las metas en la cuenta del usuario
+            const usuarioRef = doc(window.db, "usuarios", auth.currentUser.uid);
             await setDoc(usuarioRef, { misMetas: datosMetas }, { merge: true });
-            console.log("Metas guardadas en la nube correctamente.");
+            console.log("☁️ Metas guardadas en la nube exitosamente");
         } catch (error) { 
             console.error("Error subiendo metas a la nube: ", error); 
         }
     }
-}
-window.guardarMetasBD = guardarMetasBD;
-// ==================================================
-// ☁️ DESCARGAR METAS AL INICIAR SESIÓN EN NUEVO DISPOSITIVO
-// ==================================================
-setTimeout(() => {
-    const authGlobal = window.auth || (window.firebase && window.firebase.auth ? window.firebase.auth() : null);
-    if (authGlobal) {
-        authGlobal.onAuthStateChanged(async (user) => {
-            if (user && window.db) {
-                try {
-                    // Buscar al usuario en la base de datos
-                    const usuarioRef = doc(window.db, "usuarios", user.uid);
-                    const docSnap = await getDoc(usuarioRef);
-                    
-                    // Si el usuario existe y tiene metas en la nube
-                    if (docSnap.exists() && docSnap.data().misMetas) {
-                        const datosNube = docSnap.data().misMetas;
-                        
-                        // Guardar los datos de la nube en la memoria de este nuevo dispositivo
-                        localStorage.setItem('alegria_metas', JSON.stringify(datosNube.metas || []));
-                        localStorage.setItem('alegria_metas_personales', JSON.stringify(datosNube.metasPersonales || []));
-                        
-                        // Si da la casualidad de que estás en la pantalla de Ajustes, la página se refrescará 
-                        // automáticamente 1 segundo después para dibujarte las metas en la pantalla.
-                        if (document.getElementById('lista-metas') && document.querySelectorAll('.check-meta').length <= 3) {
-                            setTimeout(() => { window.location.reload(); }, 1000);
-                        }
-                    }
-                } catch (error) {
-                    console.log("Error descargando las metas de la nube: ", error);
-                }
-            }
-        });
-    }
-}, 2000);
-// FORZAR DESCARGA DE METAS MANUALMENTE
-window.descargarMetasNube = async function() {
-    const authGlobal = window.auth || (window.firebase && window.firebase.auth ? window.firebase.auth() : null);
-    if (authGlobal && authGlobal.currentUser && window.db) {
+};
+
+// 2. Descarga Automática (Se activa solita al iniciar sesión en cualquier celular)
+onAuthStateChanged(auth, async (user) => {
+    if (user && window.db) {
         try {
-            // Importar getDoc si no está (solo lo intenta hacer si existe)
-            const docSnap = await window.getDoc(window.doc(window.db, "usuarios", authGlobal.currentUser.uid));
+            const usuarioRef = doc(window.db, "usuarios", user.uid);
+            const docSnap = await getDoc(usuarioRef);
             
             if (docSnap.exists() && docSnap.data().misMetas) {
                 const datosNube = docSnap.data().misMetas;
                 
-                // Sobrescribimos el localStorage del nuevo celular con lo de la nube
+                // Guardamos en la memoria del celular actual
                 localStorage.setItem('alegria_metas', JSON.stringify(datosNube.metas || []));
                 localStorage.setItem('alegria_metas_personales', JSON.stringify(datosNube.metasPersonales || []));
                 
-                // Avisamos que ya bajaron los datos
-                console.log("Metas descargadas de la nube con éxito.");
+                // Si la página de ajustes está abierta, la recargamos una sola vez para que aparezcan
+                if (document.getElementById('lista-metas') && !sessionStorage.getItem('metas_sincronizadas')) {
+                    sessionStorage.setItem('metas_sincronizadas', 'true');
+                    window.location.reload();
+                }
             }
         } catch (error) {
-            console.error("No se pudieron descargar las metas: ", error);
+            console.error("Error descargando metas de la nube: ", error);
         }
     }
-};
+});
