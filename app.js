@@ -959,16 +959,12 @@ function guardarMetas() {
     // ==========================================
     // ---> GUARDAR EN LA NUBE (FIREBASE) <---
     // ==========================================
-    if (typeof window.guardarMetasBD === "function") {
-        const authGlobal = window.auth || (window.firebase && window.firebase.auth ? window.firebase.auth() : null);
-        if (authGlobal && authGlobal.currentUser) {
-            window.guardarMetasBD({
-                correo: authGlobal.currentUser.email,
-                metas: metasSeleccionadas,
-                metasPersonales: metasPersonalesHTML
-            });
-        }
-    }
+    if (typeof window.guardarMetasBD === 'function') {
+    window.guardarMetasBD({
+        metas: metasSeleccionadas,
+        metasPersonales: metasPersonalesHTML
+    });
+}
     // ==========================================
 
     if(typeof reproducirSonido === 'function') reproducirSonido('exito');
