@@ -940,7 +940,7 @@ nuevoLabel.innerHTML = `
 
 function guardarMetas() {
     const checks = document.querySelectorAll('.check-meta');
-    let metasSeleccionadas = [];
+    let metasSeleccionadas = []; 
     let metasPersonalesHTML = []; 
     
     checks.forEach(check => {
@@ -952,14 +952,32 @@ function guardarMetas() {
         }
     });
     
+    // Guardado local
     localStorage.setItem('alegria_metas', JSON.stringify(metasSeleccionadas));
     localStorage.setItem('alegria_metas_personales', JSON.stringify(metasPersonalesHTML));
-    
+
+    // ==========================================
+    // ---> GUARDAR EN LA NUBE (FIREBASE) <---
+    // ==========================================
+    if (typeof window.guardarMetasBD === "function") {
+        const authGlobal = window.auth || (window.firebase && window.firebase.auth ? window.firebase.auth() : null);
+        if (authGlobal && authGlobal.currentUser) {
+            window.guardarMetasBD({
+                correo: authGlobal.currentUser.email,
+                metas: metasSeleccionadas,
+                metasPersonales: metasPersonalesHTML
+            });
+        }
+    }
+    // ==========================================
+
     if(typeof reproducirSonido === 'function') reproducirSonido('exito');
 
     if ("Notification" in window && Notification.permission === "granted") {
         new Notification("Alegría", { body: "¡Tus metas se han guardado!", icon: "icono-app.png" });
-    } else { alert('¡Tus metas y avisos han sido guardados!'); }
+    } else { 
+        alert('¡Tus metas y avisos han sido guardados!'); 
+    }
 }
 
 window.pedirPermisoNotificaciones = function() {
