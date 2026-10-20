@@ -179,6 +179,17 @@ window.cerrarSesion = function() {
 onAuthStateChanged(auth, (user) => {
     if (user) {
         window.usuarioLogueado = user;
+
+        // --- INICIO DEL PASO 3: PEDIR PERMISOS DE NOTIFICACIÓN ---
+        try {
+            if (typeof window.pedirPermisoNotificaciones === 'function') {
+                // Esperamos 1.5 segundos para que la página cargue bien antes de pedir permiso
+                setTimeout(() => { window.pedirPermisoNotificaciones(); }, 1500);
+            }
+        } catch (err) {
+            console.error("Error al pedir notificaciones:", err);
+        }
+        // --- FIN DEL PASO 3 ---
         
         const authContainer = document.getElementById('auth-container');
         if (authContainer) {
