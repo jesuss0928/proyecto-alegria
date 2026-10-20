@@ -920,7 +920,12 @@ window.agregarMetaPersonalizada = function() {
         nuevoLabel.style.display = 'flex';
         nuevoLabel.style.alignItems = 'center';
         nuevoLabel.style.gap = '8px';
-        nuevoLabel.innerHTML = `<input type="checkbox" class="check-meta" value="${textoMostrar}" checked> 📌 ${textoMostrar}`;
+       // Agregamos un botón de eliminar al lado del texto
+nuevoLabel.innerHTML = `
+    <input type="checkbox" class="check-meta" value="${textoMostrar}" checked> 
+    📌 <span>${textoMostrar}</span>
+    <button type="button" onclick="this.parentElement.remove()" style="background:none; border:none; color:red; cursor:pointer; margin-left:auto;">❌</button>
+`;
         
         lista.appendChild(nuevoLabel);
         
@@ -1025,7 +1030,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 nuevoLabel.style.display = 'flex';
                 nuevoLabel.style.alignItems = 'center';
                 nuevoLabel.style.gap = '8px';
-                nuevoLabel.innerHTML = `<input type="checkbox" class="check-meta" value="${valor}"> 📌 ${valor}`;
+               // Agregamos un botón de eliminar al lado del texto
+nuevoLabel.innerHTML = `
+    <input type="checkbox" class="check-meta" value="${valor}" checked> 
+    📌 <span>${valor}</span>
+    <button type="button" onclick="this.parentElement.remove()" style="background:none; border:none; color:red; cursor:pointer; margin-left:auto;">❌</button>
+`;
                 listaMetas.appendChild(nuevoLabel);
             });
 
