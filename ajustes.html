@@ -95,6 +95,38 @@
                 </label>
                 <input type="range" id="slider-letra" min="90" max="150" step="5" value="100" oninput="cambiarTamanoLetra()" style="width: 100%; cursor: pointer; height: 6px; accent-color: var(--primary-color);">
             </div>
+            <!-- NUEVO: CONFIGURACIÓN DE TIEMPO (ZONA, FORMATO Y HORA MANUAL) -->
+        <div style="margin-top: 35px; border-top: 1px solid #444; padding-top: 20px;">
+            <h3 style="color: var(--primary-color); margin-bottom: 15px;">Configuración de Tiempo</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Formato de hora:</label>
+                <select id="select-formato-hora" onchange="guardarAjustesTiempo()" style="padding: 8px; border-radius: 5px; background: #2b2b2b; color: white; border: 1px solid #444; width: 100%; max-width: 300px;">
+                    <option value="12">12 Horas (AM / PM)</option>
+                    <option value="24">24 Horas</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Zona Horaria:</label>
+                <select id="select-zona-horaria" onchange="guardarAjustesTiempo()" style="padding: 8px; border-radius: 5px; background: #2b2b2b; color: white; border: 1px solid #444; width: 100%; max-width: 300px;">
+                    <option value="local">Mi zona local (Automático)</option>
+                    <option value="America/Lima">Perú / Colombia / Ecuador (GMT-5)</option>
+                    <option value="America/Mexico_City">México Centro (GMT-6)</option>
+                    <option value="America/Argentina/Buenos_Aires">Argentina (GMT-3)</option>
+                    <option value="Europe/Madrid">España (GMT+1 / GMT+2)</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Forzar hora de la página (Opcional):</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="time" id="input-hora-manual" onchange="guardarAjustesTiempo()" style="padding: 8px; border-radius: 5px; background: #2b2b2b; color: white; border: 1px solid #444;">
+                    <button onclick="borrarHoraManual()" style="background: #EB5757; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Usar hora real</button>
+                </div>
+                <p style="font-size: 12px; color: #888; margin-top: 5px;">Si pones una hora aquí, la página simulará que es esa hora para tus recordatorios.</p>
+            </div>
+        </div>
         </div>
 
   <!-- NUEVO: SONIDO Y ANIMACIONES -->
