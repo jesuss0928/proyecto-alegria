@@ -355,3 +355,26 @@ setTimeout(() => {
         });
     }
 }, 2000);
+// FORZAR DESCARGA DE METAS MANUALMENTE
+window.descargarMetasNube = async function() {
+    const authGlobal = window.auth || (window.firebase && window.firebase.auth ? window.firebase.auth() : null);
+    if (authGlobal && authGlobal.currentUser && window.db) {
+        try {
+            // Importar getDoc si no está (solo lo intenta hacer si existe)
+            const docSnap = await window.getDoc(window.doc(window.db, "usuarios", authGlobal.currentUser.uid));
+            
+            if (docSnap.exists() && docSnap.data().misMetas) {
+                const datosNube = docSnap.data().misMetas;
+                
+                // Sobrescribimos el localStorage del nuevo celular con lo de la nube
+                localStorage.setItem('alegria_metas', JSON.stringify(datosNube.metas || []));
+                localStorage.setItem('alegria_metas_personales', JSON.stringify(datosNube.metasPersonales || []));
+                
+                // Avisamos que ya bajaron los datos
+                console.log("Metas descargadas de la nube con éxito.");
+            }
+        } catch (error) {
+            console.error("No se pudieron descargar las metas: ", error);
+        }
+    }
+};
