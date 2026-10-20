@@ -134,10 +134,28 @@
             <!-- Tenda para añadir meta personalizada -->
             <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #ccc;">
                 <strong>Añadir una meta propia:</strong>
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <input type="text" id="input-nueva-meta" placeholder="Ej. Leer 10 páginas..." style="flex-grow: 1; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
-                    <button onclick="agregarMetaPersonalizada()" style="background: var(--primary-color); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Agregar</button>
-                </div>
+               <div style="display: flex; gap: 10px; margin-top: 10px;">
+    <input type="text" id="input-nueva-meta" placeholder="Ej. Leer 10 páginas..." style="flex-grow: 1; padding: 8px; border-radius: 5px; border: 1px solid #444; background: #2b2b2b; color: white;">
+    <button onclick="agregarMetaPersonalizada()" style="background: var(--primary-color); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Agregar</button>
+</div>
+
+<!-- Novedad: Opciones de notificación debajo del input -->
+<div style="margin-top: 12px; display: flex; align-items: center; gap: 15px; font-size: 14px; color: #bbb;">
+    <span>Notificar:</span>
+    
+    <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+        <input type="radio" name="tipoAviso" value="azar" checked onchange="toggleHoraInput()">
+        Al azar
+    </label>
+    
+    <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+        <input type="radio" name="tipoAviso" value="fija" onchange="toggleHoraInput()">
+        Establecer hora
+    </label>
+
+    <!-- Input de hora (Oculto por defecto) -->
+    <input type="time" id="meta-hora-input" style="display: none; padding: 6px; border-radius: 4px; border: 1px solid #444; background: #2b2b2b; color: white; font-family: inherit;">
+</div>
             </div>
 
             <button class="btn-guardar-config" onclick="guardarMetas()" style="margin-top: 20px;">Guardar Metas y Avisos</button>
