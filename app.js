@@ -1066,3 +1066,35 @@ nuevoLabel.innerHTML = `
         if(document.getElementById('input-hora-manual')) document.getElementById('input-hora-manual').value = localStorage.getItem('alegria_hora_manual') || '';
     }
 });
+// ==========================================
+// ⏰ MOTOR DE NOTIFICACIONES EN SEGUNDO PLANO
+// ==========================================
+setInterval(() => {
+    const metas = JSON.parse(localStorage.getItem('alegria_metas') || "[]");
+    if (metas.length === 0) return;
+
+    // Obtener la hora actual en formato AM/PM
+    const ahora = new Date();
+    let horas = ahora.getHours();
+    let minutos = ahora.getMinutes().toString().padStart(2, '0');
+    const ampm = horas >= 12 ? 'PM' : 'AM';
+    horas = horas % 12;
+    horas = horas ? horas : 12;
+    const horaActualStr = `${horas}:${minutos} ${ampm}`;
+
+    metas.forEach(meta => {
+        // Si el texto de la meta contiene la hora exacta actual entre paréntesis
+        if (meta.includes(`(${horaActualStr})`)) {
+            // Revisar que no hayamos notificado esto en el último minuto
+            const ultimaNotif = localStorage.getItem(`notif_${meta}`);
+            if (ultimaNotif !== horaActualStr) {
+                if ("Notification" in window && Notification.permission === "granted") {
+                    new Notification("Recordatorio de Alegría", { body: meta, icon: "icono-app.png" });
+                    if(typeof reproducirSonido === 'function') reproducirSonido('exito');
+                }
+                // Marcar como notificado para que no suene 60 veces en ese minuto
+                localStorage.setItem(`notif_${meta}`, horaActualStr);
+            }
+        }
+    });
+}, 30000); // Revisa el reloj cada 30 segundos
