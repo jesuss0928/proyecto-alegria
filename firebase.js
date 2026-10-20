@@ -321,3 +321,37 @@ async function guardarMetasBD(datosMetas) {
     }
 }
 window.guardarMetasBD = guardarMetasBD;
+// ==================================================
+// ☁️ DESCARGAR METAS AL INICIAR SESIÓN EN NUEVO DISPOSITIVO
+// ==================================================
+setTimeout(() => {
+    const authGlobal = window.auth || (window.firebase && window.firebase.auth ? window.firebase.auth() : null);
+    if (authGlobal) {
+        authGlobal.onAuthStateChanged(async (user) => {
+            if (user && window.db) {
+                try {
+                    // Buscar al usuario en la base de datos
+                    const usuarioRef = doc(window.db, "usuarios", user.uid);
+                    const docSnap = await getDoc(usuarioRef);
+                    
+                    // Si el usuario existe y tiene metas en la nube
+                    if (docSnap.exists() && docSnap.data().misMetas) {
+                        const datosNube = docSnap.data().misMetas;
+                        
+                        // Guardar los datos de la nube en la memoria de este nuevo dispositivo
+                        localStorage.setItem('alegria_metas', JSON.stringify(datosNube.metas || []));
+                        localStorage.setItem('alegria_metas_personales', JSON.stringify(datosNube.metasPersonales || []));
+                        
+                        // Si da la casualidad de que estás en la pantalla de Ajustes, la página se refrescará 
+                        // automáticamente 1 segundo después para dibujarte las metas en la pantalla.
+                        if (document.getElementById('lista-metas') && document.querySelectorAll('.check-meta').length <= 3) {
+                            setTimeout(() => { window.location.reload(); }, 1000);
+                        }
+                    }
+                } catch (error) {
+                    console.log("Error descargando las metas de la nube: ", error);
+                }
+            }
+        });
+    }
+}, 2000);
