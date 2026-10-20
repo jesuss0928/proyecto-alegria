@@ -1065,18 +1065,7 @@ nuevoLabel.innerHTML = `
         if(document.getElementById('select-zona-horaria')) document.getElementById('select-zona-horaria').value = localStorage.getItem('alegria_zona_horaria') || 'local';
         if(document.getElementById('input-hora-manual')) document.getElementById('input-hora-manual').value = localStorage.getItem('alegria_hora_manual') || '';
         // Descargar las metas de la nube si existen
-   // Descargar las metas de la nube si existen (Esperando a Firebase)
-    if(typeof window.descargarMetasNube === 'function') {
-        setTimeout(async () => {
-            await window.descargarMetasNube();
-            
-            // Si es la primera vez que entra a la sección en esta sesión, recarga la pantalla para dibujarlas
-            if (!sessionStorage.getItem('metas_sincronizadas')) {
-                sessionStorage.setItem('metas_sincronizadas', 'true');
-                window.location.reload();
-            }
-        }, 2000); // ⏱️ Le damos 2 segundos a Firebase para comprobar la cuenta
-    }
+   
     }
 });
 // ==========================================
