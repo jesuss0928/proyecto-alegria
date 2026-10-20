@@ -772,7 +772,43 @@ function exportarDiarioTXT() {
     enlace.download = "Mi_Diario_Alegria.txt";
     enlace.click();
 }
+// ==========================================
+// 🕒 CONFIGURACIÓN AVANZADA DE TIEMPO
+// ==========================================
+window.guardarAjustesTiempo = function() {
+    const formato = document.getElementById('select-formato-hora').value;
+    const zona = document.getElementById('select-zona-horaria').value;
+    const horaManual = document.getElementById('input-hora-manual').value;
 
+    localStorage.setItem('alegria_formato_hora', formato);
+    localStorage.setItem('alegria_zona_horaria', zona);
+    
+    if(horaManual) {
+        localStorage.setItem('alegria_hora_manual', horaManual);
+    } else {
+        localStorage.removeItem('alegria_hora_manual');
+    }
+    
+    if(typeof reproducirSonido === 'function') reproducirSonido('click');
+};
+
+window.borrarHoraManual = function() {
+    document.getElementById('input-hora-manual').value = '';
+    window.guardarAjustesTiempo();
+};
+
+// Función mágica que convierte la hora (ej: "14:30") a "2:30 PM" si el usuario lo pidió
+window.formatearHoraVisual = function(hora24) {
+    const formato = localStorage.getItem('alegria_formato_hora') || '12';
+    if (formato === '24') return hora24 + ' hrs'; 
+    
+    let [horas, minutos] = hora24.split(':');
+    horas = parseInt(horas, 10);
+    const ampm = horas >= 12 ? 'PM' : 'AM';
+    horas = horas % 12;
+    horas = horas ? horas : 12; // el 0 se convierte en 12
+    return `${horas}:${minutos} ${ampm}`;
+};
 // ==========================================
 // ⚙️ ACCESIBILIDAD, SONIDO Y ANIMACIONES
 // ==========================================
