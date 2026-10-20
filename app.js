@@ -890,29 +890,31 @@ window.toggleHoraInput = function() {
     }
 };
 
-function agregarMetaPersonalizada() {
+window.agregarMetaPersonalizada = function() {
     const input = document.getElementById('input-nueva-meta');
     const valor = input.value.trim();
     
     const tipoAviso = document.querySelector('input[name="tipoAviso"]:checked').value;
     const inputHora = document.getElementById('meta-hora-input');
-    const horaAviso = inputHora.value;
+    const horaAviso = inputHora.value; // El input type="time" siempre nos da formato 24h internamente ("15:30")
 
     if (valor !== "") {
-        // Validar que haya puesto hora si eligió "Establecer hora"
+        // 1. Validar hora
         if (tipoAviso === 'fija' && !horaAviso) {
             alert("Por favor, selecciona a qué hora deseas que te notifique.");
             return;
         }
 
-        // Preparar el texto a mostrar
+        // 2. Preparar el texto aplicando formato AM/PM o 24h según el ajuste
         let textoMostrar = valor;
         if (tipoAviso === 'fija') {
-            textoMostrar += ` ⏰ (${horaAviso})`;
+            const horaFormateada = window.formatearHoraVisual(horaAviso);
+            textoMostrar += ` ⏰ (${horaFormateada})`;
         } else {
             textoMostrar += ` 🎲 (Al azar)`;
         }
 
+        // 3. Crear el checkbox en la pantalla
         const lista = document.getElementById('lista-metas');
         const nuevoLabel = document.createElement('label');
         nuevoLabel.style.display = 'flex';
@@ -922,14 +924,14 @@ function agregarMetaPersonalizada() {
         
         lista.appendChild(nuevoLabel);
         
-        // Restaurar los inputs a su estado inicial
+        // 4. Limpiar los campos
         input.value = "";
         document.querySelector('input[value="azar"]').checked = true;
-        window.toggleHoraInput(); // Oculta el reloj de nuevo
+        window.toggleHoraInput(); 
 
         if(typeof reproducirSonido === 'function') reproducirSonido('click');
     }
-}
+};
 
 function guardarMetas() {
     const checks = document.querySelectorAll('.check-meta');
