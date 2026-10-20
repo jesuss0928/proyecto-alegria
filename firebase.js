@@ -308,3 +308,16 @@ async function obtenerEntradasDiarioPorFecha(fechaTarget) {
     return entradas;
 }
 window.obtenerEntradasDiarioPorFecha = obtenerEntradasDiarioPorFecha;
+async function guardarMetasBD(datosMetas) {
+    if (window.usuarioLogueado && window.db) {
+        try {
+            const usuarioRef = doc(window.db, "usuarios", window.usuarioLogueado.uid);
+            // Esto guarda las metas en la cuenta del usuario
+            await setDoc(usuarioRef, { misMetas: datosMetas }, { merge: true });
+            console.log("Metas guardadas en la nube correctamente.");
+        } catch (error) { 
+            console.error("Error subiendo metas a la nube: ", error); 
+        }
+    }
+}
+window.guardarMetasBD = guardarMetasBD;
