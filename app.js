@@ -1067,34 +1067,45 @@ nuevoLabel.innerHTML = `
     }
 });
 // ==========================================
-// ⏰ MOTOR DE NOTIFICACIONES EN SEGUNDO PLANO
+// ⏰ MOTOR DE NOTIFICACIONES EN SEGUNDO PLANO (MEJORADO)
 // ==========================================
-setInterval(() => {
+if(window.intervaloNotificaciones) clearInterval(window.intervaloNotificaciones);
+
+window.intervaloNotificaciones = setInterval(() => {
     const metas = JSON.parse(localStorage.getItem('alegria_metas') || "[]");
     if (metas.length === 0) return;
 
-    // Obtener la hora actual en formato AM/PM
     const ahora = new Date();
     let horas = ahora.getHours();
     let minutos = ahora.getMinutes().toString().padStart(2, '0');
     const ampm = horas >= 12 ? 'PM' : 'AM';
     horas = horas % 12;
     horas = horas ? horas : 12;
+    
     const horaActualStr = `${horas}:${minutos} ${ampm}`;
+    const fechaHoy = ahora.toLocaleDateString(); // ej: "20/10/2026"
 
     metas.forEach(meta => {
-        // Si el texto de la meta contiene la hora exacta actual entre paréntesis
+        // Verificamos si la meta tiene la hora actual exacta
         if (meta.includes(`(${horaActualStr})`)) {
-            // Revisar que no hayamos notificado esto en el último minuto
-            const ultimaNotif = localStorage.getItem(`notif_${meta}`);
-            if (ultimaNotif !== horaActualStr) {
+            // Creamos un candado único por DÍA y por META (así puede sonar todos los días)
+            const notifKey = `notif_${fechaHoy}_${meta}`;
+            const yaNotificado = localStorage.getItem(notifKey);
+
+            if (!yaNotificado) {
+                // Marcamos que ya sonó hoy para que no suene 6 veces en el mismo minuto
+                localStorage.setItem(notifKey, "true");
+
+                // 1. Intentamos lanzar notificación del sistema
                 if ("Notification" in window && Notification.permission === "granted") {
-                    new Notification("Recordatorio de Alegría", { body: meta, icon: "icono-app.png" });
+                    new Notification("⏰ ¡Recordatorio Alegría!", { body: meta, icon: "icono-app.png" });
                     if(typeof reproducirSonido === 'function') reproducirSonido('exito');
+                } else {
+                    // 2. FALLBACK: Si no hay permisos o es un celular estricto, mostramos una alerta en el centro de la pantalla
+                    if(typeof reproducirSonido === 'function') reproducirSonido('exito');
+                    alert(`⏰ ¡Hora de tu meta de bienestar!\n\n📌 ${meta}`);
                 }
-                // Marcar como notificado para que no suene 60 veces en ese minuto
-                localStorage.setItem(`notif_${meta}`, horaActualStr);
             }
         }
     });
-}, 30000); // Revisa el reloj cada 30 segundos
+}, 10000); // Revisa cada 10 segundos para mayor precisión
