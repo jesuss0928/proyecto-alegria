@@ -841,18 +841,56 @@ function aplicarAnimaciones() {
 // ==========================================
 // 🔔 METAS Y NOTIFICACIONES
 // ==========================================
+// Función para mostrar u ocultar el selector de hora
+window.toggleHoraInput = function() {
+    const opcionSeleccionada = document.querySelector('input[name="tipoAviso"]:checked').value;
+    const inputHora = document.getElementById('meta-hora-input');
+    
+    if (opcionSeleccionada === 'fija') {
+        inputHora.style.display = 'block'; 
+    } else {
+        inputHora.style.display = 'none';  
+        inputHora.value = '';              
+    }
+};
+
 function agregarMetaPersonalizada() {
     const input = document.getElementById('input-nueva-meta');
     const valor = input.value.trim();
-    if(valor !== "") {
+    
+    const tipoAviso = document.querySelector('input[name="tipoAviso"]:checked').value;
+    const inputHora = document.getElementById('meta-hora-input');
+    const horaAviso = inputHora.value;
+
+    if (valor !== "") {
+        // Validar que haya puesto hora si eligió "Establecer hora"
+        if (tipoAviso === 'fija' && !horaAviso) {
+            alert("Por favor, selecciona a qué hora deseas que te notifique.");
+            return;
+        }
+
+        // Preparar el texto a mostrar
+        let textoMostrar = valor;
+        if (tipoAviso === 'fija') {
+            textoMostrar += ` ⏰ (${horaAviso})`;
+        } else {
+            textoMostrar += ` 🎲 (Al azar)`;
+        }
+
         const lista = document.getElementById('lista-metas');
         const nuevoLabel = document.createElement('label');
         nuevoLabel.style.display = 'flex';
         nuevoLabel.style.alignItems = 'center';
         nuevoLabel.style.gap = '8px';
-        nuevoLabel.innerHTML = `<input type="checkbox" class="check-meta" value="${valor}" checked> 📌 ${valor}`;
+        nuevoLabel.innerHTML = `<input type="checkbox" class="check-meta" value="${textoMostrar}" checked> 📌 ${textoMostrar}`;
+        
         lista.appendChild(nuevoLabel);
-        input.value = ""; 
+        
+        // Restaurar los inputs a su estado inicial
+        input.value = "";
+        document.querySelector('input[value="azar"]').checked = true;
+        window.toggleHoraInput(); // Oculta el reloj de nuevo
+
         if(typeof reproducirSonido === 'function') reproducirSonido('click');
     }
 }
