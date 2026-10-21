@@ -336,18 +336,6 @@ window.obtenerEntradasDiarioPorFecha = obtenerEntradasDiarioPorFecha;
 // ☁️ GUARDAR Y DESCARGAR METAS (SISTEMA UNIFICADO)
 // ==========================================
 
-// 1. Función para Guardar (Llamada cuando presionas el botón azul)
-window.guardarMetasBD = async function(datosMetas) {
-    if (auth && auth.currentUser) {
-        try {
-            const usuarioRef = doc(window.db, "usuarios", auth.currentUser.uid);
-            await setDoc(usuarioRef, { misMetas: datosMetas }, { merge: true });
-            console.log("☁️ Metas guardadas en la nube exitosamente");
-        } catch (error) { 
-            console.error("Error subiendo metas a la nube: ", error); 
-        }
-    }
-};
 
 // 2. Descarga Automática (Se activa solita al iniciar sesión en cualquier celular)
 onAuthStateChanged(auth, async (user) => {
