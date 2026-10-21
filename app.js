@@ -66,7 +66,11 @@ window.sincronizarMascotaUI = function(datosRemotos) {
         datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] }; 
     }
 
-    // Validación de seguridad para la mascota activa
+    // Si tiposMascotas no está cargado en esta pantalla, salimos silenciosamente
+    if (typeof tiposMascotas === 'undefined' || !tiposMascotas) {
+        return;
+    }
+
     if (!datosProgreso.tipoActivo || !tiposMascotas[datosProgreso.tipoActivo]) {
         datosProgreso.tipoActivo = 'planta';
     }
@@ -81,7 +85,7 @@ window.sincronizarMascotaUI = function(datosRemotos) {
         actualizarUIMascota(); 
         if (typeof renderizarLogros === 'function') renderizarLogros();
     } catch (e) {
-        console.warn("Error al actualizar la interfaz de la mascota:", e);
+        // Silencioso
     }
 };
 
