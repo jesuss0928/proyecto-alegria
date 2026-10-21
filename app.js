@@ -99,6 +99,7 @@ function guardarProgresoMascota() {
 
 function actualizarUIMascota() {
     // --- SALVAVIDAS: Si la mascota guardada no existe en tiposMascotas, asigna una válida ---
+    if (typeof tiposMascotas === 'undefined' || !tiposMascotas) return;
     if (!tiposMascotas[datosProgreso.tipoActivo]) {
         datosProgreso.tipoActivo = Object.keys(tiposMascotas)[0] || 'planta';
     }
