@@ -453,3 +453,29 @@ window.guardarMetasBD = async function(datosMetas) {
         }
     }
 };
+// ==========================================
+// DESCARGAR METAS DE FIRESTORE
+// ==========================================
+window.descargarMetasBD = async function() {
+    if (auth && auth.currentUser) {
+        try {
+            const userRef = doc(db, "usuarios", auth.currentUser.uid);
+            const docSnap = await getDoc(userRef);
+            
+            if (docSnap.exists()) {
+                const datos = docSnap.data();
+                
+                // Si hay metas en la nube, las guardamos en la memoria del dispositivo
+                if (datos.metasSeleccionadas) {
+                    localStorage.setItem('alegria_metas', JSON.stringify(datos.metasSeleccionadas));
+                }
+                if (datos.metasPersonales) {
+                    localStorage.setItem('alegria_metas_personales', JSON.stringify(datos.metasPersonales));
+                }
+                console.log("¡Metas descargadas desde la nube exitosamente!");
+            }
+        } catch (error) {
+            console.error("Error al descargar metas:", error);
+        }
+    }
+};
