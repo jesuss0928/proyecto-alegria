@@ -408,10 +408,12 @@ window.activarNotificacionesPush = async function() {
             });
             
             if (token) {
-                console.log('¡Token obtenido con éxito! Tu dispositivo ya puede recibir mensajes:\n', token);
-            } else {
-                console.log('No se pudo obtener el token.');
-            }
+            console.log('¡Token obtenido con éxito!:\n', token);
+            // ESTA LÍNEA NUEVA PERMITE COPIAR EL TOKEN EN EL CELULAR
+            prompt("¡Permiso concedido! Copia este token:", token);
+        } else {
+            console.log('No se pudo obtener el token.');
+        }
         } else {
             console.log('El usuario denegó el permiso.');
         }
