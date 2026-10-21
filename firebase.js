@@ -394,11 +394,14 @@ window.activarNotificacionesPush = async function() {
         if (permiso === 'granted') {
             console.log('Permiso concedido. Buscando al vigilante (Service Worker)...');
             
-            // PASO NUEVO: Registrar explícitamente el Service Worker
-            const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-            console.log('Vigilante registrado correctamente. Obteniendo token...');
+            // 1. Registramos el archivo
+            await navigator.serviceWorker.register('/firebase-messaging-sw.js');
             
-            // Usamos tu llave VAPID y le decimos dónde está el vigilante
+            // 2. PASO CLAVE: Esperamos a que esté 100% activo y despierto
+            const registration = await navigator.serviceWorker.ready;
+            console.log('Vigilante ACTIVO. Obteniendo token...');
+            
+            // 3. Ahora sí, pedimos el token
             const token = await getToken(messaging, { 
                 vapidKey: 'BIa_6L1JnOJ5eSg2O3mK4ya9Citw3HCfnL4KfYPlB4BcXxiIEEXCIJ4p_2ldzQ0mHIGrOKzVFWKcsiGeYtFnidk',
                 serviceWorkerRegistration: registration
