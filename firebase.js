@@ -473,11 +473,6 @@ window.descargarMetasBD = async function() {
                     localStorage.setItem('alegria_metas_personales', JSON.stringify(datos.metasPersonales));
                 }
                 console.log("¡Metas descargadas desde la nube exitosamente!");
-
-                // Recarga suave solo si estás en ajustes.html para mostrar los cambios en pantalla
-                if (window.location.pathname.includes("ajustes.html")) {
-                    window.location.reload();
-                }
             }
         } catch (error) {
             console.error("Error al descargar metas:", error);
