@@ -381,3 +381,33 @@ setTimeout(() => {
         });
     }
 }, 1000);
+// ==========================================
+// SERVICIO DE NOTIFICACIONES PUSH (FCM)
+// ==========================================
+const messaging = getMessaging(app);
+
+window.activarNotificacionesPush = async function() {
+    try {
+        console.log('Pidiendo permiso para notificaciones...');
+        const permiso = await Notification.requestPermission();
+        
+        if (permiso === 'granted') {
+            console.log('Permiso concedido. Obteniendo token de dispositivo...');
+            
+            // Usamos tu llave VAPID para conectar
+            const token = await getToken(messaging, { 
+                vapidKey: 'BIa_6L1JnOJ5eSg2O3mK4ya9Citw3HCfnL4KfYPlB4BcXxiIEEXCIJ4p_2ldzQ0mHIGrOKzVFWKcsiGeYtFnidk' 
+            });
+            
+            if (token) {
+                console.log('¡Token obtenido con éxito! Tu dispositivo ya puede recibir mensajes:\n', token);
+            } else {
+                console.log('No se pudo obtener el token.');
+            }
+        } else {
+            console.log('El usuario denegó el permiso.');
+        }
+    } catch (error) {
+        console.error('Error al configurar las notificaciones Push:', error);
+    }
+};
