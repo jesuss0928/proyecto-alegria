@@ -432,3 +432,24 @@ window.activarNotificacionesPush = async function() {
         console.error('Error al configurar las notificaciones Push:', error);
     }
 };
+// ==========================================
+// GUARDAR METAS EN FIRESTORE
+// ==========================================
+window.guardarMetasBD = async function(datosMetas) {
+    if (auth.currentUser) {
+        try {
+            const { doc, setDoc } = require('firebase/firestore'); // Ajusta la importación según tu versión
+            const userRef = doc(db, "usuarios", auth.currentUser.uid);
+            
+            // Guardamos las metas en el perfil del usuario
+            await setDoc(userRef, {
+                metasSeleccionadas: datosMetas.metas,
+                metasPersonales: datosMetas.metasPersonales
+            }, { merge: true });
+            
+            console.log("¡Metas sincronizadas con la nube exitosamente!");
+        } catch (error) {
+            console.error("Error al guardar metas en Firestore:", error);
+        }
+    }
+};
