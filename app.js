@@ -84,10 +84,17 @@ function guardarProgresoMascota() {
 }
 
 function actualizarUIMascota() {
+    // --- SALVAVIDAS: Si la mascota guardada no existe en tiposMascotas, asigna una válida ---
+    if (!tiposMascotas[datosProgreso.tipoActivo]) {
+        datosProgreso.tipoActivo = Object.keys(tiposMascotas)[0] || 'planta';
+    }
+
     const config = tiposMascotas[datosProgreso.tipoActivo]; 
+    if (!config) return; // Si aún no existe la configuración, detiene la ejecución sin dar error
+
     const indiceEtapa = Math.min(4, Math.floor(datosProgreso.nivel / 25)); 
     const emojiEl = document.getElementById('mascota-emoji');
-    if(emojiEl) emojiEl.innerHTML = config.etapas[indiceEtapa];
+    if(emojiEl && config.etapas) emojiEl.innerHTML = config.etapas[indiceEtapa];
     
     const progresoEl = document.getElementById('mascota-progreso');
     if(progresoEl) progresoEl.style.width = datosProgreso.nivel + '%'; 
