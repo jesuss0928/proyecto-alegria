@@ -72,6 +72,17 @@ window.cargarMascotaBD = async function() {
         }
     }
 };
+async function guardarEmocionBD(emocionData) {
+    if (window.usuarioLogueado) {
+        try {
+            const userRef = doc(db, "usuarios", window.usuarioLogueado.uid);
+            await setDoc(userRef, { emocionActual: emocionData }, { merge: true });
+            console.log("¡Emoción guardada exitosamente!");
+        } catch (error) {
+            console.error("Error al guardar emoción:", error);
+        }
+    }
+}
 window.guardarEmocionBD = guardarEmocionBD;
 
 async function cargarHistorialYCalendario() {
