@@ -407,10 +407,21 @@ window.activarNotificacionesPush = async function() {
                 serviceWorkerRegistration: registration
             });
             
-            if (token) {
-            console.log('¡Token obtenido con éxito!:\n', token);
-            // ESTA LÍNEA NUEVA PERMITE COPIAR EL TOKEN EN EL CELULAR
-            prompt("¡Permiso concedido! Copia este token:", token);
+          if (token) {
+            console.log('¡Token obtenido con éxito! Guardando en la nube...');
+            
+            // Verificamos si hay un usuario logueado
+            if (auth && auth.currentUser) {
+                try {
+                    const userRef = doc(db, "usuarios", auth.currentUser.uid);
+                    await setDoc(userRef, { fcmToken: token }, { merge: true });
+                    alert("¡Notificaciones activadas con éxito! Tu dispositivo está enlazado a tu perfil.");
+                } catch (error) {
+                    console.error("Error guardando el token:", error);
+                }
+            } else {
+                alert("Debes iniciar sesión para activar las notificaciones.");
+            }
         } else {
             console.log('No se pudo obtener el token.');
         }
