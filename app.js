@@ -59,16 +59,30 @@ let datosProgreso = {
 };
 
 window.sincronizarMascotaUI = function(datosRemotos) {
-    const hoy = new Date().toLocaleDateString(); 
-    if (datosRemotos) { datosProgreso = datosRemotos; }  
-    else { datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] }; } 
-
-    if (datosProgreso.fechaUltimoUpgrade !== hoy) { 
-        datosProgreso.upgradesHoy = 0; datosProgreso.fechaUltimoUpgrade = hoy; 
-        guardarProgresoMascota();  
+    const hoy = new Date().toLocaleDateString();
+    if (datosRemotos) { 
+        datosProgreso = datosRemotos; 
+    } else { 
+        datosProgreso = JSON.parse(localStorage.getItem('alegria_mascota_data')) || { tipoActivo: 'planta', nivel: 0, fechaUltimoUpgrade: hoy, upgradesHoy: 0, logros: [] }; 
     }
 
-    actualizarUIMascota(); renderizarLogros(); 
+    // Validación de seguridad para la mascota activa
+    if (!datosProgreso.tipoActivo || !tiposMascotas[datosProgreso.tipoActivo]) {
+        datosProgreso.tipoActivo = 'planta';
+    }
+
+    if (datosProgreso.fechaUltimoUpgrade !== hoy) {
+        datosProgreso.upgradesHoy = 0; 
+        datosProgreso.fechaUltimoUpgrade = hoy;
+        guardarProgresoMascota();
+    }
+
+    try {
+        actualizarUIMascota(); 
+        if (typeof renderizarLogros === 'function') renderizarLogros();
+    } catch (e) {
+        console.warn("Error al actualizar la interfaz de la mascota:", e);
+    }
 };
 
 function guardarProgresoMascota() {
