@@ -46,22 +46,32 @@ async function cargarMascotaBD() {
         window.sincronizarMascotaUI(datosDescargados);
     }
 }
-window.cargarMascotaBD = cargarMascotaBD;
-
-async function guardarEmocionBD(emocionName) {
-    if (!window.usuarioLogueado) return;
-    try {
-        const subcoleccionRef = collection(window.db, "usuarios", window.usuarioLogueado.uid, "emociones");
-        await addDoc(subcoleccionRef, {
-            emocion: emocionName,
-            fechaFiltro: new Date().toLocaleDateString(),
-            timestamp: serverTimestamp()
-        });
-        if (typeof window.cargarHistorialYCalendario === "function") {
-            window.cargarHistorialYCalendario(); 
+window.cargarMascotaBD = async function() {
+    if (auth && auth.currentUser) {
+        try {
+            const userRef = doc(db, "usuarios", auth.currentUser.uid);
+            const docSnap = await getDoc(userRef);
+            
+            if (docSnap.exists() && docSnap.data().mascota) {
+                const datosMascota = docSnap.data().mascota;
+                
+                // Guardamos en local storage
+                localStorage.setItem('alegria_mascota_data', JSON.stringify(datosMascota));
+                
+                // Intentamos sincronizar la UI solo si la función existe y no falla
+                if (typeof window.sincronizarMascotaUI === 'function') {
+                    try {
+                        window.sincronizarMascotaUI(datosMascota);
+                    } catch (errUI) {
+                        console.warn("No se pudo renderizar la mascota en esta página (normal si no hay UI de mascota):", errUI);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Error al cargar mascota desde la nube:", error);
         }
-    } catch (error) { console.error("Error guardando emoción:", error); }
-}
+    }
+};
 window.guardarEmocionBD = guardarEmocionBD;
 
 async function cargarHistorialYCalendario() {
