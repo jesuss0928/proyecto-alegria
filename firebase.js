@@ -181,6 +181,7 @@ window.cerrarSesion = function() {
 onAuthStateChanged(auth, (user) => {
     if (user) {
         window.usuarioLogueado = user;
+        if (window.descargarMetasBD) window.descargarMetasBD();
 
         // --- INICIO DEL PASO 3: PEDIR PERMISOS DE NOTIFICACIÓN ---
         try {
