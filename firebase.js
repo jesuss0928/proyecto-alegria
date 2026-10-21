@@ -436,9 +436,9 @@ window.activarNotificacionesPush = async function() {
 // GUARDAR METAS EN FIRESTORE
 // ==========================================
 window.guardarMetasBD = async function(datosMetas) {
-    if (auth.currentUser) {
+    if (auth && auth.currentUser) {
         try {
-            const { doc, setDoc } = require('firebase/firestore'); // Ajusta la importación según tu versión
+            // ¡ELIMINAMOS LA LÍNEA DEL REQUIRE QUE DABA ERROR!
             const userRef = doc(db, "usuarios", auth.currentUser.uid);
             
             // Guardamos las metas en el perfil del usuario
